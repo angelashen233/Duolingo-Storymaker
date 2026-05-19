@@ -200,6 +200,71 @@
 
     /* Shuffle animation */
     .shuffling .story-card { animation: card-shuffle-in 300ms cubic-bezier(0.34,1.56,0.64,1) both; }
+
+    /* ── Milestone popup ── */
+    .milestone-popup-bg {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 60; display: flex; align-items: flex-end;
+      opacity: 0; pointer-events: none;
+      transition: opacity 280ms ease;
+    }
+    .milestone-popup-bg.open {
+      opacity: 1; pointer-events: auto;
+    }
+    .milestone-popup {
+      background: white; width: 100%;
+      border-radius: 24px 24px 0 0;
+      padding: 16px 20px 36px;
+      transform: translateY(100%);
+      transition: transform 350ms cubic-bezier(0.32,0.72,0,1);
+    }
+    .milestone-popup-bg.open .milestone-popup { transform: translateY(0); }
+    .milestone-handle {
+      width: 40px; height: 4px; background: var(--color-swan);
+      border-radius: 9999px; margin: 0 auto 16px;
+    }
+    .milestone-icon { font-size: 38px; text-align: center; margin-bottom: 8px; }
+    .milestone-title {
+      font-size: 17px; font-weight: 900; color: var(--color-eel);
+      text-align: center; margin-bottom: 8px; line-height: 1.3;
+    }
+    .milestone-body {
+      font-size: 13px; font-weight: 600; color: var(--color-wolf);
+      text-align: center; line-height: 1.65; margin-bottom: 18px;
+    }
+    .milestone-body strong { color: var(--color-eel); font-weight: 900; }
+    .milestone-cta {
+      background: var(--color-feather-green); color: white; border: none;
+      border-radius: 9999px; font-family: 'Nunito', sans-serif;
+      font-size: 15px; font-weight: 900; padding: 14px 24px;
+      width: 100%; cursor: pointer;
+      box-shadow: 0 4px 0 #46A302;
+      transition: transform 100ms ease, box-shadow 100ms ease;
+    }
+    .milestone-cta:active { transform: translateY(4px); box-shadow: none; }
+
+    /* Locked story cards (above user's current milestone) */
+    .story-card-locked {
+      cursor: default; pointer-events: none;
+      opacity: 0.52; filter: grayscale(40%);
+      position: relative;
+    }
+    .story-card-locked .s-cover::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.20);
+    }
+    .s-lock-badge {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(0,0,0,0.62);
+      backdrop-filter: blur(2px);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; z-index: 5;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
   </style>
 </head>
 <body class="demo-page">
@@ -282,14 +347,15 @@
           </div>
         </a>
 
-        <!-- Card 2: Coffee Shop Drama -->
-        <a href="09-story-detail.html" class="story-card slide-up">
+        <!-- Card 2: Coffee Shop Drama — LOCKED (Intermediate) -->
+        <div class="story-card story-card-locked slide-up">
           <div class="s-cover cover-alt1">
             <div class="s-cover-char"><div data-char="eddy" data-size="char-sm"></div></div>
             <div class="s-cover-badges">
               <span class="badge badge-yellow badge-intermediate">Intermediate</span>
             </div>
             <div class="s-cover-plays">▶ 3.4k</div>
+            <div class="s-lock-badge">🔒</div>
           </div>
           <div class="s-body">
             <div class="s-title">Coffee Shop Drama</div>
@@ -298,7 +364,7 @@
             </div>
             <div class="s-author"><div class="s-author-dot" style="background:#FF7043;display:flex;align-items:center;justify-content:center;font-size:8px;color:white;">C</div> Carlos V.</div>
           </div>
-        </a>
+        </div>
 
         <!-- Card 3: ¿Dónde Está el Baño? -->
         <a href="09-story-detail.html" class="story-card slide-up">
@@ -337,14 +403,15 @@
           </div>
         </a>
 
-        <!-- Card 5: Noche de Flamenco -->
-        <a href="09-story-detail.html" class="story-card slide-up">
+        <!-- Card 5: Noche de Flamenco — LOCKED (Advanced) -->
+        <div class="story-card story-card-locked slide-up">
           <div class="s-cover cover-alt1">
             <div class="s-cover-char"><div data-char="bea" data-size="char-sm"></div></div>
             <div class="s-cover-badges">
               <span class="badge badge-purple badge-advanced">Advanced</span>
             </div>
             <div class="s-cover-plays">▶ 1.7k</div>
+            <div class="s-lock-badge">🔒</div>
           </div>
           <div class="s-body">
             <div class="s-title">Noche de Flamenco</div>
@@ -353,16 +420,17 @@
             </div>
             <div class="s-author"><div class="s-author-dot" style="background:#1CB0F6;display:flex;align-items:center;justify-content:center;font-size:8px;color:white;">B</div> Berta S.</div>
           </div>
-        </a>
+        </div>
 
-        <!-- Card 6: El Tren a Madrid -->
-        <a href="09-story-detail.html" class="story-card slide-up">
+        <!-- Card 6: El Tren a Madrid — LOCKED (Intermediate) -->
+        <div class="story-card story-card-locked slide-up">
           <div class="s-cover cover-alt3">
             <div class="s-cover-char"><div data-char="junior" data-size="char-sm"></div></div>
             <div class="s-cover-badges">
               <span class="badge badge-yellow badge-intermediate">Intermediate</span>
             </div>
             <div class="s-cover-plays">▶ 950</div>
+            <div class="s-lock-badge">🔒</div>
           </div>
           <div class="s-body">
             <div class="s-title">El Tren a Madrid</div>
@@ -371,7 +439,7 @@
             </div>
             <div class="s-author"><div class="s-author-dot" style="background:#FFD700;display:flex;align-items:center;justify-content:center;font-size:8px;color:black;">J</div> Jorge P.</div>
           </div>
-        </a>
+        </div>
       </div>
 
     </main>
@@ -384,6 +452,20 @@
       <a class="nav-item" href="11-popularity-board.html"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="11" width="6" height="11" rx="1"/><rect x="9" y="4" width="6" height="18" rx="1"/><rect x="17" y="7" width="6" height="15" rx="1"/></svg></div><span class="nav-label">Boards</span></a>
       <a class="nav-item" href="#"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div><span class="nav-label">Profile</span></a>
     </nav>
+
+    <!-- Milestone popup -->
+    <div class="milestone-popup-bg" id="milestonePopup">
+      <div class="milestone-popup">
+        <div class="milestone-handle"></div>
+        <div class="milestone-icon">🔒</div>
+        <div class="milestone-title">Stories matched to your milestone</div>
+        <div class="milestone-body">
+          You're currently seeing stories from creators at <strong>your level</strong> — a curated feed just for you.<br><br>
+          <strong>This is not all!</strong> Thousands more stories from the full community are waiting for you to unlock as you level up. Keep learning! 🌟
+        </div>
+        <button class="milestone-cta" onclick="closeMilestonePopup()">Got it, keep learning! 🚀</button>
+      </div>
+    </div>
 
     <!-- Language selection sheet -->
     <div class="lang-sheet-backdrop" id="langSheetBg" onclick="closeLangSheet(event)">
@@ -490,6 +572,17 @@
       document.querySelectorAll('.sort-pill').forEach(p => p.classList.remove('active'));
       el.classList.add('active');
       shuffleGrid();
+    }
+
+    // Show milestone popup on load
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('milestonePopup').classList.add('open');
+      }, 700);
+    });
+
+    function closeMilestonePopup() {
+      document.getElementById('milestonePopup').classList.remove('open');
     }
 
     function setTime(el, type) {

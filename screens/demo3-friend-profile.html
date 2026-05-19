@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Demo 3 — Friend Profile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../duolingo-design.css">
+  <link rel="stylesheet" href="../design-system.css">
+  <link rel="stylesheet" href="../components/animations.css">
+  <link rel="stylesheet" href="../components/character.css">
+  <link rel="stylesheet" href="../components/card.css">
+  <style>
+    /* ── Profile hero ── */
+    .profile-hero {
+      background: linear-gradient(160deg, #FEE140 0%, #FA709A 100%);
+      padding: 20px 20px 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .profile-hero::after {
+      content: '🇪🇸';
+      position: absolute; bottom: 10px; right: 20px;
+      font-size: 48px; opacity: 0.15;
+    }
+    .profile-hero-top {
+      display: flex; align-items: flex-end; gap: 16px;
+    }
+    .profile-avatar-wrap {
+      position: relative; flex-shrink: 0;
+    }
+    .profile-avatar {
+      width: 80px; height: 80px; border-radius: 50%;
+      border: 4px solid white;
+      background: #FF7043;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 34px; font-weight: 900; color: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .profile-verified {
+      position: absolute; bottom: 2px; right: 2px;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--color-feather-green); border: 2.5px solid white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; color: white;
+    }
+    .profile-name-block { padding-bottom: 4px; }
+    .profile-display-name {
+      font-size: 20px; font-weight: 900; color: white;
+      letter-spacing: -0.3px; line-height: 1.2;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.18);
+    }
+    .profile-username {
+      font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.82);
+      margin-top: 2px;
+    }
+    .profile-learning-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(255,255,255,0.22); backdrop-filter: blur(4px);
+      border-radius: 9999px; padding: 3px 10px;
+      font-size: 12px; font-weight: 800; color: white;
+      margin-top: 6px;
+    }
+
+    /* ── Stats row ── */
+    .profile-stats {
+      display: flex; align-items: stretch;
+      background: white;
+      border-bottom: 2px solid var(--color-swan);
+    }
+    .profile-stat {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; padding: 14px 8px;
+      border-right: 1.5px solid var(--color-polar);
+      gap: 2px;
+    }
+    .profile-stat:last-child { border-right: none; }
+    .stat-value {
+      font-size: 20px; font-weight: 900; color: var(--color-eel);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 10px; font-weight: 800; color: var(--color-wolf);
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .stat-icon { font-size: 16px; }
+
+    /* ── Action buttons ── */
+    .profile-actions {
+      display: flex; gap: 10px; padding: 14px 20px;
+    }
+    .btn-follow {
+      flex: 1; padding: 12px; border-radius: 9999px;
+      background: var(--color-feather-green); color: white;
+      border: none; font-family: 'Nunito', sans-serif;
+      font-size: 15px; font-weight: 900; cursor: pointer;
+      box-shadow: 0 4px 0 #46A302;
+      transition: transform 100ms ease, box-shadow 100ms ease;
+    }
+    .btn-follow:active { transform: translateY(4px); box-shadow: none; }
+    .btn-follow.following {
+      background: var(--color-polar); color: var(--color-wolf);
+      border: 2px solid var(--color-swan); box-shadow: none;
+    }
+    .btn-message {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: white; border: 2.5px solid var(--color-swan);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; cursor: pointer; flex-shrink: 0;
+      transition: background 120ms ease;
+    }
+    .btn-message:hover { background: var(--color-polar); }
+
+    /* ── Streak / badges row ── */
+    .achievement-row {
+      display: flex; gap: 8px; padding: 0 20px 14px;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .achievement-row::-webkit-scrollbar { display: none; }
+    .ach-chip {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--color-polar); border: 1.5px solid var(--color-swan);
+      border-radius: 9999px; padding: 6px 12px;
+      font-size: 12px; font-weight: 800; color: var(--color-eel);
+      white-space: nowrap; flex-shrink: 0;
+    }
+
+    /* ── Section header ── */
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px 10px;
+    }
+    .section-title {
+      font-size: 17px; font-weight: 900; color: var(--color-eel);
+    }
+    .section-count {
+      font-size: 13px; font-weight: 700; color: var(--color-wolf);
+    }
+
+    /* ── Story cards grid (2-col) ── */
+    .stories-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px; padding: 0 16px 20px;
+    }
+
+    /* Base story card */
+    .sc {
+      background: white; border: 2px solid var(--color-swan);
+      border-radius: 16px; overflow: hidden;
+      box-shadow: 0 3px 0 var(--color-swan);
+      text-decoration: none; color: inherit; display: block;
+      transition: transform 120ms ease, box-shadow 120ms ease;
+      cursor: pointer;
+    }
+    .sc:hover { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(0,0,0,0.1); }
+    .sc:active { transform: translateY(3px); box-shadow: none; }
+    .sc-cover {
+      height: 110px; position: relative; overflow: hidden;
+    }
+    .sc-char {
+      position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    }
+    .sc-badges {
+      position: absolute; top: 7px; left: 7px; display: flex; gap: 4px; flex-wrap: wrap;
+    }
+    .sc-plays {
+      position: absolute; top: 7px; right: 7px;
+      background: rgba(0,0,0,0.45); backdrop-filter: blur(3px);
+      color: white; font-size: 11px; font-weight: 800;
+      padding: 3px 8px; border-radius: 9999px;
+      display: flex; align-items: center; gap: 3px;
+    }
+    .sc-body { padding: 9px 11px 11px; }
+    .sc-title {
+      font-size: 13px; font-weight: 900; color: var(--color-eel);
+      line-height: 1.3; margin-bottom: 6px;
+    }
+    .sc-meta { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+    .sc-author {
+      font-size: 11px; font-weight: 700; color: var(--color-wolf);
+      margin-top: 5px;
+    }
+
+    /* Locked card */
+    .sc-locked {
+      cursor: default; pointer-events: none;
+      opacity: 0.50; filter: grayscale(40%);
+      position: relative;
+    }
+    .sc-locked-cover::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.20);
+    }
+    .sc-lock-badge {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(0,0,0,0.60); backdrop-filter: blur(2px);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; z-index: 5;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .sc-locked-hint {
+      font-size: 10px; font-weight: 800; color: var(--color-hare);
+      text-align: center; padding: 4px 8px 8px;
+      display: flex; align-items: center; justify-content: center; gap: 3px;
+    }
+
+    /* badge inline */
+    .badge { display: inline-flex; align-items: center; border-radius: 9999px; font-family: 'Nunito', sans-serif; font-weight: 800; }
+    .badge-green  { background: rgba(88,204,2,0.14);  color: #1E6B00; }
+    .badge-yellow { background: rgba(255,200,0,0.18); color: #7A5000; }
+    .badge-purple { background: rgba(206,130,255,0.18); color: #5B1F9E; }
+    .badge-es { background: rgba(255,75,75,0.12); color: #C0001A; font-size: 10px; padding: 2px 7px; }
+    .badge-beginner    { font-size: 9px; padding: 2px 7px; }
+    .badge-intermediate{ font-size: 9px; padding: 2px 7px; }
+    .badge-advanced    { font-size: 9px; padding: 2px 7px; }
+  </style>
+</head>
+<body class="demo-page">
+  <div class="phone">
+    <div class="status-bar" style="background:transparent;position:absolute;top:0;left:0;right:0;z-index:10;">
+      <span class="status-time" style="color:white;">9:41</span>
+      <div class="status-icons" style="color:white;">
+        <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1" fill="white"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1" fill="white"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="white"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="2.5" stroke="white" stroke-width="1.5" fill="none"/><rect x="22.5" y="4" width="2" height="4" rx="1" fill="white" opacity="0.4"/><rect x="1.5" y="2.5" width="18" height="7" rx="1.5" fill="white"/></svg>
+      </div>
+    </div>
+
+    <main class="screen">
+
+      <!-- Profile hero banner -->
+      <div class="profile-hero" style="padding-top:56px;">
+        <!-- Back button overlaid on hero -->
+        <a href="demo3-social-feed.html" class="back-btn" style="position:absolute;top:54px;left:16px;background:rgba(255,255,255,0.25);border-color:rgba(255,255,255,0.4);color:white;text-decoration:none;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </a>
+
+        <div class="profile-hero-top">
+          <div class="profile-avatar-wrap">
+            <div class="profile-avatar">C</div>
+            <div class="profile-verified">✓</div>
+          </div>
+          <div class="profile-name-block">
+            <div class="profile-display-name">Carlos V.</div>
+            <div class="profile-username">@carlos_v · Madrid 🇪🇸</div>
+            <div class="profile-learning-tag">📚 Studying Japanese</div>
+          </div>
+        </div>
+        <div style="height:18px;"></div>
+      </div>
+
+      <!-- Stats row -->
+      <div class="profile-stats">
+        <div class="profile-stat">
+          <span class="stat-icon">🔥</span>
+          <span class="stat-value">62</span>
+          <span class="stat-label">Day Streak</span>
+        </div>
+        <div class="profile-stat">
+          <span class="stat-icon">⚡</span>
+          <span class="stat-value">3,410</span>
+          <span class="stat-label">Total XP</span>
+        </div>
+        <div class="profile-stat">
+          <span class="stat-icon">📖</span>
+          <span class="stat-value">3</span>
+          <span class="stat-label">Stories</span>
+        </div>
+        <div class="profile-stat">
+          <span class="stat-icon">👥</span>
+          <span class="stat-value">148</span>
+          <span class="stat-label">Followers</span>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="profile-actions">
+        <button class="btn-follow" id="followBtn" onclick="toggleFollow()">+ Follow</button>
+        <button class="btn-message">💬</button>
+        <button class="btn-message">🔗</button>
+      </div>
+
+      <!-- Achievement chips -->
+      <div class="achievement-row">
+        <div class="ach-chip">🏆 Top Creator</div>
+        <div class="ach-chip">🔥 62-day streak</div>
+        <div class="ach-chip">⭐ 12k total plays</div>
+        <div class="ach-chip">🎯 Intermediate</div>
+      </div>
+
+      <div style="height:2px;background:var(--color-polar);"></div>
+
+      <!-- Stories section -->
+      <div class="section-header">
+        <span class="section-title">📖 Stories by Carlos</span>
+        <span class="section-count">3 public</span>
+      </div>
+
+      <div class="stories-grid">
+
+        <!-- ── Story 1: El Café Rápido — BEGINNER — CLICKABLE ── -->
+        <a href="09-story-detail.html" class="sc hotspot">
+          <div class="sc-cover cover-alt1">
+            <div class="sc-char"><div data-char="eddy" data-size="char-sm"></div></div>
+            <div class="sc-badges">
+              <span class="badge badge-green badge-beginner">Beginner</span>
+            </div>
+            <div class="sc-plays">▶ 1.2k</div>
+          </div>
+          <div class="sc-body">
+            <div class="sc-title">El Café Rápido</div>
+            <div class="sc-meta">
+              <span class="badge badge-es">🇪🇸 Spanish</span>
+            </div>
+            <div class="sc-author">by Carlos V.</div>
+          </div>
+        </a>
+
+        <!-- ── Story 2: Coffee Shop Drama — INTERMEDIATE — LOCKED ── -->
+        <div class="sc sc-locked">
+          <div class="sc-cover cover-alt1 sc-locked-cover">
+            <div class="sc-char"><div data-char="eddy" data-size="char-sm"></div></div>
+            <div class="sc-badges">
+              <span class="badge badge-yellow badge-intermediate">Intermediate</span>
+            </div>
+            <div class="sc-plays">▶ 3.4k</div>
+            <div class="sc-lock-badge">🔒</div>
+          </div>
+          <div class="sc-body">
+            <div class="sc-title">Coffee Shop Drama</div>
+            <div class="sc-meta">
+              <span class="badge badge-es">🇪🇸 Spanish</span>
+            </div>
+          </div>
+          <div class="sc-locked-hint">🔒 Unlock Intermediate</div>
+        </div>
+
+        <!-- ── Story 3: La Aventura — ADVANCED — LOCKED ── -->
+        <div class="sc sc-locked">
+          <div class="sc-cover cover-spanish sc-locked-cover">
+            <div class="sc-char"><div data-char="duo" data-size="char-sm"></div></div>
+            <div class="sc-badges">
+              <span class="badge badge-purple badge-advanced">Advanced</span>
+            </div>
+            <div class="sc-plays">▶ 890</div>
+            <div class="sc-lock-badge">🔒</div>
+          </div>
+          <div class="sc-body">
+            <div class="sc-title">La Gran Aventura</div>
+            <div class="sc-meta">
+              <span class="badge badge-es">🇪🇸 Spanish</span>
+            </div>
+          </div>
+          <div class="sc-locked-hint">🔒 Unlock Advanced</div>
+        </div>
+
+      </div>
+
+      <!-- ── Progress teaser ── -->
+      <div style="margin:0 16px 24px;background:linear-gradient(135deg,rgba(88,204,2,0.08),rgba(28,176,246,0.08));border:2px solid rgba(88,204,2,0.25);border-radius:16px;padding:16px;">
+        <div style="font-size:14px;font-weight:900;color:var(--color-eel);margin-bottom:6px;">🌟 Keep learning to unlock more!</div>
+        <div style="font-size:13px;font-weight:600;color:var(--color-wolf);line-height:1.6;margin-bottom:12px;">
+          You can currently play <strong style="color:var(--color-feather-green);">Beginner</strong> stories.
+          Reach the next milestone to unlock <strong>Intermediate</strong> stories by Carlos and thousands of others.
+        </div>
+        <div style="background:var(--color-polar);border-radius:9999px;height:10px;overflow:hidden;margin-bottom:6px;">
+          <div style="width:42%;height:100%;background:linear-gradient(90deg,#58CC02,#89E219);border-radius:9999px;"></div>
+        </div>
+        <div style="font-size:11px;font-weight:800;color:var(--color-wolf);">Level 4 · 420 / 1,000 XP to Intermediate</div>
+      </div>
+
+    </main>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+      <a class="nav-item" href="01-duolingo-home-new-tab.html"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div><span class="nav-label">Home</span></a>
+      <a class="nav-item" href="#"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><span class="nav-label">Learn</span></a>
+      <a class="nav-item active" href="02-studio-landing.html"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="12" y2="12"/><polyline points="14 12 18 16 14 20"/></svg></div><span class="nav-label">Stories</span></a>
+      <a class="nav-item" href="11-popularity-board.html"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="11" width="6" height="11" rx="1"/><rect x="9" y="4" width="6" height="18" rx="1"/><rect x="17" y="7" width="6" height="15" rx="1"/></svg></div><span class="nav-label">Boards</span></a>
+      <a class="nav-item" href="#"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div><span class="nav-label">Profile</span></a>
+    </nav>
+  </div>
+
+  <script src="../js/characters.js"></script>
+  <script>
+    function toggleFollow() {
+      const btn = document.getElementById('followBtn');
+      if (btn.classList.contains('following')) {
+        btn.classList.remove('following');
+        btn.textContent = '+ Follow';
+      } else {
+        btn.classList.add('following');
+        btn.textContent = '✓ Following';
+        btn.style.transform = 'scale(1.05)';
+        setTimeout(() => btn.style.transform = '', 200);
+      }
+    }
+  </script>
+  <script>
+    document.querySelectorAll('.hotspot').forEach(el => {
+      el.addEventListener('click', () => el.classList.add('done'), { once: true });
+    });
+  </script>
+  <a class="home-fab" href="../index.html">🏠 Main Page</a>
+</body>
+</html>

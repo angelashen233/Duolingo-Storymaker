@@ -125,6 +125,31 @@
       box-shadow: 0 3px 0 var(--color-swan); transition: transform 100ms ease, box-shadow 100ms ease;
     }
     .btn-draft:active { transform: translateY(3px); box-shadow: none; }
+
+    /* Locked difficulty chip */
+    .diff-chip-locked {
+      flex: 1; padding: 10px 8px; border-radius: var(--radius-lg);
+      border: 2.5px solid var(--color-swan); background: var(--color-polar);
+      font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 800;
+      color: var(--color-hare); text-align: center;
+      cursor: not-allowed; box-shadow: none; position: relative;
+    }
+    .diff-chip-locked .lock-tip {
+      position: absolute; bottom: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%);
+      background: #3C3C3C; color: white;
+      font-size: 11px; font-weight: 700; padding: 7px 12px;
+      border-radius: 10px; white-space: nowrap; z-index: 30;
+      opacity: 0; pointer-events: none;
+      transition: opacity 150ms ease;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.22); line-height: 1.4;
+    }
+    .diff-chip-locked .lock-tip::after {
+      content: ''; position: absolute; top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent; border-top-color: #3C3C3C;
+    }
+    .diff-chip-locked:hover .lock-tip { opacity: 1; }
   </style>
 </head>
 <body class="demo-page">
@@ -211,9 +236,15 @@
       <div class="form-section">
         <div class="form-section-title">Difficulty Level</div>
         <div class="diff-row">
-          <div class="diff-chip active-beg" onclick="selectDiff(this,'beg')">🌱 Beginner</div>
-          <div class="diff-chip" onclick="selectDiff(this,'int')">⚡ Intermediate</div>
-          <div class="diff-chip" onclick="selectDiff(this,'adv')">🔥 Advanced</div>
+          <div class="diff-chip active-beg">🌱 Beginner</div>
+          <div class="diff-chip-locked">
+            🔒 Intermediate
+            <div class="lock-tip">Keep progressing to<br>unlock more levels! 🔓</div>
+          </div>
+          <div class="diff-chip-locked">
+            🔒 Advanced
+            <div class="lock-tip">Keep progressing to<br>unlock more levels! 🔓</div>
+          </div>
         </div>
       </div>
 

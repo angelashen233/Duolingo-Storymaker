@@ -164,6 +164,124 @@
       transition: all 120ms ease;
     }
     .timeline-add:hover { border-color: var(--color-feather-green); color: var(--color-feather-green); background: rgba(88,204,2,0.06); }
+
+    /* Scene overlay for time-of-day / weather effects */
+    .scene-overlay {
+      position: absolute; inset: 0; border-radius: 16px; pointer-events: none;
+      transition: background 350ms ease, backdrop-filter 350ms ease;
+    }
+
+    /* Scene Settings Panel */
+    .scene-panel {
+      display: none;
+      padding: 10px 12px 10px;
+      background: white;
+      border-top: 1.5px solid var(--color-swan);
+    }
+    .scene-panel.visible { display: block; }
+    .scene-panel-row {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+    }
+    .scene-panel-row:last-child { margin-bottom: 0; }
+    .scene-row-label {
+      font-size: 10px; font-weight: 900; color: var(--color-wolf);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      width: 66px; flex-shrink: 0; line-height: 1.3;
+    }
+    .scene-field {
+      flex: 1; font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 700;
+      color: var(--color-eel); background: var(--color-polar);
+      border: 2px solid var(--color-swan); border-radius: 10px;
+      padding: 7px 12px; outline: none; resize: none; line-height: 1.4;
+      transition: border-color 150ms ease;
+    }
+    .scene-field:focus { border-color: var(--color-macaw); background: white; }
+    .time-pills { display: flex; gap: 4px; flex-wrap: nowrap; overflow-x: auto; }
+    .time-pill {
+      padding: 5px 8px; border-radius: 9999px;
+      border: 2px solid var(--color-swan); background: var(--color-polar);
+      font-family: 'Nunito', sans-serif; font-size: 11px; font-weight: 800;
+      color: var(--color-wolf); cursor: pointer; white-space: nowrap;
+      transition: all 100ms ease; flex-shrink: 0;
+    }
+    .time-pill.active { background: var(--color-macaw); color: white; border-color: var(--color-macaw); }
+    .weather-chips { display: flex; gap: 5px; }
+    .weather-chip {
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 2.5px solid var(--color-swan); background: var(--color-polar);
+      font-size: 16px; cursor: pointer; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 100ms ease;
+    }
+    .weather-chip.active { border-color: var(--color-feather-green); background: rgba(88,204,2,0.12); }
+
+    /* ── Weather chip pop animation ── */
+    @keyframes chip-pop {
+      0%   { transform: scale(1); }
+      35%  { transform: scale(1.45); }
+      65%  { transform: scale(0.85); }
+      100% { transform: scale(1); }
+    }
+    .weather-chip.pop { animation: chip-pop 320ms cubic-bezier(0.34,1.56,0.64,1) forwards; }
+
+    /* ── Weather particle layer ── */
+    #weatherLayer {
+      position: absolute; inset: 0; pointer-events: none;
+      overflow: hidden; border-radius: 16px; z-index: 3;
+    }
+
+    /* Rain */
+    @keyframes rain-fall {
+      0%   { transform: translateY(-20px) rotate(15deg); }
+      100% { transform: translateY(290px) rotate(15deg); }
+    }
+    .rain-drop {
+      position: absolute; top: 0;
+      width: 2px; height: 14px;
+      background: linear-gradient(180deg, transparent, rgba(100,140,200,0.75));
+      border-radius: 2px;
+      animation: rain-fall linear infinite;
+    }
+
+    /* Snow */
+    @keyframes snow-fall {
+      0%   { transform: translateY(-20px) translateX(0px)   rotate(0deg); }
+      33%  { transform: translateY(80px)  translateX(12px)  rotate(120deg); }
+      66%  { transform: translateY(170px) translateX(-8px)  rotate(240deg); }
+      100% { transform: translateY(290px) translateX(5px)   rotate(360deg); }
+    }
+    .snow-flake {
+      position: absolute; top: 0;
+      color: rgba(255,255,255,0.9);
+      text-shadow: 0 0 4px rgba(150,200,255,0.6);
+      animation: snow-fall ease-in-out infinite;
+    }
+
+    /* Fog */
+    @keyframes fog-drift {
+      0%   { transform: translateX(-50px); opacity: 0.10; }
+      50%  { opacity: 0.25; }
+      100% { transform: translateX(50px);  opacity: 0.10; }
+    }
+    .fog-layer {
+      position: absolute; left: -15%; right: -15%;
+      height: 44px;
+      background: rgba(210,215,220,0.5);
+      border-radius: 50%;
+      filter: blur(14px);
+      animation: fog-drift ease-in-out infinite alternate;
+    }
+
+    /* Extra clouds (cloudy) */
+    @keyframes cloud-drift {
+      0%, 100% { transform: translateX(0px); }
+      50%       { transform: translateX(10px); }
+    }
+    .cloud-extra {
+      position: absolute;
+      animation: cloud-drift ease-in-out infinite;
+      pointer-events: none; user-select: none;
+    }
   </style>
 </head>
 <body class="demo-page">
@@ -212,6 +330,11 @@
           <span class="char-placeholder-icon">👤</span>
           <span class="char-placeholder-text">Add character</span>
         </a>
+
+        <!-- Time / weather overlay -->
+        <div class="scene-overlay" id="sceneOverlay"></div>
+        <!-- Animated weather particles -->
+        <div id="weatherLayer"></div>
       </div>
 
       <!-- Scene BG picker -->
@@ -241,6 +364,37 @@
         </div>
         <div style="font-size:11px;font-weight:600;color:var(--color-wolf);margin-top:5px;display:flex;align-items:center;gap:5px;">
           <span>💡</span><span>Tip: Write in Spanish to match your story's language tag</span>
+        </div>
+      </div>
+
+      <!-- Scene settings panel (shown when Scene tool is active) -->
+      <div class="scene-panel" id="scenePanel">
+        <div class="scene-panel-row">
+          <span class="scene-row-label">📍 Location</span>
+          <input class="scene-field" type="text" id="sceneLocation" value="City Park" placeholder="Where does this scene take place?">
+        </div>
+        <div class="scene-panel-row">
+          <span class="scene-row-label">🕐 Time</span>
+          <div class="time-pills">
+            <button class="time-pill active" onclick="setSceneTime(this,'morning')">🌅 Morning</button>
+            <button class="time-pill" onclick="setSceneTime(this,'afternoon')">☀️ Day</button>
+            <button class="time-pill" onclick="setSceneTime(this,'evening')">🌆 Evening</button>
+            <button class="time-pill" onclick="setSceneTime(this,'night')">🌙 Night</button>
+          </div>
+        </div>
+        <div class="scene-panel-row">
+          <span class="scene-row-label">🌤 Weather</span>
+          <div class="weather-chips">
+            <button class="weather-chip active" title="Sunny" onclick="setWeather(this,'sunny')">☀️</button>
+            <button class="weather-chip" title="Cloudy" onclick="setWeather(this,'cloudy')">⛅</button>
+            <button class="weather-chip" title="Rainy" onclick="setWeather(this,'rainy')">🌧️</button>
+            <button class="weather-chip" title="Snowy" onclick="setWeather(this,'snowy')">❄️</button>
+            <button class="weather-chip" title="Foggy" onclick="setWeather(this,'foggy')">🌫️</button>
+          </div>
+        </div>
+        <div class="scene-panel-row" style="margin-bottom:0;">
+          <span class="scene-row-label">📝 Note</span>
+          <textarea class="scene-field" rows="2" placeholder="Describe the mood or context for this scene…"></textarea>
         </div>
       </div>
 
@@ -303,6 +457,136 @@
     function setTool(el) {
       document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
       el.classList.add('active');
+
+      const label = el.querySelector('.tool-label').textContent.trim();
+      const dialogueArea = document.querySelector('.dialogue-area');
+      const scenePanel   = document.getElementById('scenePanel');
+
+      if (label === 'Scene') {
+        dialogueArea.style.display = 'none';
+        scenePanel.classList.add('visible');
+      } else {
+        scenePanel.classList.remove('visible');
+        dialogueArea.style.display = label === 'Dialogue' ? '' : 'none';
+      }
+    }
+
+    /* ── Time-of-day ───────────────────────────────── */
+    const timeOverlayMap = {
+      morning:   'rgba(255,200,80,0.10)',
+      afternoon: 'transparent',
+      evening:   'rgba(255,100,40,0.20)',
+      night:     'rgba(0,15,60,0.44)',
+    };
+    const timeSunMap = {
+      morning: '🌅', afternoon: '☀️', evening: '🌇', night: '🌙'
+    };
+
+    function setSceneTime(btn, time) {
+      document.querySelectorAll('.time-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('sceneOverlay').style.background = timeOverlayMap[time];
+      document.querySelector('.scene-sun').textContent = timeSunMap[time];
+    }
+
+    /* ── Weather ───────────────────────────────────── */
+    const weatherOverlayMap = {
+      sunny:  'transparent',
+      cloudy: 'rgba(160,170,190,0.16)',
+      rainy:  'rgba(80,100,140,0.22)',
+      snowy:  'rgba(210,230,255,0.24)',
+      foggy:  'rgba(200,205,215,0.35)',
+    };
+
+    /* ── Weather emoji maps ── */
+    const weatherSunMap   = { sunny:'☀️', cloudy:'⛅', rainy:'🌧️', snowy:'🌨️', foggy:'🌫️' };
+    const weatherCloudOp  = { sunny:'0.45', cloudy:'1', rainy:'1', snowy:'0.9', foggy:'0.7' };
+    const weatherSunOp    = { sunny:'0.9',  cloudy:'0.7', rainy:'0.55', snowy:'0.65', foggy:'0.4' };
+    const weatherShadow   = {
+      sunny:  '',
+      cloudy: 'inset 0 0 30px rgba(160,170,190,0.18)',
+      rainy:  'inset 0 0 40px rgba(80,100,140,0.28)',
+      snowy:  'inset 0 0 40px rgba(210,230,255,0.32)',
+      foggy:  'inset 0 0 55px rgba(200,205,215,0.45)',
+    };
+
+    function setWeather(btn, weather) {
+      document.querySelectorAll('.weather-chip').forEach(b => b.classList.remove('active', 'pop'));
+      btn.classList.add('active');
+      /* chip bounce */
+      void btn.offsetWidth;
+      btn.classList.add('pop');
+      btn.addEventListener('animationend', () => btn.classList.remove('pop'), { once: true });
+
+      /* update sun + cloud emojis */
+      const sun = document.querySelector('.scene-sun');
+      sun.textContent = weatherSunMap[weather];
+      sun.style.opacity = weatherSunOp[weather];
+      document.querySelectorAll('.scene-cloud').forEach(c => {
+        c.style.opacity = weatherCloudOp[weather];
+      });
+
+      /* canvas inset shadow */
+      document.getElementById('sceneCanvas').style.boxShadow = weatherShadow[weather];
+
+      /* animated particles */
+      renderWeatherParticles(weather);
+    }
+
+    function renderWeatherParticles(weather) {
+      const layer = document.getElementById('weatherLayer');
+      layer.innerHTML = '';
+
+      if (weather === 'rainy') {
+        for (let i = 0; i < 22; i++) {
+          const d = document.createElement('div');
+          d.className = 'rain-drop';
+          d.style.left            = (Math.random() * 105) + '%';
+          d.style.animationDelay    = (Math.random() * 1.4).toFixed(2) + 's';
+          d.style.animationDuration = (0.55 + Math.random() * 0.45).toFixed(2) + 's';
+          d.style.opacity           = (0.35 + Math.random() * 0.45).toFixed(2);
+          d.style.height            = (10 + Math.random() * 8).toFixed(0) + 'px';
+          layer.appendChild(d);
+        }
+
+      } else if (weather === 'snowy') {
+        const chars = ['❄', '❅', '❆', '·', '•'];
+        for (let i = 0; i < 18; i++) {
+          const f = document.createElement('div');
+          f.className   = 'snow-flake';
+          f.textContent = chars[Math.floor(Math.random() * chars.length)];
+          f.style.left            = (Math.random() * 100) + '%';
+          f.style.fontSize        = (9 + Math.random() * 13).toFixed(0) + 'px';
+          f.style.animationDelay    = (Math.random() * 3.5).toFixed(2) + 's';
+          f.style.animationDuration = (2.8 + Math.random() * 2.2).toFixed(2) + 's';
+          f.style.opacity           = (0.55 + Math.random() * 0.45).toFixed(2);
+          layer.appendChild(f);
+        }
+
+      } else if (weather === 'foggy') {
+        for (let i = 0; i < 4; i++) {
+          const fg = document.createElement('div');
+          fg.className = 'fog-layer';
+          fg.style.top             = (15 + i * 22) + '%';
+          fg.style.animationDelay  = (i * 1.3).toFixed(1) + 's';
+          fg.style.animationDuration = (3.5 + i * 0.8).toFixed(1) + 's';
+          layer.appendChild(fg);
+        }
+
+      } else if (weather === 'cloudy') {
+        const specs = [
+          { emoji:'☁️', top:8,  right:'8%',  size:26, delay:0,   dur:4   },
+          { emoji:'☁️', top:28, right:'55%', size:20, delay:1.5, dur:5   },
+          { emoji:'⛅', top:48, right:'20%', size:22, delay:0.8, dur:3.5 },
+        ];
+        specs.forEach(s => {
+          const c = document.createElement('div');
+          c.className = 'cloud-extra';
+          c.textContent = s.emoji;
+          c.style.cssText = `top:${s.top}px;right:${s.right};font-size:${s.size}px;animation-delay:${s.delay}s;animation-duration:${s.dur}s;opacity:0.7;`;
+          layer.appendChild(c);
+        });
+      }
     }
 
     function addDialogue() {

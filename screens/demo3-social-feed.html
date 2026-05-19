@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Demo 3 — Friends Feed</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../duolingo-design.css">
+  <link rel="stylesheet" href="../design-system.css">
+  <link rel="stylesheet" href="../components/animations.css">
+  <link rel="stylesheet" href="../components/character.css">
+  <link rel="stylesheet" href="../components/card.css">
+  <style>
+    /* ── Feed header ── */
+    .feed-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 20px 8px;
+    }
+    .feed-title { font-size: 24px; font-weight: 900; color: var(--color-eel); letter-spacing: -0.4px; }
+    .feed-header-right { display: flex; align-items: center; gap: 8px; }
+    .icon-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--color-polar); border: 2px solid var(--color-swan);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 18px; transition: background 120ms ease;
+    }
+    .icon-btn:hover { background: var(--color-swan); }
+
+    /* ── Friends you follow strip ── */
+    .friends-strip {
+      display: flex; gap: 12px; padding: 6px 20px 10px;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .friends-strip::-webkit-scrollbar { display: none; }
+    .friend-story-dot {
+      display: flex; flex-direction: column; align-items: center; gap: 5px;
+      cursor: pointer; flex-shrink: 0; text-decoration: none;
+    }
+    .friend-avatar-ring {
+      width: 52px; height: 52px; border-radius: 50%;
+      border: 3px solid var(--color-feather-green);
+      padding: 2px; box-sizing: border-box;
+    }
+    .friend-avatar-ring.new-update {
+      border-color: var(--color-feather-green);
+      box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-feather-green);
+    }
+    .friend-avatar-ring.seen { border-color: var(--color-hare); }
+    .friend-avatar-inner {
+      width: 100%; height: 100%; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 900; color: white;
+    }
+    .friend-dot-name {
+      font-size: 10px; font-weight: 800; color: var(--color-wolf);
+      max-width: 52px; text-align: center; line-height: 1.2;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .friend-story-dot .add-friend {
+      border: 2.5px dashed var(--color-hare);
+      background: var(--color-polar);
+    }
+    .friend-story-dot .add-friend span { font-size: 22px; color: var(--color-hare); }
+
+    /* ── Feed divider ── */
+    .feed-divider {
+      height: 6px; background: var(--color-polar);
+      border-top: 1.5px solid var(--color-swan);
+      border-bottom: 1.5px solid var(--color-swan);
+      margin-bottom: 4px;
+    }
+
+    /* ── Activity feed item ── */
+    .feed-item {
+      padding: 14px 20px;
+      border-bottom: 1.5px solid var(--color-polar);
+    }
+    .feed-item-header {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+    }
+    .fi-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 900; color: white;
+      flex-shrink: 0; text-decoration: none;
+    }
+    .fi-meta { flex: 1; min-width: 0; }
+    .fi-name {
+      font-size: 14px; font-weight: 900; color: var(--color-eel);
+      text-decoration: none; display: inline;
+    }
+    .fi-name:hover { text-decoration: underline; color: var(--color-macaw); }
+    .fi-action {
+      font-size: 13px; font-weight: 600; color: var(--color-wolf);
+      display: inline; margin-left: 4px;
+    }
+    .fi-time {
+      font-size: 11px; font-weight: 700; color: var(--color-hare);
+      margin-top: 1px;
+    }
+    .fi-more {
+      font-size: 20px; color: var(--color-hare); cursor: pointer;
+      padding: 4px; border: none; background: none;
+    }
+
+    /* ── Inline story card (horizontal) ── */
+    .inline-story-card {
+      display: flex; align-items: stretch; gap: 0;
+      border: 2px solid var(--color-swan); border-radius: 14px;
+      overflow: hidden; background: white;
+      box-shadow: 0 3px 0 var(--color-swan);
+      text-decoration: none; color: inherit;
+      transition: transform 120ms ease, box-shadow 120ms ease;
+      cursor: pointer;
+    }
+    .inline-story-card:hover { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(0,0,0,0.1); }
+    .inline-story-card:active { transform: translateY(3px); box-shadow: none; }
+    .isc-cover {
+      width: 80px; flex-shrink: 0; position: relative; overflow: hidden;
+    }
+    .isc-char {
+      position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    }
+    .isc-body {
+      flex: 1; padding: 10px 12px; display: flex;
+      flex-direction: column; justify-content: center; gap: 5px;
+    }
+    .isc-title {
+      font-size: 14px; font-weight: 900; color: var(--color-eel);
+      line-height: 1.3;
+    }
+    .isc-badges { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+    .isc-plays {
+      font-size: 11px; font-weight: 700; color: var(--color-wolf);
+      margin-top: 2px;
+    }
+    .isc-arrow {
+      padding: 0 12px; display: flex; align-items: center;
+      font-size: 20px; color: var(--color-hare); flex-shrink: 0;
+    }
+
+    /* Locked inline card */
+    .inline-story-card.locked {
+      cursor: default; pointer-events: none;
+      opacity: 0.50; filter: grayscale(35%);
+    }
+    .isc-lock {
+      position: absolute; inset: 0; background: rgba(0,0,0,0.22);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+
+    /* ── Badge activity item ── */
+    .badge-activity {
+      display: flex; align-items: center; gap: 12px;
+      background: rgba(255,200,0,0.09); border: 2px solid rgba(255,200,0,0.3);
+      border-radius: 14px; padding: 12px 14px;
+    }
+    .badge-activity-icon { font-size: 30px; }
+    .badge-activity-text { font-size: 13px; font-weight: 700; color: #7A5000; line-height: 1.5; }
+    .badge-activity-text strong { color: var(--color-eel); font-weight: 900; }
+
+    /* ── Notification banner (slides from top) ── */
+    .notif-banner {
+      position: absolute; top: 0; left: 0; right: 0; z-index: 60;
+      background: white;
+      border-bottom: 2px solid var(--color-swan);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.14);
+      padding: 10px 16px 12px;
+      transform: translateY(-110%);
+      transition: transform 380ms cubic-bezier(0.32,0.72,0,1);
+    }
+    .notif-banner.show { transform: translateY(0); }
+    .notif-top {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .notif-dot-ring {
+      width: 40px; height: 40px; border-radius: 50%;
+      border: 2.5px solid var(--color-feather-green);
+      padding: 2px; flex-shrink: 0; box-sizing: border-box;
+    }
+    .notif-dot-inner {
+      width: 100%; height: 100%; border-radius: 50%; background: #FF7043;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 900; color: white;
+    }
+    .notif-text { flex: 1; }
+    .notif-title { font-size: 13px; font-weight: 900; color: var(--color-eel); line-height: 1.3; }
+    .notif-sub   { font-size: 12px; font-weight: 600; color: var(--color-wolf); margin-top: 1px; }
+    .notif-dismiss {
+      width: 28px; height: 28px; border-radius: 50%; background: var(--color-polar);
+      border: none; cursor: pointer; font-size: 13px; color: var(--color-wolf);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: background 120ms ease;
+    }
+    .notif-dismiss:hover { background: var(--color-swan); }
+    .notif-actions {
+      display: flex; gap: 8px; margin-top: 10px; margin-left: 50px;
+    }
+    .notif-btn-view {
+      flex: 1; padding: 9px 16px; background: var(--color-feather-green);
+      color: white; border: none; border-radius: 9999px;
+      font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 900;
+      cursor: pointer; box-shadow: 0 3px 0 #46A302;
+      transition: transform 100ms ease, box-shadow 100ms ease;
+      text-decoration: none; display: flex; align-items: center; justify-content: center;
+    }
+    .notif-btn-view:active { transform: translateY(3px); box-shadow: none; }
+    .notif-btn-later {
+      padding: 9px 14px; background: transparent; color: var(--color-wolf);
+      border: 2px solid var(--color-swan); border-radius: 9999px;
+      font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 800;
+      cursor: pointer; transition: background 120ms ease;
+    }
+    .notif-btn-later:hover { background: var(--color-polar); }
+
+    /* ── Suggestion row ── */
+    .suggest-card {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 20px; border-bottom: 1.5px solid var(--color-polar);
+    }
+    .suggest-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 900; color: white; flex-shrink: 0;
+    }
+    .suggest-info { flex: 1; }
+    .suggest-name { font-size: 14px; font-weight: 900; color: var(--color-eel); }
+    .suggest-meta { font-size: 12px; font-weight: 600; color: var(--color-wolf); margin-top: 1px; }
+    .follow-btn {
+      padding: 8px 16px; border-radius: 9999px;
+      border: 2.5px solid var(--color-macaw); background: white;
+      color: var(--color-macaw); font-family: 'Nunito', sans-serif;
+      font-size: 13px; font-weight: 900; cursor: pointer;
+      transition: all 120ms ease;
+    }
+    .follow-btn:hover { background: var(--color-macaw); color: white; }
+    .follow-btn.following {
+      background: var(--color-polar); border-color: var(--color-swan);
+      color: var(--color-wolf);
+    }
+
+    /* badge inline */
+    .badge { display: inline-flex; align-items: center; border-radius: 9999px; font-family: 'Nunito', sans-serif; font-weight: 800; }
+    .badge-green  { background: rgba(88,204,2,0.14);  color: #1E6B00; }
+    .badge-yellow { background: rgba(255,200,0,0.18); color: #7A5000; }
+    .badge-purple { background: rgba(206,130,255,0.18); color: #5B1F9E; }
+    .badge-es { background: rgba(255,75,75,0.12); color: #C0001A; font-size: 10px; padding: 2px 7px; }
+    .badge-beginner    { font-size: 9px; padding: 2px 7px; }
+    .badge-intermediate{ font-size: 9px; padding: 2px 7px; }
+    .badge-advanced    { font-size: 9px; padding: 2px 7px; }
+  </style>
+</head>
+<body class="demo-page">
+  <div class="phone" style="position:relative;">
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-icons">
+        <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1" fill="currentColor"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1" fill="currentColor"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="currentColor"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="2.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="22.5" y="4" width="2" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="18" height="7" rx="1.5" fill="currentColor"/></svg>
+      </div>
+    </div>
+
+    <main class="screen" id="feedMain">
+
+      <!-- Header -->
+      <div class="feed-header">
+        <span class="feed-title">Friends Feed</span>
+        <div class="feed-header-right">
+          <div class="icon-btn">🔍</div>
+          <div class="icon-btn">👥</div>
+        </div>
+      </div>
+
+      <!-- Friends story dots -->
+      <div class="friends-strip">
+        <!-- Carlos — has new update -->
+        <a href="demo3-friend-profile.html" class="friend-story-dot">
+          <div class="friend-avatar-ring new-update">
+            <div class="friend-avatar-inner" style="background:#FF7043;">C</div>
+          </div>
+          <span class="friend-dot-name">Carlos</span>
+        </a>
+        <!-- Marta -->
+        <a href="demo3-friend-profile.html" class="friend-story-dot">
+          <div class="friend-avatar-ring new-update">
+            <div class="friend-avatar-inner" style="background:#FF6B9D;">M</div>
+          </div>
+          <span class="friend-dot-name">Marta</span>
+        </a>
+        <!-- Rosa -->
+        <a href="demo3-friend-profile.html" class="friend-story-dot">
+          <div class="friend-avatar-ring seen">
+            <div class="friend-avatar-inner" style="background:#58CC02;">R</div>
+          </div>
+          <span class="friend-dot-name">Rosa</span>
+        </a>
+        <!-- Ana -->
+        <a href="demo3-friend-profile.html" class="friend-story-dot">
+          <div class="friend-avatar-ring seen">
+            <div class="friend-avatar-inner" style="background:#9B59B6;">A</div>
+          </div>
+          <span class="friend-dot-name">Ana</span>
+        </a>
+        <!-- Jorge -->
+        <a href="demo3-friend-profile.html" class="friend-story-dot">
+          <div class="friend-avatar-ring seen">
+            <div class="friend-avatar-inner" style="background:#FFD700; color:#3C3C3C;">J</div>
+          </div>
+          <span class="friend-dot-name">Jorge</span>
+        </a>
+        <!-- Add friend -->
+        <div class="friend-story-dot">
+          <div class="friend-avatar-ring add-friend" style="border-style:dashed;border-color:var(--color-hare);">
+            <div class="friend-avatar-inner" style="background:transparent;">
+              <span style="font-size:22px;">➕</span>
+            </div>
+          </div>
+          <span class="friend-dot-name" style="color:var(--color-macaw);">Add</span>
+        </div>
+      </div>
+
+      <div class="feed-divider"></div>
+
+      <!-- ─── Feed item 1: Carlos updated Intermediate story ─── -->
+      <div class="feed-item">
+        <div class="feed-item-header">
+          <a href="demo3-friend-profile.html" class="fi-avatar" style="background:#FF7043;">C</a>
+          <div class="fi-meta">
+            <a href="demo3-friend-profile.html" class="fi-name">Carlos V.</a>
+            <span class="fi-action">updated a story ✏️</span>
+            <div class="fi-time">2 hours ago</div>
+          </div>
+          <button class="fi-more">···</button>
+        </div>
+        <!-- Locked story card (Intermediate) -->
+        <div class="inline-story-card locked">
+          <div class="isc-cover cover-alt1">
+            <div class="isc-char"><div data-char="eddy" data-size="char-sm"></div></div>
+            <div class="isc-lock">🔒</div>
+          </div>
+          <div class="isc-body">
+            <div class="isc-title">Coffee Shop Drama</div>
+            <div class="isc-badges">
+              <span class="badge badge-es">🇪🇸 Spanish</span>
+              <span class="badge badge-yellow badge-intermediate">Intermediate</span>
+            </div>
+            <div class="isc-plays">▶ 3.4k plays</div>
+          </div>
+          <div class="isc-arrow">›</div>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:var(--color-hare);margin-top:8px;display:flex;align-items:center;gap:5px;">
+          🔒 <span>Unlock Intermediate to play this story</span>
+        </div>
+      </div>
+
+      <!-- ─── Feed item 2: Marta published Beginner story ─── -->
+      <div class="feed-item">
+        <div class="feed-item-header">
+          <a href="demo3-friend-profile.html" class="fi-avatar" style="background:#FF6B9D;">M</a>
+          <div class="fi-meta">
+            <a href="demo3-friend-profile.html" class="fi-name">Marta G.</a>
+            <span class="fi-action">published a new story 🎉</span>
+            <div class="fi-time">1 day ago</div>
+          </div>
+          <button class="fi-more">···</button>
+        </div>
+        <!-- Clickable story card (Beginner) -->
+        <a href="09-story-detail.html" class="inline-story-card hotspot">
+          <div class="isc-cover cover-spanish">
+            <div class="isc-char"><div data-char="lily" data-size="char-sm"></div></div>
+          </div>
+          <div class="isc-body">
+            <div class="isc-title">Mi Familia es Loca</div>
+            <div class="isc-badges">
+              <span class="badge badge-es">🇪🇸 Spanish</span>
+              <span class="badge badge-green badge-beginner">Beginner</span>
+            </div>
+            <div class="isc-plays">▶ 4.8k plays</div>
+          </div>
+          <div class="isc-arrow">›</div>
+        </a>
+        <!-- Reactions -->
+        <div style="display:flex;align-items:center;gap:12px;margin-top:10px;">
+          <button style="display:flex;align-items:center;gap:5px;background:none;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:var(--color-wolf);" onclick="likePost(this)">
+            ❤️ <span class="like-count">14</span>
+          </button>
+          <button style="display:flex;align-items:center;gap:5px;background:none;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:var(--color-wolf);">
+            💬 3
+          </button>
+          <button style="display:flex;align-items:center;gap:5px;background:none;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:var(--color-wolf);">
+            🔗 Share
+          </button>
+        </div>
+      </div>
+
+      <!-- ─── Feed item 3: Rosa earned a badge ─── -->
+      <div class="feed-item">
+        <div class="feed-item-header">
+          <a href="demo3-friend-profile.html" class="fi-avatar" style="background:#58CC02;">R</a>
+          <div class="fi-meta">
+            <a href="demo3-friend-profile.html" class="fi-name">Rosa M.</a>
+            <span class="fi-action">earned a new badge</span>
+            <div class="fi-time">2 days ago</div>
+          </div>
+          <button class="fi-more">···</button>
+        </div>
+        <div class="badge-activity">
+          <div class="badge-activity-icon">🏆</div>
+          <div class="badge-activity-text">
+            <strong>Top Story Creator</strong><br>
+            Published 5 stories that reached 1,000+ plays each
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── Feed item 4: Ana liked a story ─── -->
+      <div class="feed-item">
+        <div class="feed-item-header">
+          <a href="demo3-friend-profile.html" class="fi-avatar" style="background:#9B59B6;">A</a>
+          <div class="fi-meta">
+            <a href="demo3-friend-profile.html" class="fi-name">Ana T.</a>
+            <span class="fi-action">played and loved ❤️</span>
+            <div class="fi-time">3 days ago</div>
+          </div>
+          <button class="fi-more">···</button>
+        </div>
+        <a href="09-story-detail.html" class="inline-story-card hotspot">
+          <div class="isc-cover cover-alt2">
+            <div class="isc-char"><div data-char="duo" data-size="char-sm"></div></div>
+          </div>
+          <div class="isc-body">
+            <div class="isc-title">¿Dónde Está el Baño?</div>
+            <div class="isc-badges">
+              <span class="badge badge-es">🇪🇸 Spanish</span>
+              <span class="badge badge-green badge-beginner">Beginner</span>
+            </div>
+            <div class="isc-plays">▶ 8.9k plays</div>
+          </div>
+          <div class="isc-arrow">›</div>
+        </a>
+      </div>
+
+      <!-- ─── Suggestions ─── -->
+      <div class="section-header">
+        <span class="section-title" style="font-size:16px;">People you may know</span>
+      </div>
+      <div class="suggest-card">
+        <div class="suggest-avatar" style="background:#1CB0F6;">B</div>
+        <div class="suggest-info">
+          <div class="suggest-name">Berta S.</div>
+          <div class="suggest-meta">Studying Spanish · 7 stories published</div>
+        </div>
+        <button class="follow-btn" onclick="toggleFollow(this)">+ Follow</button>
+      </div>
+      <div class="suggest-card">
+        <div class="suggest-avatar" style="background:#F39C12;">J</div>
+        <div class="suggest-info">
+          <div class="suggest-name">Jorge P.</div>
+          <div class="suggest-meta">Studying Japanese · 4 stories published</div>
+        </div>
+        <button class="follow-btn" onclick="toggleFollow(this)">+ Follow</button>
+      </div>
+
+      <div style="height:16px;"></div>
+    </main>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+      <a class="nav-item" href="01-duolingo-home-new-tab.html"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div><span class="nav-label">Home</span></a>
+      <a class="nav-item" href="#"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><span class="nav-label">Learn</span></a>
+      <a class="nav-item active" href="02-studio-landing.html"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="12" y2="12"/><polyline points="14 12 18 16 14 20"/></svg></div><span class="nav-label">Stories</span></a>
+      <a class="nav-item" href="11-popularity-board.html"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="11" width="6" height="11" rx="1"/><rect x="9" y="4" width="6" height="18" rx="1"/><rect x="17" y="7" width="6" height="15" rx="1"/></svg></div><span class="nav-label">Boards</span></a>
+      <a class="nav-item" href="#"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div><span class="nav-label">Profile</span></a>
+    </nav>
+
+    <!-- ═══════════════════════════════════
+         FRIEND UPDATE NOTIFICATION BANNER
+         Slides down from top after 700ms
+         ═══════════════════════════════════ -->
+    <div class="notif-banner" id="friendNotif">
+      <div class="notif-top">
+        <div class="notif-dot-ring">
+          <div class="notif-dot-inner">C</div>
+        </div>
+        <div class="notif-text">
+          <div class="notif-title">Carlos V. updated their story! ✏️</div>
+          <div class="notif-sub">"Coffee Shop Drama" — Intermediate · Spanish</div>
+        </div>
+        <button class="notif-dismiss" onclick="dismissNotif()">✕</button>
+      </div>
+      <div class="notif-actions">
+        <a href="demo3-friend-profile.html" class="notif-btn-view">View Profile →</a>
+        <button class="notif-btn-later" onclick="dismissNotif()">Later</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="../js/characters.js"></script>
+  <script>
+    // Auto-show notification after 700ms
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('friendNotif').classList.add('show');
+      }, 700);
+    });
+
+    function dismissNotif() {
+      const notif = document.getElementById('friendNotif');
+      notif.style.transition = 'transform 280ms cubic-bezier(0.4,0,1,1)';
+      notif.style.transform = 'translateY(-110%)';
+      setTimeout(() => notif.style.display = 'none', 300);
+    }
+
+    function likePost(btn) {
+      const counter = btn.querySelector('.like-count');
+      const current = parseInt(counter.textContent);
+      if (btn.dataset.liked) {
+        counter.textContent = current - 1;
+        btn.style.opacity = '1';
+        delete btn.dataset.liked;
+      } else {
+        counter.textContent = current + 1;
+        btn.style.opacity = '0.7';
+        btn.dataset.liked = '1';
+        // pop animation
+        btn.style.transform = 'scale(1.3)';
+        setTimeout(() => btn.style.transform = '', 200);
+      }
+    }
+
+    function toggleFollow(btn) {
+      if (btn.classList.contains('following')) {
+        btn.classList.remove('following');
+        btn.textContent = '+ Follow';
+      } else {
+        btn.classList.add('following');
+        btn.textContent = '✓ Following';
+      }
+    }
+  </script>
+  <script>
+    document.querySelectorAll('.hotspot').forEach(el => {
+      el.addEventListener('click', () => el.classList.add('done'), { once: true });
+    });
+  </script>
+  <a class="home-fab" href="../index.html">🏠 Main Page</a>
+</body>
+</html>
