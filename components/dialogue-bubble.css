@@ -1,0 +1,416 @@
+/*
+ * Dialogue Bubble Component
+ * Used in story canvas (editor), preview, and story player
+ */
+
+/* ─────────────────────────────────────────────
+   BASE BUBBLE
+───────────────────────────────────────────── */
+
+.bubble {
+  position: relative;
+  background: white;
+  border: 2.5px solid var(--color-swan);
+  border-radius: 18px;
+  padding: 14px 18px;
+  max-width: 280px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Tail variants */
+.bubble-left::before {    /* tail points left-down */
+  content: '';
+  position: absolute;
+  bottom: 16px;
+  left: -12px;
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-right: 12px solid var(--color-swan);
+}
+
+.bubble-left::after {
+  content: '';
+  position: absolute;
+  bottom: 18px;
+  left: -9px;
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-right: 10px solid white;
+}
+
+.bubble-right::before {   /* tail points right-down */
+  content: '';
+  position: absolute;
+  bottom: 16px;
+  right: -12px;
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 12px solid var(--color-swan);
+}
+
+.bubble-right::after {
+  content: '';
+  position: absolute;
+  bottom: 18px;
+  right: -9px;
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 10px solid white;
+}
+
+/* Bottom-center tail (for narration) */
+.bubble-bottom::before {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 12px solid var(--color-swan);
+}
+
+.bubble-bottom::after {
+  content: '';
+  position: absolute;
+  bottom: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 10px solid white;
+}
+
+/* ─────────────────────────────────────────────
+   BUBBLE TEXT CONTENT
+───────────────────────────────────────────── */
+
+.bubble-speaker {
+  font-family: 'Nunito', sans-serif;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-macaw);
+  margin-bottom: 5px;
+}
+
+.bubble-text {
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-eel);
+  line-height: 1.5;
+}
+
+.bubble-text-lg {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* Narration (italic, no tail) */
+.bubble-narration {
+  background: rgba(75,75,75,0.06);
+  border: 2px solid rgba(75,75,75,0.15);
+  text-align: center;
+}
+
+.bubble-narration .bubble-text {
+  font-style: italic;
+  color: var(--color-wolf);
+}
+
+/* ─────────────────────────────────────────────
+   BUBBLE VARIANTS BY SPEAKER
+───────────────────────────────────────────── */
+
+.bubble-duo {
+  border-color: rgba(88,204,2,0.4);
+  background: rgba(88,204,2,0.04);
+}
+.bubble-duo .bubble-speaker { color: #2D8A00; }
+
+.bubble-lily {
+  border-color: rgba(255,107,157,0.4);
+  background: rgba(255,107,157,0.04);
+}
+.bubble-lily .bubble-speaker { color: #C0003A; }
+
+.bubble-junior {
+  border-color: rgba(255,215,0,0.5);
+  background: rgba(255,215,0,0.06);
+}
+.bubble-junior .bubble-speaker { color: #7A5000; }
+
+.bubble-zari {
+  border-color: rgba(155,89,182,0.4);
+  background: rgba(155,89,182,0.05);
+}
+.bubble-zari .bubble-speaker { color: #6B1FA8; }
+
+.bubble-bea {
+  border-color: rgba(28,176,246,0.4);
+  background: rgba(28,176,246,0.05);
+}
+.bubble-bea .bubble-speaker { color: #0A6EA0; }
+
+.bubble-eddy {
+  border-color: rgba(255,112,67,0.4);
+  background: rgba(255,112,67,0.05);
+}
+.bubble-eddy .bubble-speaker { color: #C0360F; }
+
+/* ─────────────────────────────────────────────
+   CHOICE BUTTONS (branching)
+───────────────────────────────────────────── */
+
+.choices-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 20px 16px;
+  width: 100%;
+}
+
+.choice-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: white;
+  border: 2.5px solid var(--color-swan);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color 120ms ease,
+    background 120ms ease,
+    transform 100ms ease,
+    box-shadow 100ms ease;
+  box-shadow: 0 3px 0 var(--color-swan);
+  font-family: 'Nunito', sans-serif;
+  width: 100%;
+}
+
+.choice-btn:hover {
+  border-color: var(--color-macaw);
+  box-shadow: 0 3px 0 #0E8FCD;
+  transform: translateY(-1px);
+}
+
+.choice-btn:active {
+  transform: translateY(3px);
+  box-shadow: none;
+}
+
+.choice-btn.selected {
+  border-color: var(--color-feather-green);
+  background: rgba(88,204,2,0.06);
+  box-shadow: 0 3px 0 #46A302;
+}
+
+.choice-letter {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-polar);
+  border: 2px solid var(--color-swan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--color-wolf);
+  flex-shrink: 0;
+  transition: all 120ms ease;
+}
+
+.choice-btn:hover .choice-letter {
+  background: var(--color-macaw);
+  border-color: var(--color-macaw);
+  color: white;
+}
+
+.choice-btn.selected .choice-letter {
+  background: var(--color-feather-green);
+  border-color: var(--color-feather-green);
+  color: white;
+}
+
+.choice-text {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-eel);
+  line-height: 1.4;
+}
+
+/* ─────────────────────────────────────────────
+   BRANCHING VISUALIZATION (editor, screen 05)
+───────────────────────────────────────────── */
+
+.branch-diagram {
+  position: relative;
+  padding: 16px;
+}
+
+.branch-stem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.branch-node {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--color-macaw);
+  border: 3px solid white;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  z-index: 2;
+}
+
+.branch-fork-container {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  padding: 0 8px;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.branch-arm {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+}
+
+.branch-arm::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  width: 2px;
+  height: 20px;
+  background: var(--color-hare);
+  transform: translateX(-50%);
+}
+
+.branch-choice-preview {
+  background: white;
+  border: 2px solid var(--color-swan);
+  border-radius: var(--radius-md);
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-eel);
+  text-align: center;
+  width: 100%;
+  box-shadow: 0 2px 0 var(--color-swan);
+}
+
+/* SVG branch lines */
+.branch-lines-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.branch-line {
+  stroke: var(--color-hare);
+  stroke-width: 2;
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  fill: none;
+  animation: branch-line-draw 600ms ease forwards;
+}
+
+/* ─────────────────────────────────────────────
+   STORY PLAYER BUBBLE (full-screen immersive)
+───────────────────────────────────────────── */
+
+.player-bubble-area {
+  padding: 0 16px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.player-bubble {
+  background: white;
+  border-radius: 20px;
+  padding: 16px 20px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  width: 100%;
+  position: relative;
+}
+
+.player-bubble .bubble-speaker {
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.player-bubble .bubble-text {
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+/* Dialogue input area (editor) */
+.dialogue-input-area {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 12px 16px;
+  background: white;
+  border-top: 2px solid var(--color-swan);
+}
+
+.dialogue-textarea {
+  flex: 1;
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-eel);
+  background: var(--color-polar);
+  border: 2px solid var(--color-swan);
+  border-radius: 16px;
+  padding: 12px 16px;
+  resize: none;
+  outline: none;
+  min-height: 48px;
+  max-height: 120px;
+  line-height: 1.4;
+  transition: border-color 150ms ease;
+}
+
+.dialogue-textarea:focus {
+  border-color: var(--color-macaw);
+  background: white;
+}
+
+.dialogue-textarea::placeholder {
+  color: var(--color-hare);
+  font-weight: 600;
+}

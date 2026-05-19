@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Screen 10 — Playing a Story</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../duolingo-design.css">
+  <link rel="stylesheet" href="../design-system.css">
+  <link rel="stylesheet" href="../components/animations.css">
+  <link rel="stylesheet" href="../components/character.css">
+  <link rel="stylesheet" href="../components/dialogue-bubble.css">
+  <style>
+    body.demo-page { background: #0A1628; }
+
+    .phone { background: #0D1F35 !important; }
+
+    /* Top bar */
+    .player-top {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 14px 6px; background: rgba(0,0,0,0.3); backdrop-filter: blur(8px);
+    }
+    .player-back {
+      width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.12);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.8); text-decoration: none; font-size: 16px;
+      border: 1.5px solid rgba(255,255,255,0.15); flex-shrink: 0;
+    }
+    .player-progress-wrap { flex: 1; }
+    .player-story-name { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.55); margin-bottom: 3px; }
+    .player-progress-bar { height: 5px; background: rgba(255,255,255,0.15); border-radius: 9999px; overflow: hidden; }
+    .player-progress-fill { height: 100%; background: var(--color-feather-green); border-radius: 9999px; transition: width 500ms ease; }
+    .player-xp-badge {
+      background: rgba(255,200,0,0.2); color: #FFD700; font-size: 12px; font-weight: 800;
+      padding: 4px 10px; border-radius: 9999px; flex-shrink: 0;
+      border: 1.5px solid rgba(255,200,0,0.35);
+    }
+
+    /* Scene */
+    .player-scene {
+      height: 300px; position: relative; overflow: hidden;
+    }
+    .p-scene-bg {
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg,#0A1628 0%,#1A3550 30%,#2B5278 60%,#1C3A5E 100%);
+    }
+    /* Stars */
+    .p-star { position: absolute; background: white; border-radius: 50%; animation: blink-cursor 3s ease-in-out infinite; }
+    /* Moon */
+    .p-moon { position: absolute; top: 20px; right: 30px; font-size: 36px; opacity: 0.9; }
+    /* City silhouette */
+    .p-city {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
+      background: #0A1628;
+      clip-path: polygon(
+        0% 100%, 0% 60%, 5% 60%, 5% 40%, 10% 40%, 10% 60%,
+        15% 60%, 15% 30%, 20% 30%, 20% 60%, 25% 60%,
+        25% 45%, 30% 45%, 30% 35%, 32% 35%, 32% 25%, 34% 25%, 34% 35%,
+        36% 35%, 36% 45%, 40% 45%, 40% 55%, 45% 55%, 45% 38%,
+        50% 38%, 50% 28%, 52% 28%, 52% 20%, 54% 20%, 54% 28%,
+        56% 28%, 56% 38%, 62% 38%, 62% 50%, 66% 50%, 66% 40%,
+        70% 40%, 70% 60%, 75% 60%, 75% 45%, 80% 45%, 80% 60%,
+        85% 60%, 85% 50%, 90% 50%, 90% 60%, 95% 60%, 95% 70%, 100% 70%, 100% 100%
+      );
+    }
+    /* City lights */
+    .p-city-lights {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
+      background: linear-gradient(0deg, rgba(255,200,50,0.08) 0%, transparent 100%);
+    }
+
+    /* Characters */
+    .p-char-left  { position: absolute; bottom: 8px; left: 16px; }
+    .p-char-right { position: absolute; bottom: 8px; right: 16px; transform: scaleX(-1); }
+
+    /* Dialogue area */
+    .player-dialogue {
+      padding: 12px 14px 0; flex: 1;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .p-bubble {
+      background: rgba(255,255,255,0.95); border-radius: 18px;
+      padding: 14px 18px; box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+    }
+    .p-speaker {
+      font-size: 11px; font-weight: 900; text-transform: uppercase;
+      letter-spacing: 0.06em; margin-bottom: 5px; display: flex; align-items: center; gap: 6px;
+    }
+    .p-speaker-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .p-text { font-size: 18px; font-weight: 700; color: #2E2E2E; line-height: 1.55; }
+    .p-translation { font-size: 13px; font-weight: 600; color: #777; font-style: italic; margin-top: 5px; }
+
+    /* Choices */
+    .p-choices { padding: 8px 14px 12px; display: flex; flex-direction: column; gap: 8px; }
+    .p-choice {
+      display: flex; align-items: center; gap: 12px; padding: 13px 16px;
+      background: rgba(255,255,255,0.95); border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 14px; cursor: pointer;
+      transition: all 120ms ease; box-shadow: 0 3px 12px rgba(0,0,0,0.3);
+      color: #2E2E2E; font-family: 'Nunito', sans-serif;
+    }
+    .p-choice:hover { background: white; transform: translateY(-1px); }
+    .p-choice:active { transform: translateY(3px); box-shadow: 0 0 0 rgba(0,0,0,0); }
+    .p-choice.chosen {
+      background: rgba(88,204,2,0.95); border-color: #58CC02; color: white;
+      box-shadow: 0 3px 12px rgba(88,204,2,0.4);
+    }
+    .p-letter {
+      width: 26px; height: 26px; border-radius: 50%; background: rgba(0,0,0,0.08);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 900; flex-shrink: 0; transition: all 120ms ease;
+    }
+    .p-choice.chosen .p-letter { background: rgba(255,255,255,0.3); }
+    .p-choice-text { font-size: 14px; font-weight: 700; line-height: 1.4; }
+
+    /* Tap hint */
+    .tap-hint {
+      text-align: center; font-size: 12px; font-weight: 700;
+      color: rgba(255,255,255,0.35); padding: 4px 0 8px;
+      animation: blink-cursor 2.5s ease-in-out infinite;
+    }
+
+    /* Completion overlay */
+    .completion-overlay {
+      position: absolute; inset: 0; background: rgba(0,0,0,0.7);
+      z-index: 50; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 16px;
+      opacity: 0; pointer-events: none; transition: opacity 400ms ease;
+    }
+    .completion-overlay.show { opacity: 1; pointer-events: auto; }
+    .completion-emoji { font-size: 64px; animation: bounce-in 500ms cubic-bezier(0.34,1.56,0.64,1) forwards; }
+    .completion-title { font-size: 28px; font-weight: 900; color: white; letter-spacing: -0.5px; text-align: center; }
+    .completion-xp {
+      font-size: 22px; font-weight: 900; color: var(--color-bee);
+      background: rgba(255,200,0,0.15); border: 2px solid rgba(255,200,0,0.4);
+      padding: 10px 24px; border-radius: 9999px;
+    }
+    .completion-btns { display: flex; gap: 12px; margin-top: 8px; }
+    .comp-btn-share {
+      padding: 12px 24px; border-radius: 9999px; background: white; color: var(--color-eel);
+      font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 900;
+      border: none; cursor: pointer; text-decoration: none; display: inline-block;
+    }
+    .comp-btn-more {
+      padding: 12px 24px; border-radius: 9999px; background: var(--color-feather-green); color: white;
+      font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 900;
+      border: none; cursor: pointer; box-shadow: 0 4px 0 #46A302;
+      text-decoration: none; display: inline-block;
+    }
+
+    /* Confetti particles */
+    .confetti-particle {
+      position: absolute; width: 10px; height: 10px; border-radius: 2px;
+      animation: confetti-fall 1s ease-in forwards;
+      z-index: 100; pointer-events: none;
+    }
+  </style>
+</head>
+<body class="demo-page">
+  <div class="phone" style="position:relative;">
+    <div class="status-bar" style="background:rgba(0,0,0,0.4);backdrop-filter:blur(8px);">
+      <span class="status-time" style="color:rgba(255,255,255,0.9);">9:41</span>
+      <div class="status-icons" style="color:rgba(255,255,255,0.7);">
+        <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1" fill="white"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1" fill="white"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="white"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="2.5" stroke="white" stroke-width="1.5" fill="none"/><rect x="22.5" y="4" width="2" height="4" rx="1" fill="white" opacity="0.5"/><rect x="1.5" y="2.5" width="15" height="7" rx="1.5" fill="white"/></svg>
+      </div>
+    </div>
+
+    <main class="screen" style="display:flex;flex-direction:column;background:transparent;overflow:hidden;">
+
+      <!-- Top progress bar -->
+      <div class="player-top">
+        <a href="09-story-detail.html" class="player-back">‹</a>
+        <div class="player-progress-wrap">
+          <div class="player-story-name">Mi Familia es Loca · Scene 4 of 6</div>
+          <div class="player-progress-bar">
+            <div class="player-progress-fill" id="progressFill" style="width:66%"></div>
+          </div>
+        </div>
+        <div class="player-xp-badge" id="xpBadge">+5 XP</div>
+      </div>
+
+      <!-- Scene -->
+      <div class="player-scene">
+        <div class="p-scene-bg"></div>
+        <!-- Stars -->
+        <div class="p-star" style="width:3px;height:3px;top:15%;left:20%;animation-delay:0.2s;"></div>
+        <div class="p-star" style="width:2px;height:2px;top:22%;left:40%;animation-delay:0.8s;"></div>
+        <div class="p-star" style="width:3px;height:3px;top:12%;left:60%;animation-delay:1.4s;"></div>
+        <div class="p-star" style="width:2px;height:2px;top:18%;left:75%;animation-delay:0.5s;"></div>
+        <div class="p-star" style="width:2px;height:2px;top:28%;left:88%;animation-delay:1.1s;"></div>
+        <div class="p-moon">🌙</div>
+        <div class="p-city"></div>
+        <div class="p-city-lights"></div>
+        <!-- Characters -->
+        <div class="p-char-left" id="charLeft">
+          <div data-char="duo" data-size="char-xl" style="animation:idle-sway 4s ease-in-out infinite;"></div>
+        </div>
+        <div class="p-char-right" id="charRight">
+          <div data-char="lily" data-size="char-xl" class="char-speaking" id="speakingChar"></div>
+        </div>
+      </div>
+
+      <!-- Dialogue -->
+      <div class="player-dialogue">
+        <div class="p-bubble bubble-appear" id="dialogueBubble">
+          <div class="p-speaker">
+            <div class="p-speaker-dot" style="background:#C0001A;"></div>
+            <span id="speakerLabel" style="color:#C0001A;">Lily</span>
+          </div>
+          <div class="p-text" id="playerText">¡Hola! ¿Cómo te llamas?</div>
+          <div class="p-translation" id="playerTrans">Hello! What's your name?</div>
+        </div>
+      </div>
+
+      <!-- Choices -->
+      <div class="p-choices stagger" id="playerChoices">
+        <div class="p-choice choice-in-1 hotspot" onclick="pickChoice(this,0)">
+          <div class="p-letter">A</div>
+          <div class="p-choice-text">Tell her your name</div>
+        </div>
+        <div class="p-choice choice-in-2" onclick="pickChoice(this,1)">
+          <div class="p-letter">B</div>
+          <div class="p-choice-text">Ask her age instead</div>
+        </div>
+        <div class="p-choice choice-in-3" onclick="pickChoice(this,2)">
+          <div class="p-letter">C</div>
+          <div class="p-choice-text">Run away dramatically 🏃</div>
+        </div>
+      </div>
+
+      <div class="tap-hint" id="tapHint">Tap a choice to continue</div>
+    </main>
+
+    <!-- Completion overlay -->
+    <div class="completion-overlay" id="completionOverlay">
+      <div class="completion-emoji">🎉</div>
+      <div class="completion-title">¡Historia Completa!</div>
+      <div style="font-size:15px;font-weight:700;color:rgba(255,255,255,0.7);">Story Complete — Amazing job!</div>
+      <div class="completion-xp">+15 XP Earned! 🌟</div>
+      <div style="font-size:14px;font-weight:700;color:rgba(255,200,0,0.8);">🔥 Streak: 47 days</div>
+      <div class="completion-btns">
+        <a href="08-community-feed.html" class="comp-btn-share">Share</a>
+        <a href="11-popularity-board.html" class="comp-btn-more">Top Stories →</a>
+      </div>
+    </div>
+
+    <nav class="bottom-nav" style="background:#0A1628;border-top-color:#1A3550;">
+      <a class="nav-item" href="01-duolingo-home-new-tab.html" style="color:#555;"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div><span class="nav-label">Home</span></a>
+      <a class="nav-item" href="#" style="color:#555;"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><span class="nav-label">Learn</span></a>
+      <a class="nav-item active" href="02-studio-landing.html"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="12" y2="12"/><polyline points="14 12 18 16 14 20"/></svg></div><span class="nav-label">Stories</span></a>
+      <a class="nav-item" href="11-popularity-board.html" style="color:#555;"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="11" width="6" height="11" rx="1"/><rect x="9" y="4" width="6" height="18" rx="1"/><rect x="17" y="7" width="6" height="15" rx="1"/></svg></div><span class="nav-label">Boards</span></a>
+      <a class="nav-item" href="#" style="color:#555;"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div><span class="nav-label">Profile</span></a>
+    </nav>
+  </div>
+
+  <script src="../js/characters.js"></script>
+  <script>
+    const scenes = [
+      { speaker: 'Lily', color: '#C0001A', text: '¡Hola! ¿Cómo te llamas?', trans: "Hello! What's your name?", charId: 'lily' },
+      { speaker: 'Duo',  color: '#2D8A00', text: 'Me llamo Duo. ¿Y tú, tienes familia aquí en Madrid?', trans: 'My name is Duo. And you, do you have family here in Madrid?', charId: 'duo' },
+      { speaker: 'Lily', color: '#C0001A', text: '¡Sí! Mi familia es... muy especial. Cada domingo es una aventura.', trans: 'Yes! My family is... very special. Every Sunday is an adventure.', charId: 'lily' },
+    ];
+    let sceneIdx = 0;
+    let choicesMade = 0;
+
+    function typewriter(text, el, cb) {
+      el.textContent = '';
+      let i = 0;
+      const iv = setInterval(() => {
+        el.textContent += text[i]; i++;
+        if (i >= text.length) { clearInterval(iv); if (cb) cb(); }
+      }, 40);
+    }
+
+    function loadScene(idx) {
+      const s = scenes[idx % scenes.length];
+      const bubble = document.getElementById('dialogueBubble');
+      bubble.style.animation = 'none'; bubble.offsetHeight;
+      bubble.style.animation = 'bubble-appear 300ms cubic-bezier(0.34,1.56,0.64,1)';
+      document.getElementById('speakerLabel').textContent = s.speaker;
+      document.getElementById('speakerLabel').style.color = s.color;
+      document.querySelector('.p-speaker-dot').style.background = s.color;
+      document.getElementById('playerTrans').textContent = s.trans;
+      typewriter(s.text, document.getElementById('playerText'));
+      document.getElementById('progressFill').style.width = ((sceneIdx+1)/6*100) + '%';
+    }
+
+    function pickChoice(el, idx) {
+      document.querySelectorAll('.p-choice').forEach(c => c.classList.remove('chosen'));
+      el.classList.add('chosen');
+      choicesMade++;
+
+      setTimeout(() => {
+        sceneIdx++;
+        if (sceneIdx >= 6) {
+          showCompletion();
+        } else {
+          loadScene(sceneIdx);
+          document.querySelectorAll('.p-choice').forEach(c => c.classList.remove('chosen'));
+        }
+      }, 700);
+    }
+
+    function showCompletion() {
+      document.getElementById('completionOverlay').classList.add('show');
+      spawnConfetti();
+    }
+
+    function spawnConfetti() {
+      const colors = ['#58CC02','#1CB0F6','#FFC800','#FF4B4B','#CE82FF'];
+      for (let i = 0; i < 30; i++) {
+        setTimeout(() => {
+          const c = document.createElement('div');
+          c.className = 'confetti-particle';
+          c.style.left = Math.random() * 100 + '%';
+          c.style.top = '20%';
+          c.style.background = colors[Math.floor(Math.random() * colors.length)];
+          c.style.animationDuration = (0.8 + Math.random() * 0.6) + 's';
+          c.style.width = (6 + Math.random() * 8) + 'px';
+          c.style.height = c.style.width;
+          document.querySelector('.phone').appendChild(c);
+          setTimeout(() => c.remove(), 1500);
+        }, i * 50);
+      }
+    }
+
+    // Init
+    window.addEventListener('load', () => loadScene(0));
+  </script>
+  <script>
+    document.querySelectorAll('.hotspot').forEach(el => {
+      el.addEventListener('click', () => el.classList.add('done'), { once: true });
+    });
+  </script>
+  <a class="home-fab" href="../index.html">🏠 Main Page</a>
+</body>
+</html>

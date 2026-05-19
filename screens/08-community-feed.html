@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Screen 08 — Community Feed (Killer Feature)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../duolingo-design.css">
+  <link rel="stylesheet" href="../design-system.css">
+  <link rel="stylesheet" href="../components/animations.css">
+  <link rel="stylesheet" href="../components/character.css">
+  <link rel="stylesheet" href="../components/card.css">
+  <link rel="stylesheet" href="../components/language-chip.css">
+  <style>
+    /* Community header */
+    .comm-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 20px 6px;
+    }
+    .comm-title { font-size: 24px; font-weight: 900; color: var(--color-eel); letter-spacing: -0.4px; }
+    .search-btn {
+      width: 40px; height: 40px; border-radius: 50%; background: var(--color-polar);
+      border: 2px solid var(--color-swan); display: flex; align-items: center;
+      justify-content: center; cursor: pointer; font-size: 18px;
+      transition: background 120ms ease;
+    }
+    .search-btn:hover { background: var(--color-swan); }
+
+    /* ═══════════════════════════════════════
+       THE KILLER FEATURE CHIP
+       This is the most prominent element.
+       ═══════════════════════════════════════ */
+    .language-chip-hero {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--chip-active-bg);
+      border: 2.5px solid var(--chip-active-border);
+      border-radius: var(--radius-xl);
+      padding: 13px 18px;
+      margin: 8px 14px 2px;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #3DA800;
+      transition: transform 100ms ease, box-shadow 100ms ease;
+      text-decoration: none;
+      min-height: var(--chip-h);
+      position: relative;
+      overflow: hidden;
+    }
+    .language-chip-hero:active {
+      transform: translateY(4px);
+      box-shadow: none;
+    }
+    /* Subtle pattern overlay */
+    .language-chip-hero::after {
+      content: '🇪🇸🇯🇵🇫🇷🇰🇷🇩🇪';
+      position: absolute; right: 120px; top: 50%; transform: translateY(-50%);
+      font-size: 14px; opacity: 0.12; letter-spacing: 4px; pointer-events: none;
+    }
+
+    .chip-left { display: flex; align-items: center; gap: 12px; }
+    .chip-flag-big { font-size: 34px; line-height: 1; flex-shrink: 0; }
+    .chip-content { display: flex; flex-direction: column; gap: 2px; }
+    .chip-lang-name {
+      font-size: 19px; font-weight: 900; color: var(--chip-active-text);
+      letter-spacing: -0.3px; line-height: 1.1;
+    }
+    .chip-count { font-size: 13px; font-weight: 700; color: #3A8F00; }
+    .chip-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .chip-change-label {
+      font-size: 13px; font-weight: 900; color: var(--color-feather-green);
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .chip-chevron-icon { color: var(--color-feather-green); font-size: 18px; font-weight: 900; }
+
+    /* Sort filter bar */
+    .sort-bar {
+      display: flex; gap: 7px; padding: 10px 14px 2px;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .sort-bar::-webkit-scrollbar { display: none; }
+    .sort-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 8px 14px; border-radius: 9999px;
+      font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 800;
+      white-space: nowrap; cursor: pointer;
+      border: 2px solid var(--color-swan); background: white; color: var(--color-wolf);
+      transition: all 120ms ease; user-select: none;
+      box-shadow: 0 2px 0 var(--color-swan);
+    }
+    .sort-pill:active { transform: translateY(2px); box-shadow: none; }
+    .sort-pill.active {
+      background: var(--color-eel); border-color: var(--color-eel);
+      color: white; box-shadow: 0 2px 0 #1A1A1A;
+    }
+
+    /* Time filter bar */
+    .time-bar {
+      display: flex; gap: 6px; padding: 6px 14px 10px;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .time-bar::-webkit-scrollbar { display: none; }
+    .time-pill {
+      display: inline-flex; align-items: center;
+      padding: 5px 12px; border-radius: 9999px;
+      font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 800;
+      white-space: nowrap; cursor: pointer;
+      border: 1.5px solid var(--color-swan); background: transparent; color: var(--color-wolf);
+      transition: all 120ms ease; user-select: none;
+    }
+    .time-pill.active {
+      background: var(--color-macaw); border-color: var(--color-macaw); color: white;
+    }
+
+    /* Results header */
+    .results-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 4px 16px 8px;
+    }
+    .results-count { font-size: 13px; font-weight: 700; color: var(--color-wolf); }
+    .results-grid-toggle {
+      display: flex; gap: 4px;
+    }
+    .grid-btn {
+      padding: 5px 8px; border-radius: 6px; border: 1.5px solid var(--color-swan);
+      background: white; cursor: pointer; font-size: 14px; color: var(--color-wolf);
+      transition: all 120ms ease;
+    }
+    .grid-btn.active { background: var(--color-polar); border-color: var(--color-hare); }
+
+    /* Story cards grid */
+    .stories-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px; padding: 0 14px 16px;
+    }
+
+    .story-card {
+      background: white; border: 2px solid var(--color-swan);
+      border-radius: 16px; overflow: hidden;
+      box-shadow: 0 3px 0 var(--color-swan);
+      cursor: pointer; text-decoration: none; color: inherit;
+      transition: transform 120ms ease;
+      display: block;
+    }
+    .story-card:active { transform: translateY(3px); }
+
+    .s-cover { height: 110px; position: relative; overflow: hidden; }
+    .s-cover-char { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); }
+    .s-cover-badges { position: absolute; top: 7px; left: 7px; display: flex; gap: 4px; flex-wrap: wrap; }
+    .s-cover-plays {
+      position: absolute; top: 7px; right: 7px;
+      background: rgba(0,0,0,0.45); backdrop-filter: blur(3px);
+      color: white; font-size: 11px; font-weight: 800; padding: 3px 8px;
+      border-radius: 9999px; display: flex; align-items: center; gap: 3px;
+    }
+    .s-body { padding: 9px 11px 11px; }
+    .s-title {
+      font-size: 13px; font-weight: 900; color: var(--color-eel);
+      line-height: 1.3; margin-bottom: 6px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .s-meta { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+    .s-author { font-size: 11px; font-weight: 700; color: var(--color-wolf); margin-top: 5px; display: flex; align-items: center; gap: 4px; }
+    .s-author-dot { width: 16px; height: 16px; border-radius: 50%; overflow: hidden; flex-shrink: 0; }
+
+    /* Language badge inline */
+    .badge-es { background: rgba(255,75,75,0.12); color: #C0001A; font-size: 10px; padding: 2px 7px; }
+    .badge-ja { background: rgba(206,130,255,0.15); color: #6B1FA8; font-size: 10px; padding: 2px 7px; }
+    .badge-fr { background: rgba(28,176,246,0.15); color: #0A6EA0; font-size: 10px; padding: 2px 7px; }
+    .badge-ko { background: rgba(255,200,0,0.2); color: #7A5000; font-size: 10px; padding: 2px 7px; }
+    .badge-de { background: rgba(75,75,75,0.12); color: #2A2A2A; font-size: 10px; padding: 2px 7px; }
+
+    /* Language switch sheet */
+    .lang-sheet-backdrop {
+      position: absolute; inset: 0; background: rgba(0,0,0,0.45);
+      z-index: 50; display: flex; align-items: flex-end;
+      opacity: 0; pointer-events: none; transition: opacity 250ms ease;
+    }
+    .lang-sheet-backdrop.open { opacity: 1; pointer-events: auto; }
+    .lang-sheet {
+      background: white; width: 100%; border-radius: 24px 24px 0 0;
+      padding: 12px 0 32px;
+      transform: translateY(100%);
+      transition: transform 300ms cubic-bezier(0.32,0.72,0,1);
+    }
+    .lang-sheet-backdrop.open .lang-sheet { transform: translateY(0); }
+    .lang-handle { width: 40px; height: 4px; background: var(--color-swan); border-radius: 9999px; margin: 0 auto 12px; }
+    .lang-sheet-title { font-size: 18px; font-weight: 900; color: var(--color-eel); padding: 0 20px 10px; }
+    .lang-option-row {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 20px; cursor: pointer; transition: background 120ms ease;
+    }
+    .lang-option-row:hover { background: var(--color-polar); }
+    .lang-option-row.current { background: var(--chip-active-bg); }
+    .lang-opt-flag { font-size: 28px; width: 36px; text-align: center; }
+    .lang-opt-info { flex: 1; }
+    .lang-opt-name { font-size: 15px; font-weight: 800; color: var(--color-eel); }
+    .lang-opt-count { font-size: 12px; font-weight: 600; color: var(--color-wolf); }
+    .lang-opt-check { width: 22px; height: 22px; border-radius: 50%; background: var(--color-feather-green); display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: 900; opacity: 0; transition: opacity 150ms ease; }
+    .lang-option-row.current .lang-opt-check { opacity: 1; }
+
+    /* Shuffle animation */
+    .shuffling .story-card { animation: card-shuffle-in 300ms cubic-bezier(0.34,1.56,0.64,1) both; }
+  </style>
+</head>
+<body class="demo-page">
+  <div class="phone" style="position:relative;">
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-icons">
+        <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1" fill="currentColor"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1" fill="currentColor"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="currentColor"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="2.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="22.5" y="4" width="2" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="18" height="7" rx="1.5" fill="currentColor"/></svg>
+      </div>
+    </div>
+
+    <main class="screen" id="feedMain">
+
+      <!-- Header -->
+      <div class="comm-header">
+        <span class="comm-title">Community</span>
+        <div class="search-btn">🔍</div>
+      </div>
+
+      <!-- ═══════════════════════════════════
+           THE KILLER FEATURE CHIP
+           ═══════════════════════════════════ -->
+      <div class="language-chip-hero pulse-green" id="langChip" onclick="openLangSheet()">
+        <div class="chip-left">
+          <span class="chip-flag-big" id="chipFlag">🇪🇸</span>
+          <div class="chip-content">
+            <span class="chip-lang-name" id="chipName">Spanish stories</span>
+            <span class="chip-count" id="chipCount">12,847 stories available for your level</span>
+          </div>
+        </div>
+        <div class="chip-right">
+          <span class="chip-change-label">Change</span>
+          <span class="chip-chevron-icon">›</span>
+        </div>
+      </div>
+
+      <!-- Sort filters -->
+      <div class="sort-bar" id="sortBar">
+        <div class="sort-pill active" onclick="setSort(this,'popular')">🔥 Most Popular</div>
+        <div class="sort-pill" onclick="setSort(this,'complex')">🌿 Most Complex</div>
+        <div class="sort-pill" onclick="setSort(this,'longest')">📖 Longest</div>
+        <div class="sort-pill" onclick="setSort(this,'recent')">🆕 Most Recent</div>
+      </div>
+
+      <!-- Time filters -->
+      <div class="time-bar" id="timeBar">
+        <div class="time-pill active" onclick="setTime(this,'week')">This Week</div>
+        <div class="time-pill" onclick="setTime(this,'month')">This Month</div>
+        <div class="time-pill" onclick="setTime(this,'year')">This Year</div>
+        <div class="time-pill" onclick="setTime(this,'all')">All Time</div>
+      </div>
+
+      <!-- Results header -->
+      <div class="results-header">
+        <span class="results-count" id="resultsCount">Showing 12,847 Spanish stories · This Week</span>
+        <div class="results-grid-toggle">
+          <button class="grid-btn active">⊞</button>
+          <button class="grid-btn" onclick="toggleList()">☰</button>
+        </div>
+      </div>
+
+      <!-- Stories grid -->
+      <div class="stories-grid stagger" id="storiesGrid">
+        <!-- Card 1: Mi Familia es Loca -->
+        <a href="09-story-detail.html" class="story-card slide-up hotspot">
+          <div class="s-cover cover-spanish">
+            <div class="s-cover-char"><div data-char="lily" data-size="char-sm"></div></div>
+            <div class="s-cover-badges">
+              <span class="badge badge-green badge-beginner">Beginner</span>
+            </div>
+            <div class="s-cover-plays">▶ 4.8k</div>
+          </div>
+          <div class="s-body">
+            <div class="s-title">Mi Familia es Loca</div>
+            <div class="s-meta">
+              <span class="badge badge-es">🇪🇸 Spanish</span>
+            </div>
+            <div class="s-author"><div class="s-author-dot" style="background:#FF6B9D;display:flex;align-items:center;justify-content:center;font-size:8px;color:white;">L</div> Marta G.</div>
+          </div>
+        </a>
+
+        <!-- Card 2: Coffee Shop Drama -->
+        <a href="09-story-detail.html" class="story-card slide-up">
+          <div class="s-cover cover-alt1">
+            <div class="s-cover-char"><div data-char="eddy" data-size="char-sm"></div></div>
+            <div class="s-cover-badges">
+              <span class="badge badge-yellow badge-intermediate">Intermediate</span>
+            </div>
+            <div class="s-cover-plays">▶ 3.4k</div>
+          </div>
+          <div class="s-body">
+            <div class="s-title">Coffee Shop Drama</div>
+            <div class="s-meta">
+              <span class="badge badge-es">🇪🇸 Spanish</span>
+            </div>
+            <div class="s-author"><div class="s-author-dot" style="background:#FF7043;display:flex;align-items:center;justify-content:center;font-size:8px;color:white;">C</div> Carlos V.</div>
+          </div>
+        </a>
+
+        <!-- Card 3: ¿Dónde Está el Baño? -->
+        <a href="09-story-detail.html" class="story-card slide-up">
+          <div class="s-cover cover-alt2">
+            <div class="s-cover-char"><div data-char="duo" data-size="char-sm"></div></div>
+            <div class="s-cover-badges">
+              <span class="badge badge-green badge-beginner">Beginner</span>
+              <span class="badge badge-yellow" style="font-size:9px;padding:2px 5px;">🔥 Hot</span>
+            </div>
+            <div class="s-cover-plays">▶ 8.9k</div>
+          </div>
+          <div class="s-body">
+            <div class="s-title">¿Dónde Está el Baño?</div>
+            <div class="s-meta">
+              <span class="badge badge-es">🇪🇸 Spanish</span>
+            </div>
+            <div class="s-author"><div class="s-author-dot" style="background:#58CC02;display:flex;align-items:center;justify-content:center;font-size:8px;color:white;">R</div> Rosa M.</div>
+          </div>
+        </a>
+
+        <!-- Card 4: El Mercado -->
+        <a href="09-story-detail.html" class="story-card slide-up">
+          <div class="s-cover cover-spanish">
+            <div class="s-cover-char"><div data-char="zari" data-size="char-sm"></div></div>
+            <div class="s-cover-badges">
+              <span class="badge badge-green badge-beginner">Beginner</span>
+            </div>
+            <div class="s-cover-plays">▶ 2.1k</div>
+          </div>
+          <div class="s-body">
+            <div class="s-title">El Mercado de Barcelona</div>
+            <div class="s-meta">
+              <span class="badge badge-es">🇪🇸 Spanish</span>
+            </div>
+            <div class="s-author"><div class="s-author-dot" style="background:#9B59B6;display:flex;align-items:center;justify-content:center;font-size:8px;color:white;">A</div> Ana T.</div>
+          </div>
+        </a>
+
+        <!-- Card 5: Noche de Flamenco -->
+        <a href="09-story-detail.html" class="story-card slide-up">
+          <div class="s-cover cover-alt1">
+            <div class="s-cover-char"><div data-char="bea" data-size="char-sm"></div></div>
+            <div class="s-cover-badges">
+              <span class="badge badge-purple badge-advanced">Advanced</span>
+            </div>
+            <div class="s-cover-plays">▶ 1.7k</div>
+          </div>
+          <div class="s-body">
+            <div class="s-title">Noche de Flamenco</div>
+            <div class="s-meta">
+              <span class="badge badge-es">🇪🇸 Spanish</span>
+            </div>
+            <div class="s-author"><div class="s-author-dot" style="background:#1CB0F6;display:flex;align-items:center;justify-content:center;font-size:8px;color:white;">B</div> Berta S.</div>
+          </div>
+        </a>
+
+        <!-- Card 6: El Tren a Madrid -->
+        <a href="09-story-detail.html" class="story-card slide-up">
+          <div class="s-cover cover-alt3">
+            <div class="s-cover-char"><div data-char="junior" data-size="char-sm"></div></div>
+            <div class="s-cover-badges">
+              <span class="badge badge-yellow badge-intermediate">Intermediate</span>
+            </div>
+            <div class="s-cover-plays">▶ 950</div>
+          </div>
+          <div class="s-body">
+            <div class="s-title">El Tren a Madrid</div>
+            <div class="s-meta">
+              <span class="badge badge-es">🇪🇸 Spanish</span>
+            </div>
+            <div class="s-author"><div class="s-author-dot" style="background:#FFD700;display:flex;align-items:center;justify-content:center;font-size:8px;color:black;">J</div> Jorge P.</div>
+          </div>
+        </a>
+      </div>
+
+    </main>
+
+    <!-- Bottom Nav: Stories active -->
+    <nav class="bottom-nav">
+      <a class="nav-item" href="01-duolingo-home-new-tab.html"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div><span class="nav-label">Home</span></a>
+      <a class="nav-item" href="#"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><span class="nav-label">Learn</span></a>
+      <a class="nav-item active" href="02-studio-landing.html"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="12" y2="12"/><polyline points="14 12 18 16 14 20"/></svg></div><span class="nav-label">Stories</span></a>
+      <a class="nav-item" href="11-popularity-board.html"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="11" width="6" height="11" rx="1"/><rect x="9" y="4" width="6" height="18" rx="1"/><rect x="17" y="7" width="6" height="15" rx="1"/></svg></div><span class="nav-label">Boards</span></a>
+      <a class="nav-item" href="#"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div><span class="nav-label">Profile</span></a>
+    </nav>
+
+    <!-- Language selection sheet -->
+    <div class="lang-sheet-backdrop" id="langSheetBg" onclick="closeLangSheet(event)">
+      <div class="lang-sheet" onclick="event.stopPropagation()">
+        <div class="lang-handle"></div>
+        <div class="lang-sheet-title">Switch Language</div>
+
+        <div class="lang-option-row current" onclick="switchLang(this,'🇪🇸','Spanish stories','12,847')">
+          <span class="lang-opt-flag">🇪🇸</span>
+          <div class="lang-opt-info">
+            <div class="lang-opt-name">Spanish</div>
+            <div class="lang-opt-count">12,847 stories · You're learning this</div>
+          </div>
+          <div class="lang-opt-check">✓</div>
+        </div>
+        <div class="lang-option-row" onclick="switchLang(this,'🇯🇵','Japanese stories','8,432')">
+          <span class="lang-opt-flag">🇯🇵</span>
+          <div class="lang-opt-info">
+            <div class="lang-opt-name">Japanese</div>
+            <div class="lang-opt-count">8,432 stories</div>
+          </div>
+          <div class="lang-opt-check">✓</div>
+        </div>
+        <div class="lang-option-row" onclick="switchLang(this,'🇫🇷','French stories','9,103')">
+          <span class="lang-opt-flag">🇫🇷</span>
+          <div class="lang-opt-info">
+            <div class="lang-opt-name">French</div>
+            <div class="lang-opt-count">9,103 stories</div>
+          </div>
+          <div class="lang-opt-check">✓</div>
+        </div>
+        <div class="lang-option-row" onclick="switchLang(this,'🇰🇷','Korean stories','6,215')">
+          <span class="lang-opt-flag">🇰🇷</span>
+          <div class="lang-opt-info">
+            <div class="lang-opt-name">Korean</div>
+            <div class="lang-opt-count">6,215 stories</div>
+          </div>
+          <div class="lang-opt-check">✓</div>
+        </div>
+        <div class="lang-option-row" onclick="switchLang(this,'🇩🇪','German stories','5,891')">
+          <span class="lang-opt-flag">🇩🇪</span>
+          <div class="lang-opt-info">
+            <div class="lang-opt-name">German</div>
+            <div class="lang-opt-count">5,891 stories</div>
+          </div>
+          <div class="lang-opt-check">✓</div>
+        </div>
+        <div class="lang-option-row" onclick="switchLang(this,'🌐','All Languages','42,388')">
+          <span class="lang-opt-flag">🌐</span>
+          <div class="lang-opt-info">
+            <div class="lang-opt-name">All Languages</div>
+            <div class="lang-opt-count">42,388 total stories</div>
+          </div>
+          <div class="lang-opt-check">✓</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/characters.js"></script>
+  <script>
+    function openLangSheet() {
+      document.getElementById('langSheetBg').classList.add('open');
+    }
+
+    function closeLangSheet(e) {
+      document.getElementById('langSheetBg').classList.remove('open');
+    }
+
+    function switchLang(rowEl, flag, name, count) {
+      // Update active state in sheet
+      document.querySelectorAll('.lang-option-row').forEach(r => r.classList.remove('current'));
+      rowEl.classList.add('current');
+
+      // Update chip
+      document.getElementById('chipFlag').textContent = flag;
+      document.getElementById('chipName').textContent = name;
+      document.getElementById('chipCount').textContent = count + ' stories available for your level';
+
+      // Animate chip
+      const chip = document.getElementById('langChip');
+      chip.classList.add('chip-switch-anim');
+      chip.addEventListener('animationend', () => chip.classList.remove('chip-switch-anim'), { once: true });
+
+      // Shuffle grid
+      shuffleGrid();
+
+      // Update results count
+      document.getElementById('resultsCount').textContent = `Showing ${count} ${name.replace(' stories','')} stories · This Week`;
+
+      closeLangSheet();
+    }
+
+    function shuffleGrid() {
+      const grid = document.getElementById('storiesGrid');
+      grid.classList.add('shuffling');
+      grid.querySelectorAll('.story-card').forEach((c, i) => {
+        c.style.animationDelay = (i * 50) + 'ms';
+      });
+      setTimeout(() => grid.classList.remove('shuffling'), 1000);
+    }
+
+    function setSort(el, type) {
+      document.querySelectorAll('.sort-pill').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+      shuffleGrid();
+    }
+
+    function setTime(el, type) {
+      document.querySelectorAll('.time-pill').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+      const chipCount = document.getElementById('chipCount').textContent;
+      const sortLabel = document.querySelector('.sort-pill.active').textContent.replace(/[^\w\s]/g,'').trim();
+      document.getElementById('resultsCount').textContent = `Showing Spanish stories · ${el.textContent}`;
+    }
+
+    function toggleList() {
+      document.querySelectorAll('.grid-btn').forEach(b => b.classList.toggle('active'));
+    }
+  </script>
+  <script>
+    document.querySelectorAll('.hotspot').forEach(el => {
+      el.addEventListener('click', () => el.classList.add('done'), { once: true });
+    });
+  </script>
+  <a class="home-fab" href="../index.html">🏠 Main Page</a>
+</body>
+</html>

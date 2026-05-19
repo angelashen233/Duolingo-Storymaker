@@ -1,0 +1,280 @@
+/*
+ * Extended Button Styles for Stories Studio
+ * Supplements duolingo-design.css button components
+ */
+
+/* ─────────────────────────────────────────────
+   PLAY BUTTON (big green — story detail)
+───────────────────────────────────────────── */
+
+.btn-play {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 18px 32px;
+  background: var(--color-feather-green);
+  color: white;
+  font-family: 'Nunito', sans-serif;
+  font-size: 18px;
+  font-weight: 900;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  box-shadow: 0 5px 0 #46A302;
+  transition: transform 100ms ease, box-shadow 100ms ease;
+  text-decoration: none;
+  letter-spacing: -0.2px;
+}
+
+.btn-play:hover {
+  background: #5AD902;
+}
+
+.btn-play:active {
+  transform: translateY(5px);
+  box-shadow: none;
+}
+
+.btn-play-icon {
+  width: 22px;
+  height: 22px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+/* ─────────────────────────────────────────────
+   STUDIO / CREATE BUTTON (purple creative)
+───────────────────────────────────────────── */
+
+.btn-studio {
+  background: #7C3AED;
+  color: white;
+  box-shadow: 0 4px 0 #5B21B6;
+}
+
+.btn-studio:hover {
+  background: #8B5CF6;
+}
+
+.btn-studio:active {
+  transform: translateY(4px);
+  box-shadow: none !important;
+}
+
+/* ─────────────────────────────────────────────
+   ICON BUTTON (circular, toolbar actions)
+───────────────────────────────────────────── */
+
+.btn-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--color-swan);
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  transition: background 120ms ease, border-color 120ms ease, transform 100ms ease;
+  padding: 0;
+  flex-shrink: 0;
+  box-shadow: 0 2px 0 var(--color-swan);
+}
+
+.btn-icon:hover {
+  background: var(--color-polar);
+  border-color: var(--color-hare);
+}
+
+.btn-icon:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.btn-icon.active {
+  background: rgba(28,176,246,0.1);
+  border-color: var(--color-macaw);
+  color: var(--color-macaw);
+}
+
+/* ─────────────────────────────────────────────
+   FLOATING ACTION BUTTON (canvas + button)
+───────────────────────────────────────────── */
+
+.fab {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-feather-green);
+  color: white;
+  font-size: 26px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 5px 0 #46A302, 0 8px 20px rgba(0,0,0,0.2);
+  transition: transform 100ms ease, box-shadow 100ms ease;
+  z-index: 10;
+}
+
+.fab:active {
+  transform: translateY(5px);
+  box-shadow: none;
+}
+
+/* ─────────────────────────────────────────────
+   PUBLISH BUTTON (extended primary)
+───────────────────────────────────────────── */
+
+.btn-publish {
+  width: 100%;
+  padding: 18px 32px;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -0.2px;
+}
+
+/* ─────────────────────────────────────────────
+   REMIX BUTTON (blue outline)
+───────────────────────────────────────────── */
+
+.btn-remix {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border: 2.5px solid var(--color-macaw);
+  background: white;
+  color: var(--color-macaw);
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 900;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  box-shadow: 0 4px 0 #149EE0;
+  transition: transform 100ms ease, box-shadow 100ms ease;
+  text-decoration: none;
+}
+
+.btn-remix:hover {
+  background: rgba(28,176,246,0.05);
+}
+
+.btn-remix:active {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+
+/* ─────────────────────────────────────────────
+   DIFFICULTY SELECTOR CHIPS
+───────────────────────────────────────────── */
+
+.difficulty-row {
+  display: flex;
+  gap: 8px;
+  padding: 0 20px 16px;
+}
+
+.difficulty-chip {
+  flex: 1;
+  padding: 10px 8px;
+  border-radius: var(--radius-lg);
+  border: 2.5px solid var(--color-swan);
+  background: white;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  text-align: center;
+  transition: all 120ms ease;
+  box-shadow: 0 2px 0 var(--color-swan);
+}
+
+.difficulty-chip:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.difficulty-chip.beginner.sel {
+  border-color: var(--color-feather-green);
+  background: rgba(88,204,2,0.08);
+  color: #1E6B00;
+  box-shadow: 0 2px 0 #46A302;
+}
+
+.difficulty-chip.intermediate.sel {
+  border-color: var(--color-bee);
+  background: rgba(255,200,0,0.1);
+  color: #7A5000;
+  box-shadow: 0 2px 0 #CCA000;
+}
+
+.difficulty-chip.advanced.sel {
+  border-color: var(--color-beetle);
+  background: rgba(206,130,255,0.1);
+  color: #5B1F9E;
+  box-shadow: 0 2px 0 #9E5AB8;
+}
+
+/* ─────────────────────────────────────────────
+   SCENE BACKGROUND PICKER (radio-style pills)
+───────────────────────────────────────────── */
+
+.scene-bg-row {
+  display: flex;
+  gap: 8px;
+  padding: 8px 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.scene-bg-row::-webkit-scrollbar { display: none; }
+
+.scene-bg-pill {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: transform 100ms ease, border-color 120ms ease;
+  flex-shrink: 0;
+}
+
+.scene-bg-pill:hover {
+  transform: scale(1.1);
+}
+
+.scene-bg-pill.active {
+  border-color: var(--color-eel);
+  transform: scale(1.15);
+}
+
+/* ─────────────────────────────────────────────
+   BOTTOM STICKY CTA AREA
+───────────────────────────────────────────── */
+
+.sticky-cta {
+  padding: 12px 20px 16px;
+  background: white;
+  border-top: 1.5px solid var(--color-swan);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sticky-cta-row {
+  display: flex;
+  gap: 10px;
+}

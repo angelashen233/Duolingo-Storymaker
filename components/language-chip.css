@@ -1,0 +1,347 @@
+/*
+ * Language Chip — the killer feature
+ * Used in community feed (Screen 08) as the primary filter
+ * Also used as smaller badges on story cards
+ */
+
+/* ─────────────────────────────────────────────
+   HERO LANGUAGE CHIP (Screen 08)
+   This is the most visually prominent element
+   on the community feed screen.
+───────────────────────────────────────────── */
+
+.language-chip-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--chip-active-bg);
+  border: 2.5px solid var(--chip-active-border);
+  border-radius: var(--radius-xl);
+  padding: 12px 18px;
+  margin: 12px 16px;
+  cursor: pointer;
+  box-shadow: var(--chip-active-shadow);
+  transition:
+    transform 100ms ease,
+    box-shadow 100ms ease;
+  text-decoration: none;
+  min-height: var(--chip-h);
+  position: relative;
+  overflow: hidden;
+}
+
+.language-chip-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(88,204,2,0.04);
+  pointer-events: none;
+}
+
+.language-chip-hero:active {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+
+.chip-hero-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chip-flag {
+  font-size: 30px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.chip-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chip-language-name {
+  font-family: 'Nunito', sans-serif;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--chip-active-text);
+  letter-spacing: -0.3px;
+  line-height: 1.1;
+}
+
+.chip-story-count {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #3A8F00;
+}
+
+.chip-hero-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chip-change-label {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--color-feather-green);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.chip-chevron {
+  width: 20px;
+  height: 20px;
+  color: var(--color-feather-green);
+}
+
+/* ─────────────────────────────────────────────
+   LANGUAGE CHIP — SMALL BADGE (on story cards)
+───────────────────────────────────────────── */
+
+.lang-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+.lang-badge-flag {
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* Language color themes */
+.lang-spanish {
+  background: rgba(255,75,75,0.12);
+  color: #C0001A;
+}
+
+.lang-japanese {
+  background: rgba(206,130,255,0.15);
+  color: #6B1FA8;
+}
+
+.lang-french {
+  background: rgba(28,176,246,0.15);
+  color: #0A6EA0;
+}
+
+.lang-korean {
+  background: rgba(255,200,0,0.18);
+  color: #7A5000;
+}
+
+.lang-german {
+  background: rgba(75,75,75,0.12);
+  color: #2A2A2A;
+}
+
+/* ─────────────────────────────────────────────
+   LANGUAGE OPTION ROW (inside bottom sheet)
+───────────────────────────────────────────── */
+
+.lang-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  cursor: pointer;
+  transition: background 120ms ease;
+  text-decoration: none;
+}
+
+.lang-option:hover {
+  background: var(--color-polar);
+}
+
+.lang-option.active {
+  background: var(--chip-active-bg);
+}
+
+.lang-option-flag {
+  font-size: 26px;
+  line-height: 1;
+  width: 36px;
+  text-align: center;
+}
+
+.lang-option-info {
+  flex: 1;
+}
+
+.lang-option-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-eel);
+}
+
+.lang-option-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-wolf);
+  margin-top: 1px;
+}
+
+.lang-option-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-feather-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+
+.lang-option.active .lang-option-check {
+  opacity: 1;
+}
+
+/* ─────────────────────────────────────────────
+   SORT + TIME FILTER BAR
+───────────────────────────────────────────── */
+
+.filter-bar {
+  padding: 0 16px 8px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.filter-bar::-webkit-scrollbar { display: none; }
+
+.filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 2px solid var(--color-swan);
+  background: white;
+  color: var(--color-wolf);
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease;
+  user-select: none;
+}
+
+.filter-pill:hover {
+  border-color: var(--color-hare);
+  color: var(--color-eel);
+}
+
+.filter-pill.active {
+  background: var(--color-eel);
+  border-color: var(--color-eel);
+  color: white;
+}
+
+.filter-pill-icon {
+  font-size: 14px;
+}
+
+/* Time filter — smaller pills */
+.time-bar {
+  padding: 4px 16px 12px;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.time-bar::-webkit-scrollbar { display: none; }
+
+.time-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 1.5px solid var(--color-swan);
+  background: transparent;
+  color: var(--color-wolf);
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease;
+  user-select: none;
+}
+
+.time-pill.active {
+  background: var(--color-macaw);
+  border-color: var(--color-macaw);
+  color: white;
+}
+
+/* ─────────────────────────────────────────────
+   LANGUAGE TAG (publish flow selector)
+───────────────────────────────────────────── */
+
+.lang-selector-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 0 20px 16px;
+}
+
+.lang-select-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 8px;
+  border: 2.5px solid var(--color-swan);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition:
+    border-color 120ms ease,
+    background 120ms ease,
+    box-shadow 120ms ease;
+  background: white;
+  box-shadow: 0 2px 0 var(--color-swan);
+}
+
+.lang-select-item:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.lang-select-item.selected {
+  border-color: var(--color-feather-green);
+  background: rgba(88,204,2,0.06);
+  box-shadow: 0 2px 0 #46A302;
+}
+
+.lang-select-flag {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.lang-select-name {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--color-eel);
+  text-align: center;
+}

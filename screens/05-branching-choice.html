@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Screen 05 — Branching Choice Editor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../duolingo-design.css">
+  <link rel="stylesheet" href="../design-system.css">
+  <link rel="stylesheet" href="../components/animations.css">
+  <link rel="stylesheet" href="../components/character.css">
+  <link rel="stylesheet" href="../components/dialogue-bubble.css">
+  <link rel="stylesheet" href="../components/duo-button.css">
+  <style>
+    .editor-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 16px 8px; background: white;
+      border-bottom: 1.5px solid var(--color-swan);
+    }
+    .editor-title { font-size: 17px; font-weight: 900; color: var(--color-eel); flex: 1; }
+
+    /* Mini scene canvas */
+    .mini-scene {
+      height: 180px; margin: 10px 12px 0; border-radius: 16px; overflow: hidden;
+      background: linear-gradient(180deg,#C5EDFF 0%,#A8D8FF 40%,#D4EDCF 75%,#B8E0B0 100%);
+      border: 2px solid var(--color-swan); position: relative;
+    }
+    .mini-scene-floor { position: absolute; bottom: 0; left: 0; right: 0; height: 36px; background: rgba(80,140,60,0.2); border-radius: 0 0 14px 14px; }
+    .mini-char-left  { position: absolute; bottom: 8px; left: 12px; }
+    .mini-char-right { position: absolute; bottom: 8px; right: 12px; transform: scaleX(-1); }
+    .mini-bubble {
+      position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+      background: white; border: 2px solid var(--color-cardinal);
+      border-radius: 12px; padding: 8px 14px; white-space: nowrap;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    }
+    .mini-bubble-text { font-size: 13px; font-weight: 700; color: var(--color-eel); }
+    .mini-bubble-speaker { font-size: 10px; font-weight: 900; color: var(--color-cardinal); text-transform: uppercase; margin-bottom: 2px; letter-spacing: 0.05em; }
+
+    /* Branch indicator pill */
+    .branch-indicator {
+      display: flex; align-items: center; gap: 8px;
+      margin: 10px 12px 0; padding: 10px 14px;
+      background: rgba(255,200,0,0.12); border: 2px solid rgba(255,200,0,0.4);
+      border-radius: 12px;
+    }
+    .branch-icon { font-size: 18px; }
+    .branch-info { flex: 1; }
+    .branch-info-title { font-size: 14px; font-weight: 800; color: var(--color-eel); }
+    .branch-info-desc { font-size: 12px; font-weight: 600; color: var(--color-wolf); }
+
+    /* Branch fork visual */
+    .branch-fork {
+      margin: 10px 12px 0; background: var(--color-polar);
+      border: 2px solid var(--color-swan); border-radius: 14px; padding: 10px;
+      position: relative; overflow: hidden;
+    }
+    .branch-stem { display: flex; justify-content: center; margin-bottom: 6px; }
+    .branch-node-icon {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--color-macaw); color: white; font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 3px 6px rgba(28,176,246,0.4);
+    }
+    .branch-arms { display: flex; gap: 8px; align-items: flex-start; }
+    .branch-arm {
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+    }
+    .branch-arm-connector {
+      width: 2px; height: 18px; background: var(--color-hare);
+    }
+    .branch-arm-choice {
+      background: white; border: 2px solid var(--color-swan); border-radius: 10px;
+      padding: 7px 8px; font-size: 12px; font-weight: 700; color: var(--color-eel);
+      text-align: center; width: 100%; box-shadow: 0 2px 0 var(--color-swan);
+    }
+    .branch-arm-choice.choice-a { border-color: rgba(88,204,2,0.4); color: #1E6B00; }
+    .branch-arm-choice.choice-b { border-color: rgba(28,176,246,0.4); color: #0A6EA0; }
+    .branch-arm-choice.choice-c { border-color: rgba(255,75,75,0.4); color: #990000; }
+
+    /* Choices editor */
+    .choices-editor { padding: 10px 12px; }
+    .choices-editor-title { font-size: 14px; font-weight: 900; color: var(--color-eel); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .choice-input-row {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+    }
+    .choice-letter-badge {
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 900; color: white;
+    }
+    .badge-a { background: var(--color-feather-green); }
+    .badge-b { background: var(--color-macaw); }
+    .badge-c { background: var(--color-cardinal); }
+    .choice-text-input {
+      flex: 1; font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 700;
+      color: var(--color-eel); background: white; border: 2px solid var(--color-swan);
+      border-radius: 10px; padding: 9px 12px; outline: none;
+      transition: border-color 120ms ease;
+    }
+    .choice-text-input:focus { border-color: var(--color-macaw); }
+    .choice-delete {
+      width: 28px; height: 28px; border-radius: 50%; background: none;
+      border: 1.5px solid var(--color-swan); cursor: pointer; color: var(--color-hare);
+      font-size: 14px; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: all 120ms ease;
+    }
+    .choice-delete:hover { border-color: var(--color-cardinal); color: var(--color-cardinal); }
+
+    .add-choice-btn {
+      display: flex; align-items: center; gap: 8px; width: 100%;
+      padding: 10px 12px; border: 2px dashed var(--color-hare); border-radius: 10px;
+      background: transparent; cursor: pointer; font-family: 'Nunito', sans-serif;
+      font-size: 14px; font-weight: 800; color: var(--color-wolf);
+      transition: all 120ms ease;
+    }
+    .add-choice-btn:hover { border-color: var(--color-macaw); color: var(--color-macaw); background: rgba(28,176,246,0.04); }
+
+    .cta-row {
+      display: flex; gap: 10px; padding: 10px 12px 16px;
+    }
+  </style>
+</head>
+<body class="demo-page">
+  <div class="phone">
+    <div class="status-bar" style="background:white;">
+      <span class="status-time">9:41</span>
+      <div class="status-icons">
+        <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1" fill="currentColor"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1" fill="currentColor"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="currentColor"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="2.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="22.5" y="4" width="2" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="18" height="7" rx="1.5" fill="currentColor"/></svg>
+      </div>
+    </div>
+
+    <main class="screen">
+
+      <!-- Header -->
+      <div class="editor-header">
+        <a href="03-new-storyboard.html" class="back-btn" style="text-decoration:none;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </a>
+        <span class="editor-title">Add Branching Choices</span>
+        <a href="06-preview-story.html" style="padding:7px 14px;border-radius:9999px;background:var(--color-macaw);color:white;font-size:13px;font-weight:800;text-decoration:none;box-shadow:0 3px 0 #149EE0;white-space:nowrap;">▶ Preview</a>
+      </div>
+
+      <!-- Mini scene (context) -->
+      <div class="mini-scene">
+        <div class="mini-scene-floor"></div>
+        <div class="mini-char-left">
+          <div data-char="duo" data-size="char-md"></div>
+        </div>
+        <div class="mini-char-right">
+          <div data-char="lily" data-size="char-md"></div>
+        </div>
+        <div class="mini-bubble">
+          <div class="mini-bubble-speaker">Lily</div>
+          <div class="mini-bubble-text">¡Hola! ¿Cómo te llamas?</div>
+        </div>
+      </div>
+
+      <!-- Branch indicator -->
+      <div class="branch-indicator">
+        <span class="branch-icon">🔀</span>
+        <div class="branch-info">
+          <div class="branch-info-title">Add a story fork here</div>
+          <div class="branch-info-desc">Give players a choice — each leads to a different scene</div>
+        </div>
+      </div>
+
+      <!-- Branch fork visual -->
+      <div class="branch-fork">
+        <div class="branch-stem">
+          <div class="branch-node-icon">🔀</div>
+        </div>
+        <div class="branch-arms">
+          <div class="branch-arm choice-in-1">
+            <div class="branch-arm-connector"></div>
+            <div class="branch-arm-choice choice-a">Tell her your name</div>
+          </div>
+          <div class="branch-arm choice-in-2">
+            <div class="branch-arm-connector"></div>
+            <div class="branch-arm-choice choice-b">Ask her age instead</div>
+          </div>
+          <div class="branch-arm choice-in-3">
+            <div class="branch-arm-connector"></div>
+            <div class="branch-arm-choice choice-c">Run away dramatically</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Choices editor -->
+      <div class="choices-editor">
+        <div class="choices-editor-title">
+          <span>✏️</span> Edit Choices
+          <span style="margin-left:auto;font-size:12px;font-weight:600;color:var(--color-wolf);">3 / 4 max</span>
+        </div>
+
+        <div class="choice-input-row">
+          <div class="choice-letter-badge badge-a">A</div>
+          <input class="choice-text-input" type="text" value="Tell her your name" placeholder="Choice A...">
+          <button class="choice-delete">✕</button>
+        </div>
+
+        <div class="choice-input-row">
+          <div class="choice-letter-badge badge-b">B</div>
+          <input class="choice-text-input" type="text" value="Ask her age instead" placeholder="Choice B...">
+          <button class="choice-delete">✕</button>
+        </div>
+
+        <div class="choice-input-row">
+          <div class="choice-letter-badge badge-c">C</div>
+          <input class="choice-text-input" type="text" value="Run away dramatically" placeholder="Choice C...">
+          <button class="choice-delete">✕</button>
+        </div>
+
+        <button class="add-choice-btn" onclick="addChoice()" id="addChoiceBtn">
+          <span style="font-size:16px;font-weight:900;color:var(--color-macaw);">+</span>
+          Add another choice (1 more possible)
+        </button>
+      </div>
+
+      <div class="cta-row">
+        <a href="03-new-storyboard.html" style="flex:1;padding:13px;border:2.5px solid var(--color-swan);border-radius:9999px;background:white;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;color:var(--color-eel);text-align:center;text-decoration:none;box-shadow:0 3px 0 var(--color-swan);">Cancel</a>
+        <a href="06-preview-story.html" class="hotspot" style="flex:2;padding:13px;border-radius:9999px;background:var(--color-feather-green);font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;color:white;text-align:center;text-decoration:none;box-shadow:0 4px 0 #46A302;">Save Choices ✓</a>
+      </div>
+
+    </main>
+
+    <nav class="bottom-nav">
+      <a class="nav-item" href="01-duolingo-home-new-tab.html"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div><span class="nav-label">Home</span></a>
+      <a class="nav-item" href="#"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><span class="nav-label">Learn</span></a>
+      <a class="nav-item active" href="02-studio-landing.html"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="12" y2="12"/><polyline points="14 12 18 16 14 20"/></svg></div><span class="nav-label">Stories</span></a>
+      <a class="nav-item" href="11-popularity-board.html"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="11" width="6" height="11" rx="1"/><rect x="9" y="4" width="6" height="18" rx="1"/><rect x="17" y="7" width="6" height="15" rx="1"/></svg></div><span class="nav-label">Boards</span></a>
+      <a class="nav-item" href="#"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div><span class="nav-label">Profile</span></a>
+    </nav>
+  </div>
+
+  <script src="../js/characters.js"></script>
+  <script>
+    let choiceCount = 3;
+    function addChoice() {
+      if (choiceCount >= 4) return;
+      choiceCount++;
+      const letters = ['A','B','C','D'];
+      const colors = ['badge-a','badge-b','badge-c','badge-c'];
+      const container = document.querySelector('.choices-editor');
+      const addBtn = document.getElementById('addChoiceBtn');
+
+      const row = document.createElement('div');
+      row.className = 'choice-input-row choice-in-' + choiceCount;
+      row.innerHTML = `
+        <div class="choice-letter-badge ${colors[choiceCount-1]}">${letters[choiceCount-1]}</div>
+        <input class="choice-text-input" type="text" placeholder="Choice ${letters[choiceCount-1]}...">
+        <button class="choice-delete" onclick="this.closest('.choice-input-row').remove();choiceCount--;">✕</button>
+      `;
+      container.insertBefore(row, addBtn);
+
+      if (choiceCount >= 4) {
+        addBtn.style.opacity = '0.4';
+        addBtn.style.cursor = 'not-allowed';
+        addBtn.textContent = '✕ Maximum 4 choices reached';
+      }
+    }
+  </script>
+  <script>
+    document.querySelectorAll('.hotspot').forEach(el => {
+      el.addEventListener('click', () => el.classList.add('done'), { once: true });
+    });
+  </script>
+  <a class="home-fab" href="../index.html">🏠 Main Page</a>
+</body>
+</html>

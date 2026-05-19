@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>DEMO 2 — French Lesson + Creator Invite</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../duolingo-design.css">
+  <link rel="stylesheet" href="../design-system.css">
+  <style>
+    /* ── Layout ── */
+    .lesson-phone {
+      background: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+    @media (min-width: 500px) {
+      .lesson-phone { min-height: 844px; max-height: 844px; overflow: hidden; }
+    }
+
+    /* ── Lesson Top Bar ── */
+    .lesson-topbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px 10px;
+      flex-shrink: 0;
+    }
+    .lb-close {
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      background: none; border: none; cursor: pointer;
+      color: #AFAFAF; font-size: 22px; flex-shrink: 0;
+      border-radius: 50%;
+      transition: background 120ms ease;
+    }
+    .lb-close:hover { background: #F7F7F7; }
+    .lb-progress-track {
+      flex: 1;
+      height: 16px;
+      background: #E5E5E5;
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+    .lb-progress-fill {
+      height: 100%;
+      background: #58CC02;
+      border-radius: 9999px;
+      transition: width 600ms cubic-bezier(0.34, 1.4, 0.64, 1);
+    }
+    .lb-hearts {
+      display: flex; gap: 3px; flex-shrink: 0;
+    }
+    .lb-heart { font-size: 20px; }
+
+    /* ── Skill Banner ── */
+    .skill-banner {
+      display: flex; align-items: center; gap: 10px;
+      padding: 6px 20px 14px;
+    }
+    .skill-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, #1CB0F6, #2B70C9);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .skill-text-wrap { flex: 1; }
+    .skill-unit {
+      font-size: 11px; font-weight: 800; color: #AFAFAF;
+      text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1px;
+    }
+    .skill-name { font-size: 15px; font-weight: 800; color: #4B4B4B; }
+
+    /* ── Exercise Container ── */
+    .exercise-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 0 16px;
+      overflow: hidden;
+    }
+    .exercise-instruction {
+      font-size: 24px;
+      font-weight: 800;
+      color: #3C3C3C;
+      margin-bottom: 6px;
+      line-height: 1.25;
+    }
+    .exercise-sub {
+      font-size: 14px;
+      font-weight: 700;
+      color: #AFAFAF;
+      margin-bottom: 20px;
+    }
+
+    /* ── Audio Prompt ── */
+    .audio-prompt {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 20px;
+    }
+    .audio-btn {
+      width: 60px; height: 60px; border-radius: 16px;
+      background: linear-gradient(135deg, #1CB0F6, #149EE0);
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 0 #0D8EC4; flex-shrink: 0;
+      transition: transform 80ms ease, box-shadow 80ms ease;
+    }
+    .audio-btn:active { transform: translateY(4px); box-shadow: none; }
+    .audio-btn svg { width: 28px; height: 28px; fill: white; }
+    .audio-word {
+      font-size: 28px; font-weight: 900; color: #4B4B4B;
+      letter-spacing: -0.5px;
+    }
+    .audio-word em { font-style: italic; color: #777; font-size: 16px; font-weight: 700; }
+
+    /* ── Multiple Choice ── */
+    .mc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .mc-option {
+      background: #FFFFFF;
+      border: 2px solid #E5E5E5;
+      border-radius: 14px;
+      padding: 14px 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      text-align: center;
+      box-shadow: 0 3px 0 #E5E5E5;
+      transition: border-color 80ms ease, background 80ms ease, transform 80ms ease, box-shadow 80ms ease;
+      font-family: 'Nunito', sans-serif;
+      min-height: 80px;
+      justify-content: center;
+    }
+    .mc-option:hover:not(.disabled) { border-color: #84D8FF; background: #F3FEFF; }
+    .mc-option:active:not(.disabled) { transform: translateY(3px); box-shadow: none; }
+    .mc-option.selected {
+      border-color: #1CB0F6;
+      background: #DDF4FF;
+      box-shadow: 0 3px 0 #1CB0F6;
+    }
+    .mc-option.correct {
+      border-color: #58CC02;
+      background: #D7FFB8;
+      box-shadow: 0 3px 0 #58CC02;
+    }
+    .mc-option.wrong {
+      border-color: #FF4B4B;
+      background: #FFE0E0;
+      box-shadow: 0 3px 0 #FF4B4B;
+    }
+    .mc-option.disabled { cursor: default; pointer-events: none; }
+    .mc-emoji { font-size: 32px; line-height: 1; }
+    .mc-label { font-size: 14px; font-weight: 800; color: #4B4B4B; line-height: 1.3; }
+    .mc-option.selected .mc-label { color: #1F6B8E; }
+    .mc-option.correct .mc-label { color: #2B6B00; }
+    .mc-option.wrong   .mc-label { color: #8C1C1C; }
+
+    /* ── Word Bank / Tap-to-Build ── */
+    .answer-slots {
+      min-height: 54px;
+      border-bottom: 2px solid #E5E5E5;
+      display: flex; flex-wrap: wrap; gap: 8px;
+      padding: 8px 0 14px;
+      margin-bottom: 14px;
+      align-items: center;
+    }
+    .answer-slot-placeholder {
+      font-size: 13px; font-weight: 700; color: #AFAFAF;
+      font-style: italic;
+    }
+    .word-tile {
+      display: inline-flex; align-items: center;
+      background: #FFFFFF;
+      border: 2px solid #E5E5E5;
+      border-radius: 10px;
+      padding: 9px 14px;
+      font-size: 16px; font-weight: 800; color: #4B4B4B;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #E5E5E5;
+      transition: transform 80ms ease, box-shadow 80ms ease, opacity 100ms ease;
+      font-family: 'Nunito', sans-serif;
+      user-select: none;
+    }
+    .word-tile:active { transform: translateY(3px); box-shadow: none; }
+    .word-tile.in-answer {
+      background: #F5F5F5;
+      border-color: #AFAFAF;
+      box-shadow: 0 3px 0 #AFAFAF;
+    }
+    .word-tile.in-answer:hover { background: #EFEFEF; }
+    .word-tile.correct-tile {
+      background: #D7FFB8;
+      border-color: #58CC02;
+      box-shadow: 0 3px 0 #58CC02;
+      color: #2B6B00;
+    }
+    .word-tile.wrong-tile {
+      background: #FFE0E0;
+      border-color: #FF4B4B;
+      box-shadow: 0 3px 0 #FF4B4B;
+      color: #8C1C1C;
+    }
+    .word-tile.disabled { pointer-events: none; opacity: 0.4; }
+    .word-bank {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin-top: 6px;
+    }
+
+    /* ── Check Button ── */
+    .check-area {
+      flex-shrink: 0;
+      padding: 0 16px 28px;
+    }
+    .check-btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: 16px;
+      border: none;
+      font-family: 'Nunito', sans-serif;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform 80ms ease, box-shadow 80ms ease, background 150ms ease;
+    }
+    .check-btn.disabled {
+      background: #E5E5E5;
+      color: #AFAFAF;
+      box-shadow: 0 4px 0 #C8C8C8;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .check-btn.active {
+      background: #58CC02;
+      color: white;
+      box-shadow: 0 4px 0 #46A302;
+    }
+    .check-btn.active:hover { background: #5AD902; }
+    .check-btn.active:active { transform: translateY(4px); box-shadow: none; }
+    .check-btn.continue-correct {
+      background: #58CC02; color: white;
+      box-shadow: 0 4px 0 #46A302;
+    }
+    .check-btn.continue-wrong {
+      background: #FF4B4B; color: white;
+      box-shadow: 0 4px 0 #CC2222;
+    }
+
+    /* ── Feedback Banner ── */
+    .feedback-banner {
+      flex-shrink: 0;
+      padding: 14px 20px 10px;
+      margin: 0 0 4px;
+      border-radius: 16px 16px 0 0;
+      display: none;
+    }
+    .feedback-banner.show { display: block; }
+    .feedback-banner.correct-banner {
+      background: #D7FFB8;
+      border-top: 2px solid #58CC02;
+    }
+    .feedback-banner.wrong-banner {
+      background: #FFE0E0;
+      border-top: 2px solid #FF4B4B;
+    }
+    .fb-row { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+    .fb-icon { font-size: 22px; flex-shrink: 0; }
+    .fb-title-correct { font-size: 18px; font-weight: 900; color: #58CC02; }
+    .fb-title-wrong    { font-size: 18px; font-weight: 900; color: #FF4B4B; }
+    .fb-answer { font-size: 14px; font-weight: 700; color: #4B4B4B; padding-left: 32px; }
+    .fb-answer strong { color: #4B4B4B; }
+
+    /* ── Translate-type exercise (label prompt) ── */
+    .translate-prompt {
+      background: #F7F7F7;
+      border: 2px solid #E5E5E5;
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin-bottom: 18px;
+    }
+    .tp-french { font-size: 26px; font-weight: 900; color: #3C3C3C; margin-bottom: 4px; line-height: 1.2; }
+    .tp-phonetic { font-size: 13px; font-weight: 700; color: #AFAFAF; font-style: italic; }
+
+    /* ── Tap-the-image exercise ── */
+    .tap-img-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .tap-img-card {
+      border: 2px solid #E5E5E5;
+      border-radius: 14px;
+      padding: 16px 8px 12px;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      cursor: pointer;
+      background: white;
+      box-shadow: 0 3px 0 #E5E5E5;
+      transition: border-color 80ms ease, background 80ms ease, transform 80ms ease, box-shadow 80ms ease;
+      font-family: 'Nunito', sans-serif;
+    }
+    .tap-img-card:hover:not(.disabled) { border-color: #84D8FF; background: #F3FEFF; }
+    .tap-img-card:active:not(.disabled) { transform: translateY(3px); box-shadow: none; }
+    .tap-img-card.selected { border-color: #1CB0F6; background: #DDF4FF; box-shadow: 0 3px 0 #1CB0F6; }
+    .tap-img-card.correct  { border-color: #58CC02; background: #D7FFB8; box-shadow: 0 3px 0 #58CC02; }
+    .tap-img-card.wrong    { border-color: #FF4B4B; background: #FFE0E0; box-shadow: 0 3px 0 #FF4B4B; }
+    .tap-img-card.disabled { cursor: default; pointer-events: none; }
+    .tap-img-emoji { font-size: 44px; line-height: 1; }
+    .tap-img-label { font-size: 14px; font-weight: 800; color: #4B4B4B; }
+    .tap-img-card.correct .tap-img-label { color: #2B6B00; }
+    .tap-img-card.wrong   .tap-img-label { color: #8C1C1C; }
+
+    /* ════════════════════════════════════
+       PERFECT SCORE OVERLAY
+    ════════════════════════════════════ */
+    .perfect-overlay {
+      position: absolute; inset: 0;
+      background: white;
+      z-index: 80;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-start;
+      padding: 24px 24px 32px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 400ms ease;
+      overflow-y: auto;
+    }
+    .perfect-overlay.show { opacity: 1; pointer-events: auto; }
+
+    .perf-confetti-row {
+      font-size: 28px; letter-spacing: 4px; margin-bottom: 4px;
+    }
+    .perf-owl {
+      width: 90px; height: 90px; margin-bottom: 8px;
+      animation: owl-bounce 1.2s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    }
+    @keyframes owl-bounce {
+      from { transform: scale(0) rotate(-15deg); opacity: 0; }
+      to   { transform: scale(1) rotate(0deg);  opacity: 1; }
+    }
+    .perf-badge {
+      background: linear-gradient(135deg, #FFC800, #FF9600);
+      color: white;
+      font-size: 11px; font-weight: 900; letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 16px; border-radius: 9999px;
+      margin-bottom: 16px;
+      box-shadow: 0 3px 0 #CC7A00;
+    }
+    .perf-title {
+      font-size: 32px; font-weight: 900; color: #3C3C3C;
+      text-align: center; line-height: 1.15; margin-bottom: 6px;
+      letter-spacing: -0.5px;
+    }
+    .perf-subtitle {
+      font-size: 15px; font-weight: 700; color: #777;
+      text-align: center; margin-bottom: 22px; line-height: 1.5;
+    }
+
+    /* XP + Stats row */
+    .perf-stats {
+      display: flex; gap: 10px; margin-bottom: 24px; width: 100%;
+    }
+    .perf-stat {
+      flex: 1;
+      background: #F7F7F7;
+      border: 2px solid #E5E5E5;
+      border-radius: 14px;
+      padding: 12px 8px;
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      animation: stat-pop 400ms cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .perf-stat:nth-child(1) { animation-delay: 200ms; }
+    .perf-stat:nth-child(2) { animation-delay: 350ms; }
+    .perf-stat:nth-child(3) { animation-delay: 500ms; }
+    @keyframes stat-pop {
+      from { transform: scale(0.6); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    .ps-icon { font-size: 26px; }
+    .ps-value { font-size: 22px; font-weight: 900; color: #4B4B4B; }
+    .ps-label { font-size: 11px; font-weight: 800; color: #AFAFAF; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* ── Creator Invite Card ── */
+    .creator-card {
+      width: 100%;
+      background: linear-gradient(135deg, #F0FFF4, #E8F5FF);
+      border: 2px solid #89E219;
+      border-radius: 20px;
+      padding: 20px 18px 18px;
+      margin-bottom: 18px;
+      position: relative;
+      overflow: hidden;
+      animation: card-slide-up 600ms cubic-bezier(0.34,1.3,0.64,1) 700ms both;
+    }
+    @keyframes card-slide-up {
+      from { transform: translateY(40px); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
+    }
+    .creator-card::before {
+      content: '';
+      position: absolute; top: -30px; right: -30px;
+      width: 100px; height: 100px;
+      background: radial-gradient(circle, rgba(88,204,2,0.15) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .cc-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(88,204,2,0.15);
+      color: #2B7A00;
+      font-size: 11px; font-weight: 900; letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 4px 12px; border-radius: 9999px;
+      margin-bottom: 12px;
+      border: 1.5px solid rgba(88,204,2,0.3);
+    }
+    .cc-title {
+      font-size: 19px; font-weight: 900; color: #3C3C3C;
+      line-height: 1.25; margin-bottom: 8px;
+    }
+    .cc-body {
+      font-size: 14px; font-weight: 700; color: #555;
+      line-height: 1.55; margin-bottom: 0;
+    }
+    .cc-body strong { color: #2B7A00; }
+
+    /* ── Buttons ── */
+    .perf-cta-btn {
+      width: 100%;
+      padding: 17px;
+      border-radius: 16px;
+      border: none;
+      font-family: 'Nunito', sans-serif;
+      font-size: 17px; font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      background: #58CC02; color: white;
+      box-shadow: 0 4px 0 #46A302;
+      transition: transform 80ms ease, box-shadow 80ms ease;
+      text-decoration: none;
+      display: block;
+      text-align: center;
+      margin-bottom: 12px;
+      animation: card-slide-up 600ms cubic-bezier(0.34,1.3,0.64,1) 900ms both;
+    }
+    .perf-cta-btn:hover { background: #5AD902; }
+    .perf-cta-btn:active { transform: translateY(4px); box-shadow: none; }
+    .perf-skip-link {
+      display: block; text-align: center;
+      font-size: 14px; font-weight: 800; color: #AFAFAF;
+      cursor: pointer; text-decoration: none;
+      padding: 6px;
+      animation: card-slide-up 600ms ease 1050ms both;
+    }
+    .perf-skip-link:hover { color: #777; }
+
+    /* ── Confetti ── */
+    .confetti-container {
+      position: absolute; inset: 0;
+      pointer-events: none; z-index: 90; overflow: hidden;
+    }
+    .c-dot {
+      position: absolute;
+      border-radius: 3px;
+      animation: c-fall linear forwards;
+    }
+    @keyframes c-fall {
+      0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(900px) rotate(720deg); opacity: 0; }
+    }
+
+    /* ── Word build: sentence answer display ── */
+    .answer-slots .word-tile {
+      font-size: 15px;
+      padding: 7px 12px;
+    }
+
+    /* ── Transition between exercises ── */
+    .exercise-wrap {
+      transition: opacity 200ms ease;
+    }
+    .exercise-wrap.fade-out { opacity: 0; }
+    .exercise-wrap.fade-in  { opacity: 1; }
+  </style>
+</head>
+<body class="demo-page">
+  <div class="demo-nav">
+    <a href="../index.html">← Index</a>
+    <span class="demo-nav-label">DEMO 2 · French Lesson → Creator Invite</span>
+    <a href="02-studio-landing.html">Studio →</a>
+  </div>
+
+  <div class="phone lesson-phone" id="phone">
+
+    <!-- STATUS BAR -->
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-icons">
+        <!-- Signal bars -->
+        <svg width="17" height="12" viewBox="0 0 17 12">
+          <rect x="0"   y="6"  width="3" height="6"  rx="1" fill="#4B4B4B"/>
+          <rect x="4.5" y="3.5" width="3" height="8.5" rx="1" fill="#4B4B4B"/>
+          <rect x="9"   y="1"  width="3" height="11" rx="1" fill="#4B4B4B"/>
+        </svg>
+        <!-- Battery -->
+        <svg width="25" height="12" viewBox="0 0 25 12">
+          <rect x="0" y="1" width="22" height="10" rx="2.5" stroke="#4B4B4B" stroke-width="1.5" fill="none"/>
+          <rect x="22.5" y="4" width="2" height="4" rx="1" fill="#4B4B4B" opacity="0.5"/>
+          <rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="#4B4B4B"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- LESSON TOP BAR -->
+    <div class="lesson-topbar">
+      <button class="lb-close" onclick="window.location='../index.html'" title="Exit lesson">✕</button>
+      <div class="lb-progress-track">
+        <div class="lb-progress-fill" id="progressFill" style="width: 0%"></div>
+      </div>
+      <div class="lb-hearts">
+        <span class="lb-heart" id="h1">❤️</span>
+        <span class="lb-heart" id="h2">❤️</span>
+        <span class="lb-heart" id="h3">❤️</span>
+      </div>
+    </div>
+
+    <!-- SKILL BANNER -->
+    <div class="skill-banner">
+      <div class="skill-icon">🇫🇷</div>
+      <div class="skill-text-wrap">
+        <div class="skill-unit">Unit 1 · Lesson 3</div>
+        <div class="skill-name">French Greetings &amp; Basics</div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         EXERCISE 1 — Multiple Choice
+         "What does 'Bonjour' mean?"
+    ════════════════════════════ -->
+    <div class="exercise-wrap" id="ex1">
+      <div class="exercise-instruction">What does this mean?</div>
+      <div class="exercise-sub">Tap the correct translation</div>
+
+      <div class="audio-prompt">
+        <button class="audio-btn" onclick="playWord('bonjour')" title="Hear the word">
+          <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+        </button>
+        <div>
+          <div class="audio-word">Bonjour</div>
+          <div style="font-size:13px;font-weight:700;color:#AFAFAF;font-style:italic;margin-top:2px;">bon-ZHOOR</div>
+        </div>
+      </div>
+
+      <div class="mc-grid" id="ex1-grid">
+        <div class="mc-option" data-idx="0" onclick="selectMC(1,this)">
+          <span class="mc-emoji">👋</span>
+          <span class="mc-label">Hello</span>
+        </div>
+        <div class="mc-option" data-idx="1" onclick="selectMC(1,this)">
+          <span class="mc-emoji">🙏</span>
+          <span class="mc-label">Thank you</span>
+        </div>
+        <div class="mc-option" data-idx="2" onclick="selectMC(1,this)">
+          <span class="mc-emoji">👋🏼</span>
+          <span class="mc-label">Goodbye</span>
+        </div>
+        <div class="mc-option" data-idx="3" onclick="selectMC(1,this)">
+          <span class="mc-emoji">😴</span>
+          <span class="mc-label">Good night</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         EXERCISE 2 — Tap the image
+         "Which image shows 'le chat'?"
+    ════════════════════════════ -->
+    <div class="exercise-wrap" id="ex2" style="display:none;">
+      <div class="exercise-instruction">Tap the image that matches</div>
+      <div class="exercise-sub">Which picture shows "le chat"?</div>
+
+      <div class="translate-prompt">
+        <div class="tp-french">le chat</div>
+        <div class="tp-phonetic">luh sha &nbsp;·&nbsp; the cat</div>
+      </div>
+
+      <div class="tap-img-grid" id="ex2-grid">
+        <div class="tap-img-card" data-idx="0" onclick="selectImg(2,this)">
+          <span class="tap-img-emoji">🐕</span>
+          <span class="tap-img-label">le chien</span>
+        </div>
+        <div class="tap-img-card" data-idx="1" onclick="selectImg(2,this)">
+          <span class="tap-img-emoji">🐱</span>
+          <span class="tap-img-label">le chat</span>
+        </div>
+        <div class="tap-img-card" data-idx="2" onclick="selectImg(2,this)">
+          <span class="tap-img-emoji">🐦</span>
+          <span class="tap-img-label">l'oiseau</span>
+        </div>
+        <div class="tap-img-card" data-idx="3" onclick="selectImg(2,this)">
+          <span class="tap-img-emoji">🐟</span>
+          <span class="tap-img-label">le poisson</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         EXERCISE 3 — Build a sentence
+         "Arrange: I eat an apple"
+    ════════════════════════════ -->
+    <div class="exercise-wrap" id="ex3" style="display:none;">
+      <div class="exercise-instruction">Arrange the words</div>
+      <div class="exercise-sub">Translate this sentence into French</div>
+
+      <div class="translate-prompt">
+        <div class="tp-french" style="font-size:20px;">I eat an apple.</div>
+      </div>
+
+      <!-- Answer build area -->
+      <div class="answer-slots" id="ex3-slots">
+        <span class="answer-slot-placeholder" id="ex3-placeholder">Tap words to build the sentence…</span>
+      </div>
+      <!-- Word bank -->
+      <div class="word-bank" id="ex3-bank">
+        <div class="word-tile" data-word="bois"   onclick="tapWord(3,this)">bois</div>
+        <div class="word-tile" data-word="une"    onclick="tapWord(3,this)">une</div>
+        <div class="word-tile" data-word="Je"     onclick="tapWord(3,this)">Je</div>
+        <div class="word-tile" data-word="pomme"  onclick="tapWord(3,this)">pomme</div>
+        <div class="word-tile" data-word="mange"  onclick="tapWord(3,this)">mange</div>
+        <div class="word-tile" data-word="eau"    onclick="tapWord(3,this)">eau</div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         EXERCISE 4 — Multiple Choice
+         "What does 'Je bois de l'eau' mean?"
+    ════════════════════════════ -->
+    <div class="exercise-wrap" id="ex4" style="display:none;">
+      <div class="exercise-instruction">What does this mean?</div>
+      <div class="exercise-sub">Tap the correct translation</div>
+
+      <div class="translate-prompt">
+        <div class="tp-french">Je bois de l'eau.</div>
+        <div class="tp-phonetic">zhuh bwah duh loh</div>
+      </div>
+
+      <div class="mc-grid" id="ex4-grid">
+        <div class="mc-option" data-idx="0" onclick="selectMC(4,this)">
+          <span class="mc-emoji">🍞</span>
+          <span class="mc-label">I eat bread</span>
+        </div>
+        <div class="mc-option" data-idx="1" onclick="selectMC(4,this)">
+          <span class="mc-emoji">💧</span>
+          <span class="mc-label">I drink water</span>
+        </div>
+        <div class="mc-option" data-idx="2" onclick="selectMC(4,this)">
+          <span class="mc-emoji">📖</span>
+          <span class="mc-label">She reads a book</span>
+        </div>
+        <div class="mc-option" data-idx="3" onclick="selectMC(4,this)">
+          <span class="mc-emoji">🥛</span>
+          <span class="mc-label">He drinks milk</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         EXERCISE 5 — Multiple Choice
+         "How do you say 'Good night'?"
+    ════════════════════════════ -->
+    <div class="exercise-wrap" id="ex5" style="display:none;">
+      <div class="exercise-instruction">How do you say this in French?</div>
+      <div class="exercise-sub">Tap the correct answer</div>
+
+      <div class="audio-prompt">
+        <button class="audio-btn" onclick="playWord('goodnight')" title="Hear the phrase" style="background:linear-gradient(135deg,#9B59B6,#7C3AED);box-shadow:0 4px 0 #5B21B6;">
+          <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+        </button>
+        <div>
+          <div class="audio-word">Good night</div>
+          <div style="font-size:13px;font-weight:700;color:#AFAFAF;font-style:italic;margin-top:2px;">a nightly farewell</div>
+        </div>
+      </div>
+
+      <div class="mc-grid" id="ex5-grid">
+        <div class="mc-option" data-idx="0" onclick="selectMC(5,this)">
+          <span class="mc-emoji">☀️</span>
+          <span class="mc-label">Bonjour</span>
+        </div>
+        <div class="mc-option" data-idx="1" onclick="selectMC(5,this)">
+          <span class="mc-emoji">🙏</span>
+          <span class="mc-label">Merci</span>
+        </div>
+        <div class="mc-option" data-idx="2" onclick="selectMC(5,this)">
+          <span class="mc-emoji">🌙</span>
+          <span class="mc-label">Bonne nuit</span>
+        </div>
+        <div class="mc-option" data-idx="3" onclick="selectMC(5,this)">
+          <span class="mc-emoji">👋</span>
+          <span class="mc-label">Au revoir</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         FEEDBACK + CHECK BUTTON
+    ════════════════════════════ -->
+    <div class="feedback-banner" id="feedbackBanner">
+      <div class="fb-row">
+        <span class="fb-icon" id="fbIcon">✅</span>
+        <span id="fbTitle" class="fb-title-correct">Correct!</span>
+      </div>
+      <div class="fb-answer" id="fbAnswer" style="display:none;"></div>
+    </div>
+
+    <div class="check-area">
+      <button class="check-btn disabled" id="checkBtn" onclick="handleCheck()">Check</button>
+    </div>
+
+    <!-- ════════════════════════════
+         PERFECT SCORE OVERLAY
+    ════════════════════════════ -->
+    <div class="perfect-overlay" id="perfectOverlay">
+
+      <!-- Confetti container -->
+      <div class="confetti-container" id="confettiContainer"></div>
+
+      <div class="perf-confetti-row">🎉✨🎊✨🎉</div>
+
+      <img
+        class="perf-owl"
+        src="https://upload.wikimedia.org/wikipedia/commons/d/d9/Duolingo-bird.svg"
+        alt="Duo the owl celebrating"
+        id="perfOwl"
+      >
+
+      <div class="perf-badge">🏆 Lesson Complete</div>
+
+      <div class="perf-title">You scored perfect!</div>
+      <div class="perf-subtitle">
+        You aced all 5 questions in<br>
+        <strong>French Greetings &amp; Basics</strong>
+      </div>
+
+      <!-- Stats -->
+      <div class="perf-stats">
+        <div class="perf-stat">
+          <span class="ps-icon">⚡</span>
+          <span class="ps-value">+20</span>
+          <span class="ps-label">XP</span>
+        </div>
+        <div class="perf-stat">
+          <span class="ps-icon">🎯</span>
+          <span class="ps-value">100%</span>
+          <span class="ps-label">Accuracy</span>
+        </div>
+        <div class="perf-stat">
+          <span class="ps-icon">🔥</span>
+          <span class="ps-value">7</span>
+          <span class="ps-label">Day Streak</span>
+        </div>
+      </div>
+
+      <!-- Creator Invite Card — the killer UX moment -->
+      <div class="creator-card">
+        <div class="cc-tag">✨ Special Invite</div>
+        <div class="cc-title">
+          You scored perfect! Try making your own story.
+        </div>
+        <div class="cc-body">
+          You're a French Greetings master now.
+          <strong>Teach others</strong> by writing your own scene — it only takes a few minutes.
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <a href="./02-studio-landing.html" class="perf-cta-btn">
+        ✨ Try the Studio — Create a Story
+      </a>
+      <a class="perf-skip-link" onclick="window.location='../index.html'">
+        Maybe later
+      </a>
+
+    </div>
+    <!-- end perfect-overlay -->
+
+  </div><!-- end .phone -->
+
+  <script>
+    /* ══════════════════════════════════════════════
+       STATE
+    ══════════════════════════════════════════════ */
+    const TOTAL_EX = 5;
+    let currentEx = 1;
+    let checked    = false;   // has user clicked "Check" for current exercise?
+    let selected   = null;    // currently selected answer (index or array)
+
+    // Correct answers per exercise
+    // ex1: index 0 = "Hello"
+    // ex2: index 1 = "le chat"
+    // ex3: word array ['Je','mange','une','pomme']
+    // ex4: index 1 = "I drink water"
+    // ex5: index 2 = "Bonne nuit"
+    const CORRECT = {
+      1: 0,
+      2: 1,
+      4: 1,
+      5: 2,
+      3: ['Je','mange','une','pomme']
+    };
+
+    // Correct answer labels for feedback banner
+    const CORRECT_LABEL = {
+      1: 'Hello',
+      2: 'le chat 🐱',
+      3: 'Je mange une pomme',
+      4: 'I drink water 💧',
+      5: 'Bonne nuit 🌙'
+    };
+
+    // Progress: each exercise worth 20%
+    function setProgress(ex) {
+      const pct = ((ex - 1) / TOTAL_EX) * 100;
+      document.getElementById('progressFill').style.width = pct + '%';
+    }
+
+    /* ══════════════════════════════════════════════
+       MULTIPLE CHOICE
+    ══════════════════════════════════════════════ */
+    function selectMC(exNum, el) {
+      if (checked) return;
+      // Deselect all
+      const grid = document.getElementById('ex' + exNum + '-grid');
+      grid.querySelectorAll('.mc-option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      selected = parseInt(el.dataset.idx);
+      activateCheck();
+    }
+
+    /* ══════════════════════════════════════════════
+       TAP IMAGE
+    ══════════════════════════════════════════════ */
+    function selectImg(exNum, el) {
+      if (checked) return;
+      const grid = document.getElementById('ex' + exNum + '-grid');
+      grid.querySelectorAll('.tap-img-card').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      selected = parseInt(el.dataset.idx);
+      activateCheck();
+    }
+
+    /* ══════════════════════════════════════════════
+       WORD BUILD (Exercise 3)
+    ══════════════════════════════════════════════ */
+    let builtSentence = [];  // words in answer area
+
+    function tapWord(exNum, tile) {
+      if (checked) return;
+      const word = tile.dataset.word;
+
+      if (tile.classList.contains('in-answer')) {
+        // Remove from answer
+        builtSentence = builtSentence.filter(w => w !== word);
+        tile.classList.remove('in-answer');
+      } else {
+        // Add to answer
+        builtSentence.push(word);
+        tile.classList.add('in-answer');
+      }
+
+      // Re-render answer slots
+      renderSlots();
+      selected = [...builtSentence];
+      if (builtSentence.length > 0) {
+        activateCheck();
+      } else {
+        deactivateCheck();
+      }
+    }
+
+    function renderSlots() {
+      const slots = document.getElementById('ex3-slots');
+      const placeholder = document.getElementById('ex3-placeholder');
+
+      if (builtSentence.length === 0) {
+        slots.innerHTML = '<span class="answer-slot-placeholder" id="ex3-placeholder">Tap words to build the sentence…</span>';
+        return;
+      }
+
+      slots.innerHTML = '';
+      builtSentence.forEach(word => {
+        const tile = document.createElement('div');
+        tile.className = 'word-tile in-answer';
+        tile.dataset.word = word;
+        tile.textContent = word;
+        tile.onclick = () => {
+          if (checked) return;
+          // Find the tile in bank and untoggle
+          const bankTile = document.querySelector('#ex3-bank .word-tile[data-word="' + word + '"]');
+          if (bankTile) tapWord(3, bankTile);
+        };
+        slots.appendChild(tile);
+      });
+    }
+
+    /* ══════════════════════════════════════════════
+       CHECK BUTTON STATE
+    ══════════════════════════════════════════════ */
+    function activateCheck() {
+      const btn = document.getElementById('checkBtn');
+      btn.className = 'check-btn active';
+      btn.textContent = 'Check';
+    }
+
+    function deactivateCheck() {
+      const btn = document.getElementById('checkBtn');
+      btn.className = 'check-btn disabled';
+      btn.textContent = 'Check';
+    }
+
+    /* ══════════════════════════════════════════════
+       HANDLE CHECK / CONTINUE
+    ══════════════════════════════════════════════ */
+    function handleCheck() {
+      const btn = document.getElementById('checkBtn');
+
+      if (!checked) {
+        // ── First click: evaluate ──
+        checked = true;
+        let isCorrect = false;
+
+        if (currentEx === 3) {
+          // Array comparison
+          const correct = CORRECT[3];
+          isCorrect = (
+            Array.isArray(selected) &&
+            selected.length === correct.length &&
+            selected.every((w, i) => w === correct[i])
+          );
+        } else {
+          isCorrect = (selected === CORRECT[currentEx]);
+        }
+
+        showFeedback(isCorrect);
+        markAnswers(isCorrect);
+
+        if (isCorrect) {
+          btn.className = 'check-btn continue-correct';
+        } else {
+          btn.className = 'check-btn continue-wrong';
+        }
+        btn.textContent = 'Continue';
+
+      } else {
+        // ── Second click: advance ──
+        hideFeedback();
+        advanceExercise();
+      }
+    }
+
+    /* ══════════════════════════════════════════════
+       SHOW / HIDE FEEDBACK BANNER
+    ══════════════════════════════════════════════ */
+    function showFeedback(isCorrect) {
+      const banner = document.getElementById('feedbackBanner');
+      const icon   = document.getElementById('fbIcon');
+      const title  = document.getElementById('fbTitle');
+      const answer = document.getElementById('fbAnswer');
+
+      banner.className = 'feedback-banner show ' + (isCorrect ? 'correct-banner' : 'wrong-banner');
+      icon.textContent  = isCorrect ? '✅' : '❌';
+      title.className   = isCorrect ? 'fb-title-correct' : 'fb-title-wrong';
+      title.textContent = isCorrect ? 'Correct! Great job 🎉' : 'Oops, not quite!';
+
+      if (!isCorrect) {
+        answer.style.display = 'block';
+        answer.innerHTML = 'Correct answer: <strong>' + CORRECT_LABEL[currentEx] + '</strong>';
+      } else {
+        answer.style.display = 'none';
+      }
+    }
+
+    function hideFeedback() {
+      const banner = document.getElementById('feedbackBanner');
+      banner.className = 'feedback-banner';
+    }
+
+    /* ══════════════════════════════════════════════
+       MARK ANSWERS VISUALLY
+    ══════════════════════════════════════════════ */
+    function markAnswers(isCorrect) {
+      if (currentEx === 1 || currentEx === 4 || currentEx === 5) {
+        const grid = document.getElementById('ex' + currentEx + '-grid');
+        const opts = grid.querySelectorAll('.mc-option');
+        opts.forEach(o => {
+          o.classList.add('disabled');
+          const idx = parseInt(o.dataset.idx);
+          if (idx === CORRECT[currentEx]) {
+            o.classList.remove('selected');
+            o.classList.add('correct');
+          } else if (idx === selected && !isCorrect) {
+            o.classList.add('wrong');
+          }
+        });
+      } else if (currentEx === 2) {
+        const grid = document.getElementById('ex' + currentEx + '-grid');
+        const cards = grid.querySelectorAll('.tap-img-card');
+        cards.forEach(c => {
+          c.classList.add('disabled');
+          const idx = parseInt(c.dataset.idx);
+          if (idx === CORRECT[currentEx]) {
+            c.classList.remove('selected');
+            c.classList.add('correct');
+          } else if (idx === selected && !isCorrect) {
+            c.classList.add('wrong');
+          }
+        });
+      } else if (currentEx === 3) {
+        // Mark all tiles in answer area
+        const slots = document.getElementById('ex3-slots');
+        slots.querySelectorAll('.word-tile').forEach(t => {
+          if (isCorrect) {
+            t.classList.add('correct-tile');
+          } else {
+            t.classList.add('wrong-tile');
+          }
+        });
+        // Disable bank
+        document.getElementById('ex3-bank').querySelectorAll('.word-tile').forEach(t => {
+          t.classList.add('disabled');
+        });
+      }
+    }
+
+    /* ══════════════════════════════════════════════
+       ADVANCE TO NEXT EXERCISE / COMPLETE
+    ══════════════════════════════════════════════ */
+    function advanceExercise() {
+      // Hide current exercise
+      document.getElementById('ex' + currentEx).style.display = 'none';
+      checked  = false;
+      selected = null;
+      builtSentence = [];
+      deactivateCheck();
+
+      currentEx++;
+
+      if (currentEx > TOTAL_EX) {
+        // All done!
+        showPerfectOverlay();
+        return;
+      }
+
+      // Update progress
+      setProgress(currentEx);
+
+      // Show next exercise
+      const nextEl = document.getElementById('ex' + currentEx);
+      nextEl.style.display = 'flex';
+      nextEl.style.flexDirection = 'column';
+      nextEl.style.opacity = '0';
+      setTimeout(() => { nextEl.style.transition = 'opacity 200ms ease'; nextEl.style.opacity = '1'; }, 20);
+    }
+
+    /* ══════════════════════════════════════════════
+       PERFECT SCORE OVERLAY
+    ══════════════════════════════════════════════ */
+    function showPerfectOverlay() {
+      // Hide lesson chrome
+      document.querySelector('.lesson-topbar').style.display = 'none';
+      document.querySelector('.skill-banner').style.display = 'none';
+      document.querySelector('.check-area').style.display = 'none';
+
+      const overlay = document.getElementById('perfectOverlay');
+      overlay.classList.add('show');
+
+      // Update progress to 100%
+      document.getElementById('progressFill').style.width = '100%';
+
+      // Spawn confetti
+      spawnConfetti();
+    }
+
+    /* ══════════════════════════════════════════════
+       CONFETTI
+    ══════════════════════════════════════════════ */
+    function spawnConfetti() {
+      const container = document.getElementById('confettiContainer');
+      const colors = ['#58CC02','#1CB0F6','#FF4B4B','#FFC800','#CE82FF','#FF9600','#89E219'];
+      const count  = 60;
+
+      for (let i = 0; i < count; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'c-dot';
+        const size = Math.random() * 10 + 6;
+        dot.style.cssText = `
+          left:     ${Math.random() * 100}%;
+          top:      0;
+          width:    ${size}px;
+          height:   ${size * (Math.random() > 0.5 ? 1 : 2.5)}px;
+          background: ${colors[Math.floor(Math.random() * colors.length)]};
+          animation-duration: ${Math.random() * 1.5 + 0.8}s;
+          animation-delay:    ${Math.random() * 0.6}s;
+          border-radius:      ${Math.random() > 0.5 ? '50%' : '3px'};
+        `;
+        container.appendChild(dot);
+      }
+
+      // Clean up after animation
+      setTimeout(() => container.innerHTML = '', 3000);
+    }
+
+    /* ══════════════════════════════════════════════
+       AUDIO (visual feedback only — no actual audio)
+    ══════════════════════════════════════════════ */
+    function playWord(word) {
+      // Visual pulse to simulate audio play
+      const btn = event.currentTarget;
+      btn.style.transform = 'scale(0.9)';
+      setTimeout(() => btn.style.transform = '', 150);
+    }
+
+    /* ══════════════════════════════════════════════
+       INIT
+    ══════════════════════════════════════════════ */
+    setProgress(1);
+  </script>
+  <a class="home-fab" href="../index.html">🏠 Main Page</a>
+</body>
+</html>

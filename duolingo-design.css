@@ -1,0 +1,604 @@
+/*
+ * Duolingo Design Guidelines — CSS
+ * Source: https://design.duolingo.com/
+ *
+ * Sections:
+ *  1. Fonts
+ *  2. CSS Custom Properties (Design Tokens)
+ *     2a. Core Brand Colors
+ *     2b. Secondary Colors
+ *     2c. Neutrals
+ *     2d. Duo's Mascot Palette
+ *     2e. Typography Tokens
+ *     2f. Spacing & Layout
+ *  3. Base / Reset
+ *  4. Typography Classes
+ *  5. Color Utility Classes
+ *  6. Background Utility Classes
+ *  7. Button Components
+ *  8. Card Component
+ *  9. Badge / Streak Component
+ * 10. Progress Bar Component
+ */
+
+/* ─────────────────────────────────────────────
+   1. FONTS
+   Feather Bold is proprietary to Duolingo.
+   DIN Next Rounded requires a license.
+   Nunito is the official free substitute font.
+───────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,400&display=swap');
+
+/* If you have licensed copies of DIN Next Rounded or Feather Bold,
+   register them here with @font-face. */
+
+/* ─────────────────────────────────────────────
+   2. CSS CUSTOM PROPERTIES (DESIGN TOKENS)
+───────────────────────────────────────────── */
+
+:root {
+
+  /* ── 2a. Core Brand Colors ── */
+  --color-feather-green:  #58CC02;   /* Primary brand green */
+  --color-mask-green:     #89E219;   /* Secondary green — background for Duo */
+  --color-eel:            #4B4B4B;   /* Primary text color */
+  --color-snow:           #FFFFFF;   /* Primary background */
+
+  /* ── 2b. Secondary Colors ── */
+  --color-macaw:          #1CB0F6;   /* Blue */
+  --color-cardinal:       #FF4B4B;   /* Red / error */
+  --color-bee:            #FFC800;   /* Yellow */
+  --color-fox:            #FF9600;   /* Orange */
+  --color-beetle:         #CE82FF;   /* Purple */
+  --color-humpback:       #2B70C9;   /* Dark blue */
+
+  /* ── 2c. Neutrals ── */
+  --color-wolf:           #777777;
+  --color-hare:           #AFAFAF;
+  --color-swan:           #E5E5E5;
+  --color-polar:          #F7F7F7;
+
+  /* Aliases for readability */
+  --color-text-primary:   var(--color-eel);
+  --color-text-secondary: var(--color-wolf);
+  --color-text-muted:     var(--color-hare);
+  --color-border:         var(--color-swan);
+  --color-bg-page:        var(--color-snow);
+  --color-bg-subtle:      var(--color-polar);
+  --color-primary:        var(--color-feather-green);
+  --color-error:          var(--color-cardinal);
+  --color-warning:        var(--color-bee);
+  --color-info:           var(--color-macaw);
+  --color-success:        var(--color-feather-green);
+
+  /* ── 2d. Duo's Mascot Palette ── */
+  --color-duo-wing-overlay:    #43C000;
+  --color-duo-feather-green:   #58CC02;
+  --color-duo-mask-green:      #89E219;
+  --color-duo-beak-inner:      #B66E28;
+  --color-duo-beak-lower-feet: #F49000;
+  --color-duo-beak-upper:      #FFC200;
+  --color-duo-beak-highlight:  #FFDE00;
+  --color-duo-tongue-pink:     #FFCAFF;
+
+  /* ── 2e. Typography Tokens ── */
+
+  /* Font families */
+  /* Feather Bold is Duolingo's proprietary headline face.
+     DIN Next Rounded is the licensed secondary face.
+     Nunito is the publicly available substitute for both. */
+  --font-headline:   'Feather Bold', 'Nunito', sans-serif;
+  --font-body:       'DIN Next Rounded', 'Nunito', sans-serif;
+  --font-substitute: 'Nunito', sans-serif;
+
+  /* Font weights */
+  --font-weight-light:     300;
+  --font-weight-regular:   400;
+  --font-weight-semibold:  600;
+  --font-weight-bold:      700;
+  --font-weight-extrabold: 800;
+  --font-weight-black:     900;
+
+  /* Scale — mirrors Duolingo's min sizes and step progression */
+  --font-size-xs:   12px;
+  --font-size-sm:   14px;   /* DIN Next Rounded minimum */
+  --font-size-base: 16px;
+  --font-size-md:   18px;
+  --font-size-lg:   20px;
+  --font-size-xl:   24px;
+  --font-size-2xl:  32px;
+  --font-size-3xl:  40px;
+  --font-size-4xl:  56px;
+  --font-size-5xl:  80px;  /* Feather Bold large headline threshold */
+
+  /* Line heights */
+  --line-height-headline: 1.05;   /* 100-110% per Feather Bold spec */
+  --line-height-body:     1.4;    /* 140% per DIN Next Rounded spec */
+  --line-height-tight:    1.1;
+  --line-height-normal:   1.5;
+
+  /* Letter spacing */
+  --letter-spacing-headline: -0.02em;  /* -20 tracking per Feather Bold spec */
+  --letter-spacing-body:      0;       /* 0 tracking per DIN spec */
+
+  /* ── 2f. Spacing & Layout ── */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
+  --radius-full: 9999px;
+
+  /* Duolingo uses a prominent bottom shadow on interactive elements */
+  --shadow-button: 0 4px 0 0;
+  --shadow-card:   0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-raised: 0 4px 16px rgba(0, 0, 0, 0.12);
+
+  --transition-fast:   150ms ease;
+  --transition-normal: 250ms ease;
+}
+
+/* ─────────────────────────────────────────────
+   3. BASE / RESET
+───────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: var(--font-size-base);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);   /* Duolingo UI is predominantly bold */
+  line-height: var(--line-height-body);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-page);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: var(--color-macaw);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* ─────────────────────────────────────────────
+   4. TYPOGRAPHY CLASSES
+   Feather Bold rules:
+     - Always lowercase
+     - letter-spacing: -0.02em (tracking -20)
+     - line-height: 100–110%
+     - Never below 30px
+   DIN Next Rounded rules:
+     - line-height: 140%
+     - Never below 14px
+     - Left-aligned or centered
+───────────────────────────────────────────── */
+
+/* Feather Bold — headline style */
+.heading-hero {
+  font-family: var(--font-headline);
+  font-size: var(--font-size-5xl);
+  font-weight: var(--font-weight-black);
+  line-height: var(--line-height-headline);
+  letter-spacing: var(--letter-spacing-headline);
+  text-transform: lowercase;
+  text-align: left;
+}
+
+.heading-1 {
+  font-family: var(--font-headline);
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-black);
+  line-height: var(--line-height-headline);
+  letter-spacing: var(--letter-spacing-headline);
+  text-transform: lowercase;
+  text-align: left;
+}
+
+.heading-2 {
+  font-family: var(--font-headline);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-black);
+  line-height: var(--line-height-headline);
+  letter-spacing: var(--letter-spacing-headline);
+  text-transform: lowercase;
+  text-align: left;
+}
+
+.heading-3 {
+  font-family: var(--font-headline);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-black);
+  line-height: var(--line-height-headline);
+  letter-spacing: var(--letter-spacing-headline);
+  text-transform: lowercase;
+  text-align: left;
+}
+
+/* Minimum Feather Bold headline — 30px */
+.heading-min {
+  font-family: var(--font-headline);
+  font-size: 30px;
+  font-weight: var(--font-weight-black);
+  line-height: var(--line-height-headline);
+  letter-spacing: var(--letter-spacing-headline);
+  text-transform: lowercase;
+  text-align: left;
+}
+
+/* DIN Next Rounded — subheading */
+.subheading {
+  font-family: var(--font-body);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-body);
+  letter-spacing: var(--letter-spacing-body);
+}
+
+/* DIN Next Rounded — body copy */
+.body-lg {
+  font-family: var(--font-body);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-body);
+  letter-spacing: var(--letter-spacing-body);
+}
+
+.body {
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-body);
+  letter-spacing: var(--letter-spacing-body);
+}
+
+.body-sm {
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);   /* 14px — DIN Next Rounded minimum */
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-body);
+  letter-spacing: var(--letter-spacing-body);
+}
+
+.label {
+  font-family: var(--font-body);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-extrabold);
+  line-height: var(--line-height-body);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ─────────────────────────────────────────────
+   5. COLOR UTILITY CLASSES (text)
+───────────────────────────────────────────── */
+
+.text-feather-green  { color: var(--color-feather-green); }
+.text-mask-green     { color: var(--color-mask-green); }
+.text-eel            { color: var(--color-eel); }
+.text-snow           { color: var(--color-snow); }
+.text-macaw          { color: var(--color-macaw); }
+.text-cardinal       { color: var(--color-cardinal); }
+.text-bee            { color: var(--color-bee); }
+.text-fox            { color: var(--color-fox); }
+.text-beetle         { color: var(--color-beetle); }
+.text-humpback       { color: var(--color-humpback); }
+.text-wolf           { color: var(--color-wolf); }
+.text-hare           { color: var(--color-hare); }
+.text-muted          { color: var(--color-text-muted); }
+
+/* ─────────────────────────────────────────────
+   6. BACKGROUND UTILITY CLASSES
+───────────────────────────────────────────── */
+
+.bg-feather-green  { background-color: var(--color-feather-green); }
+.bg-mask-green     { background-color: var(--color-mask-green); }
+.bg-eel            { background-color: var(--color-eel); }
+.bg-snow           { background-color: var(--color-snow); }
+.bg-macaw          { background-color: var(--color-macaw); }
+.bg-cardinal       { background-color: var(--color-cardinal); }
+.bg-bee            { background-color: var(--color-bee); }
+.bg-fox            { background-color: var(--color-fox); }
+.bg-beetle         { background-color: var(--color-beetle); }
+.bg-humpback       { background-color: var(--color-humpback); }
+.bg-wolf           { background-color: var(--color-wolf); }
+.bg-hare           { background-color: var(--color-hare); }
+.bg-swan           { background-color: var(--color-swan); }
+.bg-polar          { background-color: var(--color-polar); }
+
+/* ─────────────────────────────────────────────
+   7. BUTTON COMPONENTS
+   Duolingo buttons have:
+   - Rounded corners (pill shape for primary)
+   - Prominent bottom shadow (3D press effect)
+   - Bold uppercase / sentence-case labels
+───────────────────────────────────────────── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-8);
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-extrabold);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+  user-select: none;
+  white-space: nowrap;
+}
+
+/* Press-down effect — characteristic Duolingo 3-D button */
+.btn:active {
+  transform: translateY(4px);
+  box-shadow: none !important;
+}
+
+/* ── Primary (Feather Green) ── */
+.btn-primary {
+  background-color: var(--color-feather-green);
+  color: var(--color-snow);
+  box-shadow: var(--shadow-button) #46A302;   /* darker green underside */
+}
+
+.btn-primary:hover {
+  background-color: #5AD902;
+}
+
+/* ── Secondary (Macaw blue) ── */
+.btn-secondary {
+  background-color: var(--color-macaw);
+  color: var(--color-snow);
+  box-shadow: var(--shadow-button) #149EE0;
+}
+
+.btn-secondary:hover {
+  background-color: #2DC0FF;
+}
+
+/* ── Danger (Cardinal red) ── */
+.btn-danger {
+  background-color: var(--color-cardinal);
+  color: var(--color-snow);
+  box-shadow: var(--shadow-button) #CC2222;
+}
+
+.btn-danger:hover {
+  background-color: #FF6262;
+}
+
+/* ── Ghost / Outline ── */
+.btn-ghost {
+  background-color: transparent;
+  color: var(--color-feather-green);
+  box-shadow: inset 0 0 0 2px var(--color-feather-green);
+}
+
+.btn-ghost:hover {
+  background-color: rgba(88, 204, 2, 0.08);
+}
+
+/* ── Disabled state ── */
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  background-color: var(--color-swan);
+  color: var(--color-hare);
+  box-shadow: var(--shadow-button) var(--color-hare);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ── Size variants ── */
+.btn-sm {
+  padding: var(--space-2) var(--space-5);
+  font-size: var(--font-size-sm);
+  border-radius: var(--radius-xl);
+}
+
+.btn-lg {
+  padding: var(--space-4) var(--space-12);
+  font-size: var(--font-size-lg);
+}
+
+/* ─────────────────────────────────────────────
+   8. CARD COMPONENT
+───────────────────────────────────────────── */
+
+.card {
+  background-color: var(--color-snow);
+  border: 2px solid var(--color-swan);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-card);
+}
+
+.card-header {
+  margin-bottom: var(--space-4);
+}
+
+.card-title {
+  font-family: var(--font-body);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-eel);
+  line-height: var(--line-height-tight);
+}
+
+.card-body {
+  font-size: var(--font-size-base);
+  color: var(--color-wolf);
+  line-height: var(--line-height-body);
+}
+
+.card-footer {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 2px solid var(--color-swan);
+}
+
+/* Lesson / option card — tappable */
+.card-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  background-color: var(--color-snow);
+  border: 2px solid var(--color-swan);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    background-color var(--transition-fast);
+  box-shadow: 0 3px 0 var(--color-swan);
+}
+
+.card-option:hover {
+  border-color: var(--color-macaw);
+}
+
+.card-option.selected {
+  border-color: var(--color-macaw);
+  background-color: rgba(28, 176, 246, 0.08);
+  box-shadow: 0 3px 0 var(--color-macaw);
+}
+
+.card-option.correct {
+  border-color: var(--color-feather-green);
+  background-color: rgba(88, 204, 2, 0.08);
+  box-shadow: 0 3px 0 var(--color-feather-green);
+}
+
+.card-option.incorrect {
+  border-color: var(--color-cardinal);
+  background-color: rgba(255, 75, 75, 0.08);
+  box-shadow: 0 3px 0 var(--color-cardinal);
+}
+
+/* ─────────────────────────────────────────────
+   9. BADGE / STREAK COMPONENT
+───────────────────────────────────────────── */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.badge-green {
+  background-color: var(--color-feather-green);
+  color: var(--color-snow);
+}
+
+.badge-blue {
+  background-color: var(--color-macaw);
+  color: var(--color-snow);
+}
+
+.badge-yellow {
+  background-color: var(--color-bee);
+  color: var(--color-eel);
+}
+
+.badge-red {
+  background-color: var(--color-cardinal);
+  color: var(--color-snow);
+}
+
+.badge-purple {
+  background-color: var(--color-beetle);
+  color: var(--color-snow);
+}
+
+.badge-neutral {
+  background-color: var(--color-polar);
+  color: var(--color-wolf);
+}
+
+/* Streak badge (fire orange) */
+.badge-streak {
+  background-color: var(--color-fox);
+  color: var(--color-snow);
+  gap: var(--space-1);
+}
+
+/* ─────────────────────────────────────────────
+   10. PROGRESS BAR COMPONENT
+───────────────────────────────────────────── */
+
+.progress-track {
+  width: 100%;
+  height: 16px;
+  background-color: var(--color-swan);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background-color: var(--color-feather-green);
+  transition: width var(--transition-normal);
+}
+
+.progress-fill-blue   { background-color: var(--color-macaw); }
+.progress-fill-yellow { background-color: var(--color-bee); }
+.progress-fill-red    { background-color: var(--color-cardinal); }
+.progress-fill-purple { background-color: var(--color-beetle); }
+
+/* Lesson XP bar variant — thinner */
+.progress-track-sm {
+  height: 8px;
+}
+
+/* ─────────────────────────────────────────────
+   END OF DUOLINGO DESIGN SYSTEM CSS
+───────────────────────────────────────────── */

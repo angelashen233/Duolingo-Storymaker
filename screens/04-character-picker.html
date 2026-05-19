@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Screen 04 — Character Picker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../duolingo-design.css">
+  <link rel="stylesheet" href="../design-system.css">
+  <link rel="stylesheet" href="../components/animations.css">
+  <link rel="stylesheet" href="../components/character.css">
+  <link rel="stylesheet" href="../components/duo-button.css">
+  <style>
+    /* Shows canvas dimmed behind the character picker sheet */
+    .canvas-bg {
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, #C5EDFF 0%, #A8D8FF 40%, #D4EDCF 75%, #B8E0B0 100%);
+      overflow: hidden;
+    }
+    .canvas-dim {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.45); z-index: 5;
+    }
+    /* Character picker sheet */
+    .picker-sheet {
+      position: absolute; bottom: var(--nav-h); left: 0; right: 0;
+      background: white; border-radius: 24px 24px 0 0;
+      z-index: 10;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 -8px 32px rgba(0,0,0,0.2);
+      animation: slide-up 350ms cubic-bezier(0.32,0.72,0,1) forwards;
+    }
+    .sheet-drag-handle {
+      width: 40px; height: 4px; background: var(--color-swan);
+      border-radius: 9999px; margin: 12px auto 0;
+    }
+    .sheet-search {
+      padding: 12px 16px 0;
+    }
+    .search-input {
+      width: 100%; font-family: 'Nunito', sans-serif; font-size: 15px;
+      font-weight: 700; color: var(--color-eel); background: var(--color-polar);
+      border: 2px solid var(--color-swan); border-radius: 14px;
+      padding: 11px 16px 11px 42px; outline: none; box-sizing: border-box;
+      transition: border-color 150ms ease;
+    }
+    .search-input:focus { border-color: var(--color-macaw); background: white; }
+    .search-wrap { position: relative; }
+    .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--color-hare); font-size: 16px; }
+
+    /* Character grid */
+    .char-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 10px; padding: 12px 14px 16px;
+    }
+    .char-card {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 6px; padding: 14px 6px 12px;
+      border: 2.5px solid var(--color-swan); border-radius: 18px;
+      background: white; cursor: pointer;
+      transition: all 120ms ease;
+      box-shadow: 0 3px 0 var(--color-swan);
+      position: relative;
+    }
+    .char-card:active { transform: translateY(3px); box-shadow: none; }
+    .char-card.selected {
+      border-color: var(--color-feather-green);
+      background: rgba(88,204,2,0.06);
+      box-shadow: 0 3px 0 #46A302;
+    }
+    .char-card.selected::after {
+      content: '✓'; position: absolute; top: 6px; right: 8px;
+      width: 20px; height: 20px; background: var(--color-feather-green);
+      color: white; font-size: 12px; font-weight: 900; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      line-height: 20px; text-align: center;
+    }
+    .char-card-avatar { height: 80px; display: flex; align-items: flex-end; justify-content: center; }
+    .char-card-name { font-size: 13px; font-weight: 800; color: var(--color-eel); }
+    .char-card-role { font-size: 11px; font-weight: 600; color: var(--color-wolf); text-align: center; line-height: 1.2; }
+
+    /* Upload your own card */
+    .upload-card {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 6px; padding: 14px 6px 12px;
+      border: 2.5px dashed var(--color-hare); border-radius: 18px;
+      background: var(--color-polar); cursor: pointer;
+      transition: all 150ms ease;
+    }
+    .upload-card:hover { border-color: var(--color-macaw); background: rgba(28,176,246,0.05); }
+    .upload-circle {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: white; border: 2px solid var(--color-swan);
+      display: flex; align-items: center; justify-content: center; font-size: 22px;
+    }
+
+    /* Section divider in sheet */
+    .sheet-section-label {
+      font-size: 12px; font-weight: 900; color: var(--color-wolf);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 8px 16px 4px;
+    }
+
+    /* Selected character preview bar */
+    .selected-preview {
+      position: sticky; bottom: 0; background: white;
+      border-top: 1.5px solid var(--color-swan); padding: 12px 16px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .selected-char-mini { width: 44px; height: 54px; flex-shrink: 0; }
+    .selected-info { flex: 1; }
+    .selected-name { font-size: 15px; font-weight: 800; color: var(--color-eel); }
+    .selected-trait { font-size: 13px; font-weight: 600; color: var(--color-wolf); }
+    .add-to-scene-btn {
+      background: var(--color-feather-green); color: white;
+      font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 900;
+      padding: 12px 20px; border-radius: 9999px; border: none; cursor: pointer;
+      box-shadow: 0 4px 0 #46A302; transition: transform 100ms ease, box-shadow 100ms ease;
+      white-space: nowrap; text-decoration: none; display: inline-block;
+    }
+    .add-to-scene-btn:active { transform: translateY(4px); box-shadow: none; }
+  </style>
+</head>
+<body class="demo-page">
+  <div class="phone">
+    <div class="status-bar" style="position:absolute;top:0;left:0;right:0;z-index:20;background:transparent;">
+      <span class="status-time" style="color:white;text-shadow:0 1px 4px rgba(0,0,0,0.4);">9:41</span>
+      <div class="status-icons" style="color:white;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.3));">
+        <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1" fill="white"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1" fill="white"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="white"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="2.5" stroke="white" stroke-width="1.5" fill="none"/><rect x="22.5" y="4" width="2" height="4" rx="1" fill="white" opacity="0.5"/><rect x="1.5" y="2.5" width="18" height="7" rx="1.5" fill="white"/></svg>
+      </div>
+    </div>
+
+    <!-- Canvas dimmed behind -->
+    <div class="canvas-bg">
+      <!-- Duo on left, visible behind -->
+      <div style="position:absolute;bottom:360px;left:24px;opacity:0.6;">
+        <div data-char="duo" data-size="char-lg"></div>
+      </div>
+      <div class="canvas-dim"></div>
+    </div>
+
+    <!-- Character picker sheet -->
+    <div class="picker-sheet" id="pickerSheet">
+      <div class="sheet-drag-handle"></div>
+
+      <!-- Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px 0;">
+        <div style="font-size:20px;font-weight:900;color:var(--color-eel);">Choose a Character</div>
+        <a href="03-new-storyboard.html" style="width:32px;height:32px;border-radius:50%;background:var(--color-polar);border:none;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--color-wolf);text-decoration:none;cursor:pointer;">✕</a>
+      </div>
+
+      <!-- Search -->
+      <div class="sheet-search">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input class="search-input" type="text" placeholder="Search characters...">
+        </div>
+      </div>
+
+      <!-- Duolingo Characters -->
+      <div class="sheet-section-label">Duolingo Characters</div>
+      <div class="char-grid" id="charGrid">
+        <!-- Duo -->
+        <button class="char-card" data-char-id="duo" onclick="selectChar(this,'duo','Duo','The Cheerful Owl')">
+          <div class="char-card-avatar"><div data-char="duo" data-size="char-md"></div></div>
+          <span class="char-card-name">Duo</span>
+          <span class="char-card-role">The Cheerful Owl</span>
+        </button>
+        <!-- Lily -->
+        <button class="char-card selected" data-char-id="lily" onclick="selectChar(this,'lily','Lily','The Creative Dreamer')">
+          <div class="char-card-avatar"><div data-char="lily" data-size="char-md"></div></div>
+          <span class="char-card-name">Lily</span>
+          <span class="char-card-role">The Creative Dreamer</span>
+        </button>
+        <!-- Junior -->
+        <button class="char-card" data-char-id="junior" onclick="selectChar(this,'junior','Junior','The Energetic Kid')">
+          <div class="char-card-avatar"><div data-char="junior" data-size="char-md"></div></div>
+          <span class="char-card-name">Junior</span>
+          <span class="char-card-role">The Energetic Kid</span>
+        </button>
+        <!-- Zari -->
+        <button class="char-card" data-char-id="zari" onclick="selectChar(this,'zari','Zari','The Bold Explorer')">
+          <div class="char-card-avatar"><div data-char="zari" data-size="char-md"></div></div>
+          <span class="char-card-name">Zari</span>
+          <span class="char-card-role">The Bold Explorer</span>
+        </button>
+        <!-- Bea -->
+        <button class="char-card" data-char-id="bea" onclick="selectChar(this,'bea','Bea','The Smart Strategist')">
+          <div class="char-card-avatar"><div data-char="bea" data-size="char-md"></div></div>
+          <span class="char-card-name">Bea</span>
+          <span class="char-card-role">The Smart Strategist</span>
+        </button>
+        <!-- Eddy -->
+        <button class="char-card" data-char-id="eddy" onclick="selectChar(this,'eddy','Eddy','The Wild Card')">
+          <div class="char-card-avatar"><div data-char="eddy" data-size="char-md"></div></div>
+          <span class="char-card-name">Eddy</span>
+          <span class="char-card-role">The Wild Card</span>
+        </button>
+      </div>
+
+      <!-- Upload your own -->
+      <div class="sheet-section-label">Custom Character</div>
+      <div style="padding:0 14px 16px;">
+        <div class="upload-card" onclick="triggerUpload()">
+          <div class="upload-circle">📷</div>
+          <div style="font-size:13px;font-weight:800;color:var(--color-wolf);">Upload Your Own Friend</div>
+          <div style="font-size:11px;font-weight:600;color:var(--color-hare);text-align:center;line-height:1.4;">Add a photo — we'll turn it into a fun character icon</div>
+        </div>
+      </div>
+
+      <!-- Selected character sticky bar -->
+      <div class="selected-preview" id="selectedBar">
+        <div class="selected-char-mini" id="selectedMini">
+          <div data-char="lily" data-size="char-sm"></div>
+        </div>
+        <div class="selected-info">
+          <div class="selected-name" id="selectedName">Lily</div>
+          <div class="selected-trait" id="selectedTrait">The Creative Dreamer · Speaking right</div>
+        </div>
+        <a href="05-branching-choice.html" class="add-to-scene-btn hotspot" id="addBtn">Add to Scene</a>
+      </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav" style="position:absolute;bottom:0;left:0;right:0;z-index:15;">
+      <a class="nav-item" href="01-duolingo-home-new-tab.html">
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div>
+        <span class="nav-label">Home</span>
+      </a>
+      <a class="nav-item" href="#">
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+        <span class="nav-label">Learn</span>
+      </a>
+      <a class="nav-item active" href="02-studio-landing.html">
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="12" y2="12"/><polyline points="14 12 18 16 14 20"/></svg></div>
+        <span class="nav-label">Stories</span>
+      </a>
+      <a class="nav-item" href="11-popularity-board.html">
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="11" width="6" height="11" rx="1"/><rect x="9" y="4" width="6" height="18" rx="1"/><rect x="17" y="7" width="6" height="15" rx="1"/></svg></div>
+        <span class="nav-label">Boards</span>
+      </a>
+      <a class="nav-item" href="#">
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+        <span class="nav-label">Profile</span>
+      </a>
+    </nav>
+  </div>
+
+  <script src="../js/characters.js"></script>
+  <script>
+    let currentSelected = { id: 'lily', name: 'Lily', trait: 'The Creative Dreamer' };
+
+    function selectChar(el, charId, name, trait) {
+      document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      currentSelected = { id: charId, name, trait };
+
+      // Update preview bar
+      document.getElementById('selectedName').textContent = name;
+      document.getElementById('selectedTrait').textContent = trait + ' · Speaking right';
+
+      // Re-render mini
+      const mini = document.getElementById('selectedMini');
+      mini.innerHTML = '';
+      const div = document.createElement('div');
+      div.setAttribute('data-char', charId);
+      div.setAttribute('data-size', 'char-sm');
+      mini.appendChild(div);
+      renderAllCharacters();
+
+      // Pulse animation
+      const bar = document.getElementById('selectedBar');
+      bar.style.animation = 'none';
+      bar.offsetHeight; // reflow
+      bar.style.animation = 'chip-switch 300ms ease';
+    }
+
+    function triggerUpload() {
+      // Simulate upload flow
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.click();
+    }
+  </script>
+  <script>
+    document.querySelectorAll('.hotspot').forEach(el => {
+      el.addEventListener('click', () => el.classList.add('done'), { once: true });
+    });
+  </script>
+  <a class="home-fab" href="../index.html">🏠 Main Page</a>
+</body>
+</html>

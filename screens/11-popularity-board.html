@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Screen 11 — Popularity Board</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../duolingo-design.css">
+  <link rel="stylesheet" href="../design-system.css">
+  <link rel="stylesheet" href="../components/animations.css">
+  <link rel="stylesheet" href="../components/character.css">
+  <link rel="stylesheet" href="../components/card.css">
+  <link rel="stylesheet" href="../components/language-chip.css">
+  <style>
+    /* Board header */
+    .board-header {
+      background: linear-gradient(135deg,#FFC800 0%,#FF9600 100%);
+      padding: 14px 20px 20px;
+    }
+    .board-header-top {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+    }
+    .board-title {
+      font-size: 24px; font-weight: 900; color: white; letter-spacing: -0.4px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .board-title-icon { font-size: 28px; animation: trophy-spin 3s ease-in-out infinite; display: inline-block; }
+
+    /* Language filter (compact version) */
+    .board-lang-chip {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.25); border: 1.5px solid rgba(255,255,255,0.4);
+      border-radius: 9999px; padding: 7px 12px; cursor: pointer;
+      transition: background 120ms ease;
+    }
+    .board-lang-chip:hover { background: rgba(255,255,255,0.35); }
+    .board-lang-flag { font-size: 18px; }
+    .board-lang-name { font-size: 13px; font-weight: 800; color: white; }
+    .board-lang-chevron { color: rgba(255,255,255,0.7); font-size: 14px; }
+
+    /* Time filter tabs */
+    .time-tabs {
+      display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none;
+    }
+    .time-tabs::-webkit-scrollbar { display: none; }
+    .time-tab {
+      display: inline-flex; align-items: center; padding: 7px 14px;
+      border-radius: 9999px; font-family: 'Nunito', sans-serif; font-size: 13px;
+      font-weight: 800; white-space: nowrap; cursor: pointer;
+      border: 2px solid rgba(255,255,255,0.35); background: transparent; color: rgba(255,255,255,0.75);
+      transition: all 120ms ease; user-select: none;
+    }
+    .time-tab.active {
+      background: white; color: #FF9600; border-color: white;
+    }
+    .time-tab:active { transform: translateY(1px); }
+
+    /* Podium section */
+    .podium-section {
+      background: var(--color-polar); padding: 16px 16px 8px;
+      border-bottom: 1.5px solid var(--color-swan);
+    }
+    .podium-label {
+      font-size: 12px; font-weight: 900; color: var(--color-wolf);
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px;
+      text-align: center;
+    }
+    .podium-row { display: flex; align-items: flex-end; justify-content: center; gap: 8px; }
+    .podium-item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+
+    /* Podium blocks */
+    .podium-block {
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 10px 10px 0 0; width: 80px;
+      transform-origin: bottom; animation: podium-rise 700ms cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .podium-1 { background: linear-gradient(135deg,#FFD700,#FFA500); height: 60px; animation-delay: 0ms; }
+    .podium-2 { background: linear-gradient(135deg,#C0C0C0,#A8A8A8); height: 44px; animation-delay: 100ms; }
+    .podium-3 { background: linear-gradient(135deg,#CD7F32,#A0522D); height: 32px; animation-delay: 200ms; }
+    .podium-rank { font-size: 20px; font-weight: 900; color: rgba(255,255,255,0.9); }
+
+    .podium-card {
+      background: white; border: 2px solid var(--color-swan); border-radius: 12px;
+      padding: 8px; width: 80px; box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+      cursor: pointer; transition: transform 120ms ease;
+      text-decoration: none; display: block;
+    }
+    .podium-card:hover { transform: translateY(-2px); }
+    .podium-cover { height: 44px; border-radius: 8px; overflow: hidden; position: relative; margin-bottom: 5px; }
+    .podium-cover-char { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); }
+    .podium-card-title { font-size: 10px; font-weight: 800; color: var(--color-eel); text-align: center; line-height: 1.3; }
+    .podium-card-plays { font-size: 10px; font-weight: 700; color: var(--color-wolf); text-align: center; margin-top: 2px; }
+    .podium-rank-badge {
+      font-size: 12px; font-weight: 900; color: rgba(255,255,255,0.85); text-align: center;
+    }
+
+    /* Ranked list */
+    .ranked-list { background: white; }
+    .rank-row {
+      display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+      border-bottom: 1.5px solid var(--color-polar); cursor: pointer;
+      transition: background 120ms ease; text-decoration: none; color: inherit;
+    }
+    .rank-row:hover { background: var(--color-polar); }
+    .rank-num {
+      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 900; background: var(--color-polar);
+      color: var(--color-wolf); border: 2px solid var(--color-swan);
+    }
+    .rank-cover {
+      width: 52px; height: 52px; border-radius: 10px; overflow: hidden; flex-shrink: 0;
+      position: relative; display: flex; align-items: flex-end;
+    }
+    .rank-cover-char { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); }
+    .rank-info { flex: 1; min-width: 0; }
+    .rank-title {
+      font-size: 14px; font-weight: 800; color: var(--color-eel);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px;
+    }
+    .rank-meta { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+    .rank-stat { font-size: 11px; font-weight: 700; color: var(--color-wolf); }
+    .rank-trend {
+      font-size: 11px; font-weight: 800; display: flex; align-items: center; gap: 2px;
+    }
+    .trend-up   { color: var(--color-feather-green); }
+    .trend-down { color: var(--color-cardinal); }
+    .trend-same { color: var(--color-hare); }
+
+    /* Language sheet (reused from 08) */
+    .lang-sheet-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.45); z-index: 50; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 250ms ease; }
+    .lang-sheet-backdrop.open { opacity: 1; pointer-events: auto; }
+    .lang-sheet { background: white; width: 100%; border-radius: 24px 24px 0 0; padding: 12px 0 32px; transform: translateY(100%); transition: transform 300ms cubic-bezier(0.32,0.72,0,1); }
+    .lang-sheet-backdrop.open .lang-sheet { transform: translateY(0); }
+    .lang-handle { width: 40px; height: 4px; background: var(--color-swan); border-radius: 9999px; margin: 0 auto 12px; }
+    .lang-sheet-title { font-size: 18px; font-weight: 900; color: var(--color-eel); padding: 0 20px 10px; }
+    .lang-opt-row { display: flex; align-items: center; gap: 14px; padding: 13px 20px; cursor: pointer; transition: background 120ms ease; }
+    .lang-opt-row:hover { background: var(--color-polar); }
+    .lang-opt-row.cur { background: var(--chip-active-bg); }
+    .lang-opt-flag { font-size: 26px; width: 36px; text-align: center; }
+    .lang-opt-info { flex: 1; }
+    .lang-opt-name { font-size: 15px; font-weight: 800; color: var(--color-eel); }
+    .lang-opt-cnt { font-size: 12px; font-weight: 600; color: var(--color-wolf); }
+    .lang-opt-chk { width: 22px; height: 22px; border-radius: 50%; background: var(--color-feather-green); display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; opacity: 0; transition: opacity 120ms ease; }
+    .lang-opt-row.cur .lang-opt-chk { opacity: 1; }
+  </style>
+</head>
+<body class="demo-page">
+  <div class="phone" style="position:relative;">
+    <div class="status-bar" style="position:absolute;top:0;left:0;right:0;z-index:10;background:transparent;">
+      <span class="status-time" style="color:rgba(255,255,255,0.9);">9:41</span>
+      <div class="status-icons" style="color:rgba(255,255,255,0.8);">
+        <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1" fill="white"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1" fill="white"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="white"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="2.5" stroke="white" stroke-width="1.5" fill="none"/><rect x="22.5" y="4" width="2" height="4" rx="1" fill="white" opacity="0.5"/><rect x="1.5" y="2.5" width="18" height="7" rx="1.5" fill="white"/></svg>
+      </div>
+    </div>
+
+    <main class="screen">
+
+      <!-- Board header (gold gradient) -->
+      <div class="board-header">
+        <!-- padding for status bar -->
+        <div style="height:38px;"></div>
+        <div class="board-header-top">
+          <div class="board-title">
+            <span class="board-title-icon">🏆</span>
+            Top Stories
+          </div>
+          <!-- Language filter (compact) -->
+          <div class="board-lang-chip" onclick="openLangSheet()">
+            <span class="board-lang-flag" id="boardFlag">🇪🇸</span>
+            <span class="board-lang-name" id="boardLang">Spanish</span>
+            <span class="board-lang-chevron">›</span>
+          </div>
+        </div>
+
+        <!-- Time filter tabs -->
+        <div class="time-tabs" id="timeTabs">
+          <div class="time-tab" onclick="setTimeFilter(this,'week')">This Week</div>
+          <div class="time-tab active" onclick="setTimeFilter(this,'month')">This Month</div>
+          <div class="time-tab" onclick="setTimeFilter(this,'year')">This Year</div>
+          <div class="time-tab" onclick="setTimeFilter(this,'all')">All Time</div>
+        </div>
+      </div>
+
+      <!-- Podium top 3 -->
+      <div class="podium-section">
+        <div class="podium-label">👑 Top 3 This Month</div>
+        <div class="podium-row">
+          <!-- #2 Silver -->
+          <div class="podium-item">
+            <a href="09-story-detail.html" class="podium-card">
+              <div class="podium-cover cover-spanish">
+                <div class="podium-cover-char"><div data-char="lily" style="width:32px;height:40px;overflow:hidden;"></div></div>
+              </div>
+              <div class="podium-card-title">Mi Familia es Loca</div>
+              <div class="podium-card-plays">4,821 plays</div>
+            </a>
+            <div class="podium-block podium-2"><div class="podium-rank">2</div></div>
+            <div class="podium-rank-badge" style="color:#A8A8A8;font-size:16px;">🥈</div>
+          </div>
+
+          <!-- #1 Gold -->
+          <div class="podium-item" style="margin-bottom:-4px;">
+            <a href="09-story-detail.html" class="podium-card hotspot" style="border-color:rgba(255,200,0,0.6);box-shadow:0 4px 12px rgba(255,165,0,0.25);">
+              <div class="podium-cover cover-alt2">
+                <div class="podium-cover-char"><div data-char="duo" style="width:36px;height:45px;overflow:hidden;"></div></div>
+              </div>
+              <div class="podium-card-title">¿Dónde Está el Baño?</div>
+              <div class="podium-card-plays">8,912 plays</div>
+            </a>
+            <div class="podium-block podium-1"><div class="podium-rank">1</div></div>
+            <div class="podium-rank-badge" style="color:#FFD700;font-size:20px;">🥇</div>
+          </div>
+
+          <!-- #3 Bronze -->
+          <div class="podium-item">
+            <a href="09-story-detail.html" class="podium-card">
+              <div class="podium-cover cover-japanese">
+                <div class="podium-cover-char"><div data-char="bea" style="width:32px;height:40px;overflow:hidden;"></div></div>
+              </div>
+              <div class="podium-card-title">Lost in Tokyo</div>
+              <div class="podium-card-plays">7,203 plays</div>
+            </a>
+            <div class="podium-block podium-3"><div class="podium-rank">3</div></div>
+            <div class="podium-rank-badge" style="color:#CD7F32;font-size:16px;">🥉</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ranked list 4–10 -->
+      <div class="ranked-list">
+        <div style="padding:10px 16px 4px;font-size:12px;font-weight:900;color:var(--color-wolf);text-transform:uppercase;letter-spacing:0.06em;">Rankings 4–10</div>
+
+        <a href="09-story-detail.html" class="rank-row">
+          <div class="rank-num">4</div>
+          <div class="rank-cover cover-korean"><div class="rank-cover-char"><div data-char="zari" style="width:28px;height:35px;overflow:hidden;"></div></div></div>
+          <div class="rank-info">
+            <div class="rank-title">Surviving K-Drama in Real Life</div>
+            <div class="rank-meta">
+              <span class="badge badge-ko" style="font-size:10px;padding:2px 6px;">🇰🇷 Korean</span>
+              <span class="rank-stat">6,780 plays</span>
+              <span class="rank-trend trend-up">↑ +12%</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="09-story-detail.html" class="rank-row">
+          <div class="rank-num">5</div>
+          <div class="rank-cover cover-french"><div class="rank-cover-char"><div data-char="eddy" style="width:28px;height:35px;overflow:hidden;"></div></div></div>
+          <div class="rank-info">
+            <div class="rank-title">A Date in Paris</div>
+            <div class="rank-meta">
+              <span class="badge badge-fr" style="font-size:10px;padding:2px 6px;">🇫🇷 French</span>
+              <span class="rank-stat">5,912 plays</span>
+              <span class="rank-trend trend-up">↑ +8%</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="09-story-detail.html" class="rank-row">
+          <div class="rank-num">6</div>
+          <div class="rank-cover cover-alt1"><div class="rank-cover-char"><div data-char="eddy" style="width:28px;height:35px;overflow:hidden;"></div></div></div>
+          <div class="rank-info">
+            <div class="rank-title">Coffee Shop Drama</div>
+            <div class="rank-meta">
+              <span class="badge badge-es" style="font-size:10px;padding:2px 6px;">🇪🇸 Spanish</span>
+              <span class="rank-stat">3,445 plays</span>
+              <span class="rank-trend trend-same">→ 0%</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="09-story-detail.html" class="rank-row">
+          <div class="rank-num">7</div>
+          <div class="rank-cover cover-alt3"><div class="rank-cover-char"><div data-char="lily" style="width:28px;height:35px;overflow:hidden;"></div></div></div>
+          <div class="rank-info">
+            <div class="rank-title">Sakura Season Surprise</div>
+            <div class="rank-meta">
+              <span class="badge badge-ja" style="font-size:10px;padding:2px 6px;">🇯🇵 Japanese</span>
+              <span class="rank-stat">4,234 plays</span>
+              <span class="rank-trend trend-down">↓ -3%</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="09-story-detail.html" class="rank-row">
+          <div class="rank-num">8</div>
+          <div class="rank-cover cover-german"><div class="rank-cover-char"><div data-char="junior" style="width:28px;height:35px;overflow:hidden;"></div></div></div>
+          <div class="rank-info">
+            <div class="rank-title">Das Berliner Café</div>
+            <div class="rank-meta">
+              <span class="badge badge-de" style="font-size:10px;padding:2px 6px;">🇩🇪 German</span>
+              <span class="rank-stat">2,103 plays</span>
+              <span class="rank-trend trend-up">↑ +22%</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="09-story-detail.html" class="rank-row">
+          <div class="rank-num">9</div>
+          <div class="rank-cover cover-spanish"><div class="rank-cover-char"><div data-char="zari" style="width:28px;height:35px;overflow:hidden;"></div></div></div>
+          <div class="rank-info">
+            <div class="rank-title">El Mercado de Barcelona</div>
+            <div class="rank-meta">
+              <span class="badge badge-es" style="font-size:10px;padding:2px 6px;">🇪🇸 Spanish</span>
+              <span class="rank-stat">2,031 plays</span>
+              <span class="rank-trend trend-down">↓ -5%</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="09-story-detail.html" class="rank-row">
+          <div class="rank-num">10</div>
+          <div class="rank-cover cover-alt1"><div class="rank-cover-char"><div data-char="bea" style="width:28px;height:35px;overflow:hidden;"></div></div></div>
+          <div class="rank-info">
+            <div class="rank-title">Noche de Flamenco</div>
+            <div class="rank-meta">
+              <span class="badge badge-es" style="font-size:10px;padding:2px 6px;">🇪🇸 Spanish</span>
+              <span class="rank-stat">1,734 plays</span>
+              <span class="rank-trend trend-up">↑ NEW</span>
+            </div>
+          </div>
+        </a>
+      </div>
+
+    </main>
+
+    <!-- Bottom Nav: Boards active -->
+    <nav class="bottom-nav">
+      <a class="nav-item" href="01-duolingo-home-new-tab.html"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div><span class="nav-label">Home</span></a>
+      <a class="nav-item" href="#"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><span class="nav-label">Learn</span></a>
+      <a class="nav-item" href="02-studio-landing.html"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="12" y2="12"/><polyline points="14 12 18 16 14 20"/></svg></div><span class="nav-label">Stories</span></a>
+      <a class="nav-item active" href="11-popularity-board.html"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="11" width="6" height="11" rx="1"/><rect x="9" y="4" width="6" height="18" rx="1"/><rect x="17" y="7" width="6" height="15" rx="1"/></svg></div><span class="nav-label">Boards</span></a>
+      <a class="nav-item" href="#"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div><span class="nav-label">Profile</span></a>
+    </nav>
+
+    <!-- Language sheet -->
+    <div class="lang-sheet-backdrop" id="langSheetBg" onclick="closeLangSheet(event)">
+      <div class="lang-sheet" onclick="event.stopPropagation()">
+        <div class="lang-handle"></div>
+        <div class="lang-sheet-title">Filter by Language</div>
+        <div class="lang-opt-row cur" onclick="switchBoardLang(this,'🇪🇸','Spanish')"><span class="lang-opt-flag">🇪🇸</span><div class="lang-opt-info"><div class="lang-opt-name">Spanish</div><div class="lang-opt-cnt">12,847 stories</div></div><div class="lang-opt-chk">✓</div></div>
+        <div class="lang-opt-row" onclick="switchBoardLang(this,'🇯🇵','Japanese')"><span class="lang-opt-flag">🇯🇵</span><div class="lang-opt-info"><div class="lang-opt-name">Japanese</div><div class="lang-opt-cnt">8,432 stories</div></div><div class="lang-opt-chk">✓</div></div>
+        <div class="lang-opt-row" onclick="switchBoardLang(this,'🇫🇷','French')"><span class="lang-opt-flag">🇫🇷</span><div class="lang-opt-info"><div class="lang-opt-name">French</div><div class="lang-opt-cnt">9,103 stories</div></div><div class="lang-opt-chk">✓</div></div>
+        <div class="lang-opt-row" onclick="switchBoardLang(this,'🇰🇷','Korean')"><span class="lang-opt-flag">🇰🇷</span><div class="lang-opt-info"><div class="lang-opt-name">Korean</div><div class="lang-opt-cnt">6,215 stories</div></div><div class="lang-opt-chk">✓</div></div>
+        <div class="lang-opt-row" onclick="switchBoardLang(this,'🇩🇪','German')"><span class="lang-opt-flag">🇩🇪</span><div class="lang-opt-info"><div class="lang-opt-name">German</div><div class="lang-opt-cnt">5,891 stories</div></div><div class="lang-opt-chk">✓</div></div>
+        <div class="lang-opt-row" onclick="switchBoardLang(this,'🌐','All Languages')"><span class="lang-opt-flag">🌐</span><div class="lang-opt-info"><div class="lang-opt-name">All Languages</div><div class="lang-opt-cnt">42,388 stories</div></div><div class="lang-opt-chk">✓</div></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/characters.js"></script>
+  <script>
+    function setTimeFilter(el, key) {
+      document.querySelectorAll('.time-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function openLangSheet() {
+      document.getElementById('langSheetBg').classList.add('open');
+    }
+    function closeLangSheet(e) {
+      document.getElementById('langSheetBg').classList.remove('open');
+    }
+    function switchBoardLang(row, flag, name) {
+      document.querySelectorAll('.lang-opt-row').forEach(r => r.classList.remove('cur'));
+      row.classList.add('cur');
+      document.getElementById('boardFlag').textContent = flag;
+      document.getElementById('boardLang').textContent = name;
+      closeLangSheet();
+    }
+  </script>
+  <script>
+    document.querySelectorAll('.hotspot').forEach(el => {
+      el.addEventListener('click', () => el.classList.add('done'), { once: true });
+    });
+  </script>
+  <a class="home-fab" href="../index.html">🏠 Main Page</a>
+</body>
+</html>

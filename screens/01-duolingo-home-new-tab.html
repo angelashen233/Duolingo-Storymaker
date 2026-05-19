@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Screen 01 — Duolingo Home + Studio Tab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../duolingo-design.css">
+  <link rel="stylesheet" href="../design-system.css">
+  <link rel="stylesheet" href="../components/animations.css">
+  <style>
+    /* ── Home header bar ── */
+    .home-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px 8px;
+    }
+    .duo-wordmark {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--color-feather-green);
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .home-stats {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--color-eel);
+    }
+    .stat-icon { font-size: 18px; }
+
+    /* ── New feature banner ── */
+    .new-feature-banner {
+      margin: 8px 16px 4px;
+      background: linear-gradient(135deg, #7C3AED 0%, #1CB0F6 100%);
+      border-radius: 16px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #5B21B6;
+      transition: transform 100ms ease, box-shadow 100ms ease;
+      text-decoration: none;
+    }
+    .new-feature-banner:active { transform: translateY(4px); box-shadow: none; }
+    .banner-icon { font-size: 36px; line-height: 1; flex-shrink: 0; }
+    .banner-text { flex: 1; }
+    .banner-new { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; color: #FFE066; margin-bottom: 2px; }
+    .banner-title { font-size: 16px; font-weight: 900; color: white; line-height: 1.2; margin-bottom: 2px; }
+    .banner-desc { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.85); }
+    .banner-cta {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 8px 14px;
+      border-radius: 9999px;
+      white-space: nowrap;
+      border: 1.5px solid rgba(255,255,255,0.4);
+      flex-shrink: 0;
+    }
+
+    /* ── Section banner ── */
+    .section-banner {
+      margin: 14px 16px 0;
+      background: linear-gradient(135deg, #58CC02 0%, #89E219 100%);
+      border-radius: 14px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+    .section-banner-left { display: flex; align-items: center; gap: 10px; }
+    .section-icon { font-size: 22px; }
+    .section-num { font-size: 10px; font-weight: 900; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.06em; }
+    .section-name { font-size: 16px; font-weight: 900; color: white; }
+    .section-chevron { color: white; font-size: 18px; opacity: 0.7; }
+
+    /* ── Lesson path ── */
+    .lesson-path {
+      padding: 12px 0 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+    .path-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    .path-row.right { justify-content: flex-end; padding-right: 56px; }
+    .path-row.left  { justify-content: flex-start; padding-left: 56px; }
+    .path-row.center { justify-content: center; }
+
+    .lesson-node {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      cursor: pointer;
+      position: relative;
+      font-size: 28px;
+      transition: transform 100ms ease;
+    }
+    .lesson-node:active { transform: scale(0.95); }
+
+    .lesson-node.completed {
+      background: var(--color-feather-green);
+      box-shadow: 0 5px 0 #3DA800;
+    }
+    .lesson-node.completed .node-stars { color: var(--color-bee); font-size: 10px; display: flex; gap: 1px; }
+
+    .lesson-node.current {
+      background: var(--color-feather-green);
+      box-shadow: 0 5px 0 #3DA800, 0 0 0 6px rgba(88,204,2,0.25);
+      width: 84px;
+      height: 84px;
+      font-size: 32px;
+    }
+    .lesson-node.current::after {
+      content: 'START';
+      position: absolute;
+      bottom: -30px;
+      background: var(--color-eel);
+      color: white;
+      font-size: 10px;
+      font-weight: 900;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      letter-spacing: 0.06em;
+    }
+
+    .lesson-node.locked {
+      background: var(--color-swan);
+      box-shadow: 0 5px 0 var(--color-hare);
+      cursor: default;
+    }
+    .lesson-node.locked .node-icon { filter: grayscale(1); opacity: 0.5; }
+
+    /* Connecting dots between nodes */
+    .path-connector {
+      width: 4px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 6px 0;
+    }
+    .path-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--color-feather-green);
+      border-radius: 50%;
+    }
+    .path-dot.locked { background: var(--color-swan); }
+
+    /* Duo hovering over current lesson */
+    .duo-hover {
+      position: absolute;
+      top: -42px;
+      right: -8px;
+      font-size: 28px;
+      animation: bob 2s ease-in-out infinite;
+    }
+
+    /* Stars above completed */
+    .lesson-stars {
+      display: flex;
+      gap: 1px;
+      font-size: 10px;
+    }
+
+    /* XP progress bar at top of section */
+    .xp-bar-section {
+      padding: 8px 20px 4px;
+    }
+    .xp-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--color-wolf);
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body class="demo-page">
+
+  <div class="phone">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-icons">
+        <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1" fill="currentColor"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1" fill="currentColor"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="currentColor"/><rect x="13.5" y="0" width="3.5" height="12" rx="1" fill="currentColor" opacity="0.3"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 3C5.2 3 2.8 4.2 1 6.2L0 5.2C2.1 2.8 5 1.2 8 1.2c3 0 5.9 1.6 8 4L15 6.2C13.2 4.2 10.8 3 8 3z" fill="currentColor"/><path d="M8 6C6.2 6 4.6 6.8 3.4 8L2.4 7C3.9 5.5 5.8 4.6 8 4.6s4.1.9 5.6 2.4L12.6 8C11.4 6.8 9.8 6 8 6z" fill="currentColor"/><circle cx="8" cy="10.5" r="1.5" fill="currentColor"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="2.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="22.5" y="4" width="2" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="currentColor"/></svg>
+      </div>
+    </div>
+
+    <!-- Scrollable screen -->
+    <main class="screen">
+
+      <!-- App header -->
+      <div class="home-header">
+        <div class="duo-wordmark">
+          <img src="../Image/Duolingo-owl-front.png" alt="Duolingo" width="28" height="28" style="display:block;">
+          duolingo
+        </div>
+        <div class="home-stats">
+          <div class="stat-pill"><span class="stat-icon">🔥</span><span>47</span></div>
+          <div class="stat-pill"><span class="stat-icon">💎</span><span>3,240</span></div>
+          <div class="stat-pill"><span class="stat-icon">❤️</span><span>5</span></div>
+        </div>
+      </div>
+
+      <!-- NEW: Stories Studio banner -->
+      <a href="02-studio-landing.html" class="new-feature-banner">
+        <div class="banner-icon">✏️</div>
+        <div class="banner-text">
+          <div class="banner-new">✨ New Feature</div>
+          <div class="banner-title">Stories Studio is here!</div>
+          <div class="banner-desc">Create your own interactive Spanish stories</div>
+        </div>
+        <div class="banner-cta">Try it →</div>
+      </a>
+
+      <!-- XP progress -->
+      <div class="xp-bar-section">
+        <div class="xp-bar-label">
+          <span>Daily XP Goal</span>
+          <span>55 / 100 XP</span>
+        </div>
+        <div class="progress-track progress-track-sm">
+          <div class="progress-fill" style="width: 55%"></div>
+        </div>
+      </div>
+
+      <!-- Section banner -->
+      <div class="section-banner">
+        <div class="section-banner-left">
+          <span class="section-icon">🇪🇸</span>
+          <div>
+            <div class="section-num">Section 2</div>
+            <div class="section-name">Ordering Food & Drinks</div>
+          </div>
+        </div>
+        <span class="section-chevron">›</span>
+      </div>
+
+      <!-- Lesson path -->
+      <div class="lesson-path">
+        <!-- Node 1: completed -->
+        <div class="path-row right">
+          <div class="lesson-node completed">
+            <span>🍎</span>
+            <div class="lesson-stars">⭐⭐⭐</div>
+          </div>
+        </div>
+        <div class="path-connector">
+          <div class="path-dot"></div><div class="path-dot"></div><div class="path-dot"></div>
+        </div>
+
+        <!-- Node 2: completed -->
+        <div class="path-row center">
+          <div class="lesson-node completed">
+            <span>🗣️</span>
+            <div class="lesson-stars">⭐⭐⭐</div>
+          </div>
+        </div>
+        <div class="path-connector">
+          <div class="path-dot"></div><div class="path-dot"></div><div class="path-dot"></div>
+        </div>
+
+        <!-- Node 3: completed -->
+        <div class="path-row left">
+          <div class="lesson-node completed">
+            <span>🍽️</span>
+            <div class="lesson-stars">⭐⭐⭐</div>
+          </div>
+        </div>
+        <div class="path-connector">
+          <div class="path-dot"></div><div class="path-dot"></div><div class="path-dot"></div>
+        </div>
+
+        <!-- Node 4: CURRENT -->
+        <div class="path-row center" style="margin-bottom: 32px;">
+          <div class="lesson-node current" style="position:relative;">
+            <div class="duo-hover"><img src="../Image/Duolingo-owl-front.png" alt="Duo" width="28" height="28"></div>
+            <span>🥘</span>
+          </div>
+        </div>
+        <div class="path-connector">
+          <div class="path-dot locked"></div><div class="path-dot locked"></div><div class="path-dot locked"></div>
+        </div>
+
+        <!-- Node 5: locked -->
+        <div class="path-row right">
+          <div class="lesson-node locked"><span class="node-icon">🔒</span></div>
+        </div>
+        <div class="path-connector">
+          <div class="path-dot locked"></div><div class="path-dot locked"></div><div class="path-dot locked"></div>
+        </div>
+
+        <!-- Node 6: locked -->
+        <div class="path-row center">
+          <div class="lesson-node locked"><span class="node-icon">🔒</span></div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav" aria-label="Main navigation">
+      <!-- Home (active) -->
+      <a class="nav-item active" href="01-duolingo-home-new-tab.html" aria-current="page">
+        <div class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        </div>
+        <span class="nav-label">Home</span>
+      </a>
+      <!-- Learn -->
+      <a class="nav-item" href="01-duolingo-home-new-tab.html">
+        <div class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <span class="nav-label">Learn</span>
+      </a>
+      <!-- Stories (NEW) -->
+      <a class="nav-item hotspot" href="02-studio-landing.html">
+        <div class="nav-icon" style="position:relative;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="12" y2="12"/><polyline points="14 12 18 16 14 20"/></svg>
+          <span class="nav-new-badge">NEW</span>
+        </div>
+        <span class="nav-label">Stories</span>
+      </a>
+      <!-- Leaderboard -->
+      <a class="nav-item" href="11-popularity-board.html">
+        <div class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="11" width="6" height="11" rx="1"/><rect x="9" y="4" width="6" height="18" rx="1"/><rect x="17" y="7" width="6" height="15" rx="1"/></svg>
+        </div>
+        <span class="nav-label">Boards</span>
+      </a>
+      <!-- Profile -->
+      <a class="nav-item" href="#">
+        <div class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </div>
+        <span class="nav-label">Profile</span>
+      </a>
+    </nav>
+  </div>
+
+  <script src="../js/characters.js"></script>
+  <script>
+    document.querySelectorAll('.hotspot').forEach(el => {
+      el.addEventListener('click', () => el.classList.add('done'), { once: true });
+    });
+  </script>
+  <a class="home-fab" href="../index.html">🏠 Main Page</a>
+</body>
+</html>

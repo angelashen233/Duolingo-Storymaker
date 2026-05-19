@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Screen 09 — Story Detail</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../duolingo-design.css">
+  <link rel="stylesheet" href="../design-system.css">
+  <link rel="stylesheet" href="../components/animations.css">
+  <link rel="stylesheet" href="../components/character.css">
+  <link rel="stylesheet" href="../components/language-chip.css">
+  <link rel="stylesheet" href="../components/duo-button.css">
+  <style>
+    /* Hero cover */
+    .detail-hero {
+      height: 240px; position: relative; overflow: hidden;
+      background: linear-gradient(135deg,#FF6B6B 0%,#FFE66D 100%);
+    }
+    .detail-hero-chars {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      display: flex; align-items: flex-end; justify-content: center;
+      gap: -16px; padding: 0 20px;
+    }
+    .detail-char { margin-right: -12px; }
+    .detail-char:last-child { margin-right: 0; }
+    .detail-hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(0deg,rgba(0,0,0,0.55) 0%,rgba(0,0,0,0) 55%);
+    }
+    .detail-hero-top {
+      position: absolute; top: 0; left: 0; right: 0;
+      padding: 60px 16px 0; display: flex; justify-content: space-between; align-items: flex-start;
+    }
+    .detail-back {
+      width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center;
+      color: white; text-decoration: none; font-size: 16px;
+      border: 1.5px solid rgba(255,255,255,0.2);
+    }
+    .detail-hero-badges { display: flex; gap: 6px; }
+    .detail-hero-badge {
+      background: rgba(0,0,0,0.35); backdrop-filter: blur(8px);
+      color: white; font-size: 11px; font-weight: 800; padding: 4px 10px;
+      border-radius: 9999px; border: 1.5px solid rgba(255,255,255,0.25);
+    }
+    .detail-hero-info {
+      position: absolute; bottom: 0; left: 0; right: 0; padding: 12px 16px;
+    }
+    .detail-hero-lang {
+      font-size: 12px; font-weight: 800; color: rgba(255,255,255,0.8);
+      text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;
+    }
+    .detail-hero-title {
+      font-size: 24px; font-weight: 900; color: white; letter-spacing: -0.4px;
+      line-height: 1.2;
+    }
+
+    /* Content area */
+    .detail-content { background: white; }
+
+    /* Author row */
+    .author-row {
+      display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+      border-bottom: 1.5px solid var(--color-polar);
+    }
+    .author-avatar-lg {
+      width: 40px; height: 40px; border-radius: 50%; overflow: hidden;
+      flex-shrink: 0; border: 2px solid var(--color-swan);
+    }
+    .author-info { flex: 1; }
+    .author-name-lg { font-size: 14px; font-weight: 800; color: var(--color-eel); }
+    .author-date { font-size: 12px; font-weight: 600; color: var(--color-wolf); }
+    .follow-btn {
+      padding: 7px 16px; border-radius: 9999px; border: 2px solid var(--color-macaw);
+      background: white; color: var(--color-macaw); font-family: 'Nunito', sans-serif;
+      font-size: 13px; font-weight: 800; cursor: pointer;
+      transition: all 120ms ease;
+    }
+    .follow-btn:hover { background: var(--color-macaw); color: white; }
+
+    /* Stats row */
+    .stats-row {
+      display: flex; align-items: center; padding: 12px 16px;
+      border-bottom: 1.5px solid var(--color-polar); gap: 0;
+    }
+    .stat-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .stat-col + .stat-col { border-left: 1.5px solid var(--color-polar); }
+    .stat-num { font-size: 20px; font-weight: 900; color: var(--color-eel); letter-spacing: -0.5px; }
+    .stat-label { font-size: 11px; font-weight: 700; color: var(--color-wolf); text-transform: uppercase; letter-spacing: 0.04em; }
+
+    /* Description */
+    .story-desc { padding: 14px 16px; }
+    .story-desc-title { font-size: 15px; font-weight: 900; color: var(--color-eel); margin-bottom: 6px; }
+    .story-desc-text { font-size: 14px; font-weight: 600; color: var(--color-wolf); line-height: 1.6; }
+
+    /* Language & info chips */
+    .info-chips { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 0 16px 14px; }
+    .info-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 6px 12px; border-radius: 9999px; border: 1.5px solid var(--color-swan);
+      font-size: 13px; font-weight: 700; color: var(--color-wolf); background: var(--color-polar);
+    }
+
+    /* Comments preview */
+    .comments-section { padding: 12px 16px 0; }
+    .comment-row {
+      display: flex; gap: 10px; margin-bottom: 12px; align-items: flex-start;
+    }
+    .comment-avatar {
+      width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 900; color: white;
+    }
+    .comment-bubble { background: var(--color-polar); border-radius: 0 12px 12px 12px; padding: 8px 12px; flex: 1; }
+    .comment-name { font-size: 12px; font-weight: 800; color: var(--color-eel); margin-bottom: 2px; }
+    .comment-text { font-size: 13px; font-weight: 600; color: var(--color-wolf); line-height: 1.5; }
+    .comment-time { font-size: 11px; font-weight: 600; color: var(--color-hare); margin-top: 3px; }
+
+    .see-all-comments {
+      display: block; text-align: center; padding: 10px;
+      color: var(--color-macaw); font-size: 14px; font-weight: 800;
+      text-decoration: none; border-top: 1.5px solid var(--color-polar);
+    }
+
+    /* Bottom CTA */
+    .detail-cta {
+      padding: 12px 16px 16px; background: white;
+      border-top: 1.5px solid var(--color-swan); position: sticky; bottom: 0;
+    }
+    .cta-row { display: flex; gap: 10px; }
+    .play-btn {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 15px; background: var(--color-feather-green); color: white;
+      font-family: 'Nunito', sans-serif; font-size: 16px; font-weight: 900;
+      border: none; border-radius: 9999px; cursor: pointer;
+      box-shadow: 0 5px 0 #46A302; transition: transform 100ms ease, box-shadow 100ms ease;
+      text-decoration: none;
+    }
+    .play-btn:active { transform: translateY(5px); box-shadow: none; }
+    .remix-btn {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 15px 18px; border: 2.5px solid var(--color-macaw); background: white;
+      color: var(--color-macaw); font-family: 'Nunito', sans-serif;
+      font-size: 15px; font-weight: 900; border-radius: 9999px; cursor: pointer;
+      box-shadow: 0 4px 0 #149EE0; transition: transform 100ms ease, box-shadow 100ms ease;
+      text-decoration: none;
+    }
+    .remix-btn:active { transform: translateY(4px); box-shadow: none; }
+  </style>
+</head>
+<body class="demo-page">
+  <div class="phone">
+    <div class="status-bar" style="position:absolute;top:0;left:0;right:0;z-index:10;background:transparent;">
+      <span class="status-time" style="color:rgba(255,255,255,0.9);">9:41</span>
+      <div class="status-icons" style="color:white;">
+        <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1" fill="white"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1" fill="white"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="white"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="2.5" stroke="white" stroke-width="1.5" fill="none"/><rect x="22.5" y="4" width="2" height="4" rx="1" fill="white" opacity="0.5"/><rect x="1.5" y="2.5" width="18" height="7" rx="1.5" fill="white"/></svg>
+      </div>
+    </div>
+
+    <main class="screen">
+
+      <!-- Hero cover -->
+      <div class="detail-hero">
+        <!-- Characters -->
+        <div class="detail-hero-chars">
+          <div class="detail-char"><div data-char="lily" data-size="char-xl"></div></div>
+          <div class="detail-char" style="margin-left:-24px;"><div data-char="junior" data-size="char-lg"></div></div>
+        </div>
+
+        <div class="detail-hero-overlay"></div>
+
+        <!-- Back + badges -->
+        <div class="detail-hero-top">
+          <a href="08-community-feed.html" class="detail-back">‹</a>
+          <div class="detail-hero-badges">
+            <div class="detail-hero-badge">🇪🇸 Spanish</div>
+            <div class="detail-hero-badge">🌱 Beginner</div>
+          </div>
+        </div>
+
+        <!-- Title -->
+        <div class="detail-hero-info">
+          <div class="detail-hero-lang">🇪🇸 Spanish Story</div>
+          <div class="detail-hero-title">Mi Familia es Loca</div>
+        </div>
+      </div>
+
+      <!-- Author row -->
+      <div class="author-row">
+        <div class="author-avatar-lg" style="background:linear-gradient(135deg,#FF6B9D,#FF85B3);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:white;">M</div>
+        <div class="author-info">
+          <div class="author-name-lg">Marta García</div>
+          <div class="author-date">Published 3 days ago</div>
+        </div>
+        <button class="follow-btn" id="followBtn" onclick="toggleFollow(this)">+ Follow</button>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-col">
+          <div class="stat-num">4,821</div>
+          <div class="stat-label">▶ Plays</div>
+        </div>
+        <div class="stat-col">
+          <div class="stat-num">892</div>
+          <div class="stat-label">♥ Likes</div>
+        </div>
+        <div class="stat-col">
+          <div class="stat-num">134</div>
+          <div class="stat-label">💬 Comments</div>
+        </div>
+        <div class="stat-col">
+          <div class="stat-num">67</div>
+          <div class="stat-label">🔀 Remixes</div>
+        </div>
+      </div>
+
+      <!-- Info chips -->
+      <div class="info-chips" style="padding-top:12px;">
+        <span class="info-chip">🎬 6 scenes</span>
+        <span class="info-chip">🔀 3 branching choices</span>
+        <span class="info-chip">⏱️ ~4 min</span>
+        <span class="info-chip">🔀 Remixes allowed</span>
+      </div>
+
+      <!-- Description -->
+      <div class="story-desc">
+        <div class="story-desc-title">About this story</div>
+        <div class="story-desc-text">A chaotic Sunday lunch with the most dramatic family in Madrid. Practice common family vocabulary, greetings, and everyday expressions in a fun, branching story format. Three possible endings!</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Comments preview -->
+      <div class="comments-section">
+        <div style="font-size:15px;font-weight:900;color:var(--color-eel);margin-bottom:12px;">💬 Top Comments</div>
+
+        <div class="comment-row">
+          <div class="comment-avatar" style="background:#58CC02;">J</div>
+          <div class="comment-bubble">
+            <div class="comment-name">José M.</div>
+            <div class="comment-text">¡Me encantó esta historia! The vocabulary for family members helped me so much 😂 "La abuela" was my favourite character</div>
+            <div class="comment-time">2 days ago · 45 ♥</div>
+          </div>
+        </div>
+
+        <div class="comment-row">
+          <div class="comment-avatar" style="background:#1CB0F6;">S</div>
+          <div class="comment-bubble">
+            <div class="comment-name">Sofia K.</div>
+            <div class="comment-text">Perfect for my A2 level. Tried all 3 endings and they're all hilarious. Please make a sequel!!</div>
+            <div class="comment-time">1 day ago · 31 ♥</div>
+          </div>
+        </div>
+
+        <div class="comment-row">
+          <div class="comment-avatar" style="background:#FF7043;">T</div>
+          <div class="comment-bubble">
+            <div class="comment-name">Thomas B.</div>
+            <div class="comment-text">The "run away dramatically" ending got me. +15 XP well spent 🦉</div>
+            <div class="comment-time">5 hours ago · 18 ♥</div>
+          </div>
+        </div>
+
+        <a href="#" class="see-all-comments">See all 134 comments →</a>
+      </div>
+
+      <!-- Bottom padding for sticky CTA -->
+      <div style="height:80px;"></div>
+    </main>
+
+    <!-- Sticky CTA -->
+    <div class="detail-cta">
+      <div class="cta-row">
+        <a href="10-playing-story.html" class="play-btn hotspot">▶ Play Story</a>
+        <a href="03-new-storyboard.html" class="remix-btn">🔀 Remix</a>
+      </div>
+    </div>
+
+    <nav class="bottom-nav">
+      <a class="nav-item" href="01-duolingo-home-new-tab.html"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div><span class="nav-label">Home</span></a>
+      <a class="nav-item" href="#"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><span class="nav-label">Learn</span></a>
+      <a class="nav-item active" href="02-studio-landing.html"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="12" y2="12"/><polyline points="14 12 18 16 14 20"/></svg></div><span class="nav-label">Stories</span></a>
+      <a class="nav-item" href="11-popularity-board.html"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="11" width="6" height="11" rx="1"/><rect x="9" y="4" width="6" height="18" rx="1"/><rect x="17" y="7" width="6" height="15" rx="1"/></svg></div><span class="nav-label">Boards</span></a>
+      <a class="nav-item" href="#"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div><span class="nav-label">Profile</span></a>
+    </nav>
+  </div>
+
+  <script src="../js/characters.js"></script>
+  <script>
+    function toggleFollow(btn) {
+      if (btn.textContent.trim() === '+ Follow') {
+        btn.textContent = '✓ Following';
+        btn.style.background = 'var(--color-macaw)';
+        btn.style.color = 'white';
+      } else {
+        btn.textContent = '+ Follow';
+        btn.style.background = 'white';
+        btn.style.color = 'var(--color-macaw)';
+      }
+    }
+  </script>
+  <script>
+    document.querySelectorAll('.hotspot').forEach(el => {
+      el.addEventListener('click', () => el.classList.add('done'), { once: true });
+    });
+  </script>
+  <a class="home-fab" href="../index.html">🏠 Main Page</a>
+</body>
+</html>

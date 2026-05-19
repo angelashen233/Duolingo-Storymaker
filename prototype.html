@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duolingo Stories Studio — Interactive Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./duolingo-design.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(160deg, #58CC02 0%, #1CB0F6 50%, #CE82FF 100%);
+      min-height: 100vh;
+      padding: 32px 20px 48px;
+      color: #4B4B4B;
+    }
+
+    .hero {
+      text-align: center;
+      color: white;
+      padding: 0 0 36px;
+    }
+
+    .duo-icon {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 16px;
+      display: inline-block;
+      animation: bob 2.5s ease-in-out infinite;
+    }
+
+    @keyframes bob {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-10px); }
+    }
+
+    .hero-title {
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+      margin-bottom: 6px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .hero-subtitle {
+      font-size: 15px;
+      font-weight: 700;
+      opacity: 0.9;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    /* How-to instruction card */
+    .how-to {
+      display: inline-flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: rgba(255,255,255,0.22);
+      backdrop-filter: blur(10px);
+      border: 1.5px solid rgba(255,255,255,0.45);
+      border-radius: 16px;
+      padding: 14px 20px;
+      max-width: 420px;
+      margin: 0 auto 28px;
+      text-align: left;
+    }
+
+    .how-to-icon {
+      font-size: 28px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .how-to-text {
+      font-size: 14px;
+      font-weight: 700;
+      color: white;
+      line-height: 1.55;
+    }
+
+    .how-to-text strong {
+      font-weight: 900;
+      color: #CCFF77;
+    }
+
+    .start-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: white;
+      color: #58CC02;
+      font-family: 'Nunito', sans-serif;
+      font-size: 18px;
+      font-weight: 900;
+      padding: 16px 40px;
+      border-radius: 9999px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 6px 0 rgba(0,0,0,0.15);
+      transition: transform 100ms ease, box-shadow 100ms ease;
+      letter-spacing: -0.2px;
+    }
+
+    .start-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 0 rgba(0,0,0,0.15); }
+    .start-btn:active { transform: translateY(6px); box-shadow: none; }
+
+    /* Screen map */
+    .section-block {
+      max-width: 920px;
+      margin: 0 auto 32px;
+    }
+
+    .section-label {
+      color: rgba(255,255,255,0.8);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+      padding: 0 4px;
+    }
+
+    .screen-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 10px;
+    }
+
+    .screen-card {
+      background: white;
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+      transition: transform 120ms ease, box-shadow 120ms ease;
+      border: 2px solid transparent;
+    }
+
+    .screen-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 0 rgba(0,0,0,0.1);
+      border-color: rgba(88,204,2,0.3);
+    }
+
+    .screen-card:active { transform: translateY(4px); box-shadow: none; }
+
+    .screen-num {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #58CC02, #89E219);
+      color: white;
+      font-size: 15px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 3px 0 #46A302;
+    }
+
+    .screen-card.killer .screen-num {
+      background: linear-gradient(135deg, #FF4B4B, #FFC800);
+      box-shadow: 0 3px 0 #CC2222;
+    }
+
+    .screen-info { flex: 1; }
+
+    .screen-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: #4B4B4B;
+      line-height: 1.3;
+      margin-bottom: 2px;
+    }
+
+    .screen-desc {
+      font-size: 12px;
+      font-weight: 600;
+      color: #888;
+      line-height: 1.4;
+    }
+
+    /* Hotspot legend chip */
+    .hotspot-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      border: 2.5px solid #58CC02;
+      color: #2B7A00;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 8px 18px;
+      border-radius: 9999px;
+      margin-bottom: 24px;
+      animation: chip-pulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes chip-pulse {
+      0%, 100% { outline-color: rgba(88,204,2,0.85); outline-offset: 3px; }
+      60% { outline-color: rgba(88,204,2,0.08); outline-offset: 9px; }
+    }
+
+    .hotspot-chip {
+      outline: 3px solid rgba(88,204,2,0.85);
+      outline-offset: 3px;
+    }
+
+    .killer-tag {
+      background: linear-gradient(135deg, #FF4B4B, #FFC800);
+      color: white;
+      font-size: 10px;
+      font-weight: 900;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+
+    .arrow { color: #AFAFAF; font-size: 18px; flex-shrink: 0; }
+
+    footer {
+      text-align: center;
+      color: rgba(255,255,255,0.7);
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: 40px;
+    }
+
+    footer a { color: rgba(255,255,255,0.85); }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <img class="duo-icon" src="./Image/Duolingo-owl-front.png" alt="Duo the Duolingo owl">
+    <h1 class="hero-title">Stories Studio — Prototype</h1>
+    <p class="hero-subtitle">Interactive prototype · Navigate using the app's own UI<br>University Design Jam · Pathway 2 · Addition</p>
+
+    <!-- How-to card -->
+    <div class="how-to">
+      <div class="how-to-icon">🎯</div>
+      <div class="how-to-text">
+        On each screen, look for the <strong>pulsing green ring</strong> — that's where to tap/click to advance the flow.<br>
+        The ring disappears once tapped. Use the app's <strong>back arrows</strong>, <strong>bottom nav</strong>, and <strong>buttons</strong> to explore freely.
+      </div>
+    </div>
+
+    <!-- Hotspot demo -->
+    <div class="hotspot-chip">⬤ This is a hotspot ring</div>
+    <br>
+    <a href="./screens/01-duolingo-home-new-tab.html" class="start-btn">▶ Start Prototype</a>
+  </div>
+
+  <div class="section-block">
+    <p class="section-label">Jump to any screen</p>
+    <div class="screen-grid">
+
+      <a href="./screens/01-duolingo-home-new-tab.html" class="screen-card">
+        <div class="screen-num">1</div>
+        <div class="screen-info">
+          <div class="screen-name">Duolingo Home + Studio Tab</div>
+          <div class="screen-desc">Tap the Stories tab in the bottom nav</div>
+        </div>
+        <span class="arrow">›</span>
+      </a>
+
+      <a href="./screens/02-studio-landing.html" class="screen-card">
+        <div class="screen-num">2</div>
+        <div class="screen-info">
+          <div class="screen-name">Studio Landing</div>
+          <div class="screen-desc">Tap "Create a New Story"</div>
+        </div>
+        <span class="arrow">›</span>
+      </a>
+
+      <a href="./screens/03-new-storyboard.html" class="screen-card">
+        <div class="screen-num">3</div>
+        <div class="screen-info">
+          <div class="screen-name">Storyboard Canvas</div>
+          <div class="screen-desc">Tap "Characters" in the toolbar</div>
+        </div>
+        <span class="arrow">›</span>
+      </a>
+
+      <a href="./screens/04-character-picker.html" class="screen-card">
+        <div class="screen-num">4</div>
+        <div class="screen-info">
+          <div class="screen-name">Character Picker</div>
+          <div class="screen-desc">Select a character, then tap "Add to Scene"</div>
+        </div>
+        <span class="arrow">›</span>
+      </a>
+
+      <a href="./screens/05-branching-choice.html" class="screen-card">
+        <div class="screen-num">5</div>
+        <div class="screen-info">
+          <div class="screen-name">Branching Choice Editor</div>
+          <div class="screen-desc">Edit choices, then tap "Save Choices"</div>
+        </div>
+        <span class="arrow">›</span>
+      </a>
+
+      <a href="./screens/06-preview-story.html" class="screen-card">
+        <div class="screen-num">6</div>
+        <div class="screen-info">
+          <div class="screen-name">Preview Your Story</div>
+          <div class="screen-desc">Tap a choice to continue to publish</div>
+        </div>
+        <span class="arrow">›</span>
+      </a>
+
+      <a href="./screens/07-publish-flow.html" class="screen-card">
+        <div class="screen-num">7</div>
+        <div class="screen-info">
+          <div class="screen-name">Publish Flow</div>
+          <div class="screen-desc">Set language & difficulty, then tap "Publish"</div>
+        </div>
+        <span class="arrow">›</span>
+      </a>
+
+      <a href="./screens/08-community-feed.html" class="screen-card killer">
+        <div class="screen-num">8</div>
+        <div class="screen-info">
+          <div class="screen-name">Community Feed</div>
+          <div class="screen-desc">Tap a story card to open it</div>
+        </div>
+        <span class="killer-tag">★ KEY</span>
+        <span class="arrow">›</span>
+      </a>
+
+      <a href="./screens/09-story-detail.html" class="screen-card">
+        <div class="screen-num">9</div>
+        <div class="screen-info">
+          <div class="screen-name">Story Detail</div>
+          <div class="screen-desc">Tap "▶ Play Story" to begin</div>
+        </div>
+        <span class="arrow">›</span>
+      </a>
+
+      <a href="./screens/10-playing-story.html" class="screen-card">
+        <div class="screen-num">10</div>
+        <div class="screen-info">
+          <div class="screen-name">Playing a Story</div>
+          <div class="screen-desc">Tap choices to advance — finish to see the board</div>
+        </div>
+        <span class="arrow">›</span>
+      </a>
+
+      <a href="./screens/11-popularity-board.html" class="screen-card">
+        <div class="screen-num">11</div>
+        <div class="screen-info">
+          <div class="screen-name">Popularity Board</div>
+          <div class="screen-desc">Tap the #1 story to loop back</div>
+        </div>
+        <span class="arrow">›</span>
+      </a>
+
+    </div>
+  </div>
+
+  <footer>
+    Interactive Prototype &nbsp;·&nbsp; Vanilla HTML / CSS / JS &nbsp;·&nbsp; No frameworks
+    &nbsp;·&nbsp; <a href="./index.html">← Back to overview</a>
+  </footer>
+</body>
+</html>

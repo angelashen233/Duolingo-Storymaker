@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duolingo Stories Studio — Design Jam Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./duolingo-design.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: #FFFFFF;
+      min-height: 100vh;
+      padding: 32px 20px 48px;
+      color: #4B4B4B;
+      border-top: 5px solid #58CC02;
+    }
+
+    .hero {
+      text-align: center;
+      color: #3C3C3C;
+      padding: 0 0 40px;
+    }
+
+    .duo-icon {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 16px;
+      display: inline-block;
+      animation: bob 2.5s ease-in-out infinite;
+    }
+
+    @keyframes bob {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-10px); }
+    }
+
+    .hero-title {
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+      margin-bottom: 8px;
+      color: #58CC02;
+    }
+
+    .hero-subtitle {
+      font-size: 16px;
+      font-weight: 700;
+      color: #777777;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #F0FFF4;
+      color: #2B7A00;
+      padding: 8px 18px;
+      border-radius: 9999px;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border: 1.5px solid #B7EBA0;
+    }
+
+    .start-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: #58CC02;
+      color: white;
+      font-family: 'Nunito', sans-serif;
+      font-size: 18px;
+      font-weight: 900;
+      padding: 16px 40px;
+      border-radius: 9999px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 6px 0 #46A302;
+      transition: transform 100ms ease, box-shadow 100ms ease;
+      margin-top: 24px;
+      letter-spacing: -0.2px;
+    }
+
+    .start-btn:hover { background: #5AD902; transform: translateY(-2px); box-shadow: 0 8px 0 #46A302; }
+    .start-btn:active { transform: translateY(6px); box-shadow: none; }
+
+    .screen-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 12px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .screen-card {
+      background: white;
+      border-radius: 16px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 4px 0 #E5E5E5;
+      transition: transform 120ms ease, box-shadow 120ms ease;
+      border: 2px solid #F0F0F0;
+    }
+
+    .screen-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 0 rgba(0,0,0,0.1);
+      border-color: rgba(88,204,2,0.3);
+    }
+
+    .screen-card:active {
+      transform: translateY(4px);
+      box-shadow: none;
+    }
+
+    .screen-num {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #58CC02, #89E219);
+      color: white;
+      font-size: 16px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 3px 0 #46A302;
+    }
+
+    .screen-card.killer .screen-num {
+      background: linear-gradient(135deg, #FF4B4B, #FFC800);
+      box-shadow: 0 3px 0 #CC2222;
+    }
+
+    .screen-info { flex: 1; }
+
+    .screen-name {
+      font-size: 15px;
+      font-weight: 800;
+      color: #4B4B4B;
+      line-height: 1.3;
+      margin-bottom: 2px;
+    }
+
+    .screen-desc {
+      font-size: 13px;
+      font-weight: 600;
+      color: #777;
+      line-height: 1.4;
+    }
+
+    .killer-tag {
+      background: linear-gradient(135deg, #FF4B4B, #FFC800);
+      color: white;
+      font-size: 10px;
+      font-weight: 900;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+
+    .arrow {
+      color: #AFAFAF;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .section-label {
+      color: #AFAFAF;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+      padding: 0 4px;
+    }
+
+    .section-block {
+      max-width: 960px;
+      margin: 0 auto 32px;
+    }
+
+    footer {
+      text-align: center;
+      color: #AFAFAF;
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: 40px;
+      border-top: 2px solid #F0F0F0;
+      padding-top: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <img class="duo-icon" src="./Image/Duolingo-owl-front.png" alt="Duo the Duolingo owl">
+    <h1 class="hero-title">Duolingo Stories Studio</h1>
+    <p class="hero-subtitle">A new creation-first feature for language learners<br>University Design Jam · Pathway 2 · Addition</p>
+    <div class="hero-tag">📱 11 screens · Mobile-first · Vanilla HTML/CSS/JS</div>
+    <br>
+    <a href="./screens/01-duolingo-home-new-tab.html" class="start-btn">▶ Start Demo</a>
+  </div>
+
+  <div class="section-block">
+    <p class="section-label">🎬 Demo flow — click any screen to jump in</p>
+    <div class="screen-grid">
+
+      <a href="./screens/01-duolingo-home-new-tab.html" class="screen-card">
+        <div class="screen-num">1</div>
+        <div class="screen-info">
+          <div class="screen-name">Duolingo Home + Studio Tab</div>
+          <div class="screen-desc">Existing home screen with the new Studio tab added to bottom nav</div>
+        </div>
+        <span class="arrow">›</span>
+      </a>
+
+      <a href="./screens/02-studio-landing.html" class="screen-card">
+        <div class="screen-num">2</div>
+        <div class="screen-info">
+          <div class="screen-name">Studio Landing</div>
+          <div class="screen-desc">Your stories + create button + featured community picks</div>
+        </div>
+        <span class="arrow">›</span>
+      </a>
+
+      <a href="./screens/03-new-storyboard.html" class="screen-card">
+        <div class="screen-num">3</div>
+        <div class="screen-info">
+          <div class="screen-name">New Storyboard Canvas</div>
+          <div class="screen-desc">Scene editor with characters, dialogue input, timeline</div>
+        </div>
+        <span class="arrow">›</span>
+      </a>
+
+      <a href="./screens/04-character-picker.html" class="screen-card">
+        <div class="screen-num">4</div>
+        <div class="screen-info">
+          <div class="screen-name">Character Picker</div>
+          <div class="screen-desc">CSS blob characters grid + upload your own friend</div>
+        </div>
+        <span class="arrow">›</span>
+      </a>
+
+      <a href="./screens/05-branching-choice.html" class="screen-card">
+        <div class="screen-num">5</div>
+        <div class="screen-info">
+          <div class="screen-name">Branching Choice Editor</div>
+          <div class="screen-desc">Fork-in-the-story moment — add choices with animated branch lines</div>
+        </div>
+        <span class="arrow">›</span>
+      </a>
+
+      <a href="./screens/06-preview-story.html" class="screen-card">
+        <div class="screen-num">6</div>
+        <div class="screen-info">
+          <div class="screen-name">Preview Your Story</div>
+          <div class="screen-desc">Test-play your story as a player would experience it</div>
+        </div>
+        <span class="arrow">›</span>
+      </a>
+
+      <a href="./screens/07-publish-flow.html" class="screen-card">
+        <div class="screen-num">7</div>
+        <div class="screen-info">
+          <div class="screen-name">Publish Flow</div>
+          <div class="screen-desc">Title, language, difficulty, public/private, remix toggles</div>
+        </div>
+        <span class="arrow">›</span>
+      </a>
+
+      <a href="./screens/08-community-feed.html" class="screen-card killer">
+        <div class="screen-num">8</div>
+        <div class="screen-info">
+          <div class="screen-name">Community Feed</div>
+          <div class="screen-desc">Stories filtered by your learning language — the killer feature</div>
+        </div>
+        <span class="killer-tag">★ KEY</span>
+        <span class="arrow">›</span>
+      </a>
+
+      <a href="./screens/09-story-detail.html" class="screen-card">
+        <div class="screen-num">9</div>
+        <div class="screen-info">
+          <div class="screen-name">Story Detail</div>
+          <div class="screen-desc">Cover, author, stats, play button, comments, remix</div>
+        </div>
+        <span class="arrow">›</span>
+      </a>
+
+      <a href="./screens/10-playing-story.html" class="screen-card">
+        <div class="screen-num">10</div>
+        <div class="screen-info">
+          <div class="screen-name">Playing a Story</div>
+          <div class="screen-desc">Full-screen interactive — typewriter dialogue + branching choices</div>
+        </div>
+        <span class="arrow">›</span>
+      </a>
+
+      <a href="./screens/11-popularity-board.html" class="screen-card">
+        <div class="screen-num">11</div>
+        <div class="screen-info">
+          <div class="screen-name">Popularity Board</div>
+          <div class="screen-desc">Ranked top stories with gold/silver/bronze + time filters</div>
+        </div>
+        <span class="arrow">›</span>
+      </a>
+
+    </div>
+  </div>
+
+  <div class="section-block">
+    <p class="section-label">⭐ Demo 2 — Lesson-to-Creator Pipeline</p>
+    <div class="screen-grid">
+
+      <a href="./screens/demo2-french-lesson.html" class="screen-card killer" style="align-items:flex-start; padding: 22px 20px;">
+        <div class="screen-num" style="background:linear-gradient(135deg,#1CB0F6,#2B70C9);box-shadow:0 3px 0 #1A5CA8; flex-shrink:0; margin-top:2px;">D2</div>
+        <div class="screen-info">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap;">
+            <div class="screen-name" style="margin-bottom:0;">French Lesson → Creator Invite</div>
+            <span class="killer-tag">★ NEW</span>
+          </div>
+          <div class="screen-desc">Complete a 5-exercise French lesson, score perfect, then get invited to build your own story in the Studio.</div>
+        </div>
+        <span class="arrow" style="margin-top:2px;">›</span>
+      </a>
+
+    </div>
+  </div>
+
+  <footer>
+    Built with Vanilla HTML · CSS · JS &nbsp;·&nbsp; Duolingo Design System &nbsp;·&nbsp; iPhone 14 Pro viewport
+  </footer>
+</body>
+</html>
