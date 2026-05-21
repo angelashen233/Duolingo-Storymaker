@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Demo 4 — Drama Scene: La Traición</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../duolingo-design.css">
+  <link rel="stylesheet" href="../design-system.css">
+  <link rel="stylesheet" href="../components/animations.css">
+  <link rel="stylesheet" href="../components/character.css">
+  <link rel="stylesheet" href="../components/dialogue-bubble.css">
+  <style>
+    /* ── Editor header ── */
+    .editor-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 16px 8px; background: #1A0A2E;
+      border-bottom: 1.5px solid rgba(255,255,255,0.08);
+    }
+    .title-input {
+      flex: 1; font-family: 'Nunito', sans-serif; font-size: 17px;
+      font-weight: 900; color: white; border: none; outline: none;
+      background: transparent; min-width: 0;
+    }
+    .title-input::placeholder { color: rgba(255,255,255,0.4); }
+
+    .header-btn {
+      padding: 7px 16px; border-radius: 9999px; border: none; cursor: pointer;
+      font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 800;
+    }
+    .preview-btn {
+      background: #CE82FF; color: white;
+      box-shadow: 0 3px 0 #7C3AED; transition: transform 100ms ease, box-shadow 100ms ease;
+      text-decoration: none; display: inline-block;
+    }
+    .preview-btn:active { transform: translateY(3px); box-shadow: none; }
+
+    /* ── Genre tag strip ── */
+    .story-meta-strip {
+      background: #1A0A2E;
+      display: flex; align-items: center; gap: 8px;
+      padding: 4px 16px 8px; border-bottom: 1.5px solid rgba(255,255,255,0.08);
+    }
+    .meta-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: rgba(255,255,255,0.10); border-radius: 9999px;
+      padding: 3px 10px; font-size: 11px; font-weight: 800; color: rgba(255,255,255,0.80);
+    }
+    .meta-chip.drama { background: rgba(206,130,255,0.22); color: #E0AAFF; }
+    .meta-chip.lang  { background: rgba(255,75,75,0.18);  color: #FFB3B3; }
+    .meta-chip.level { background: rgba(255,200,0,0.18);  color: #FFE080; }
+
+    /* ── Scene canvas ── */
+    .scene-area {
+      margin: 10px 12px 0; border-radius: 18px; overflow: hidden;
+      height: 248px; position: relative;
+      border: 2px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, #0D0820 0%, #1A1040 35%, #0F2050 65%, #0A1828 100%);
+      box-shadow: inset 0 0 50px rgba(80,40,140,0.35);
+    }
+    /* Moon */
+    .scene-moon {
+      position: absolute; top: 12px; right: 22px; font-size: 30px;
+      filter: drop-shadow(0 0 8px rgba(200,220,255,0.6));
+      animation: moon-glow 3s ease-in-out infinite alternate;
+    }
+    @keyframes moon-glow {
+      from { filter: drop-shadow(0 0 8px rgba(200,220,255,0.4)); }
+      to   { filter: drop-shadow(0 0 16px rgba(200,220,255,0.9)); }
+    }
+    /* Clouds */
+    .scene-cloud {
+      position: absolute; font-size: 28px; opacity: 0.6;
+      animation: cloud-drift ease-in-out infinite alternate;
+    }
+    @keyframes cloud-drift {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(8px); }
+    }
+    /* Ground (wet puddle) */
+    .scene-floor {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 40px;
+      background: linear-gradient(180deg, rgba(20,30,50,0.4), rgba(30,50,80,0.7));
+      border-radius: 0 0 16px 16px;
+    }
+    .scene-puddle {
+      position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+      width: 80px; height: 14px; border-radius: 50%;
+      background: rgba(100,140,200,0.25); border: 1px solid rgba(100,160,220,0.3);
+    }
+
+    /* Characters */
+    .char-left  { position: absolute; bottom: 10px; left: 14px; }
+    .char-right { position: absolute; bottom: 10px; right: 14px; transform: scaleX(-1); }
+
+    /* Dramatic speech bubble (top-left area) */
+    .stage-bubble {
+      position: absolute; top: 12px; left: 82px; right: 12px;
+      max-width: 195px;
+    }
+    .stage-bubble-box {
+      background: rgba(255,255,255,0.97);
+      border: 2.5px solid #FF4B4B;
+      border-radius: 14px; padding: 9px 13px;
+      box-shadow: 0 4px 14px rgba(255,75,75,0.30);
+    }
+    .stage-bubble-speaker {
+      font-size: 9px; font-weight: 900; color: #CC0000;
+      text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 3px;
+    }
+    .stage-bubble-text {
+      font-size: 13px; font-weight: 800; color: #1A0A2E; line-height: 1.4;
+    }
+    .stage-bubble-tail {
+      width: 0; height: 0;
+      border-top: 0;
+      border-right: 10px solid transparent;
+      border-bottom: 10px solid #FF4B4B;
+      border-left: 0;
+      position: absolute; bottom: -10px; left: 18px;
+    }
+
+    /* Translation sub-line */
+    .bubble-translation {
+      font-size: 11px; font-weight: 600; color: #777;
+      margin-top: 4px; font-style: italic;
+    }
+
+    /* Lightning flash layer */
+    .lightning-layer {
+      position: absolute; inset: 0; border-radius: 16px;
+      background: white; opacity: 0; pointer-events: none; z-index: 6;
+      animation: lightning 5s ease-in-out 1.5s infinite;
+    }
+    @keyframes lightning {
+      0%, 91%, 100% { opacity: 0; }
+      92%  { opacity: 0.55; }
+      93%  { opacity: 0.05; }
+      94%  { opacity: 0.60; }
+      95%  { opacity: 0; }
+    }
+
+    /* Colour-tinted rain */
+    @keyframes rain-fall {
+      0%   { transform: translateY(-20px) rotate(15deg); }
+      100% { transform: translateY(270px) rotate(15deg); }
+    }
+    .rain-drop {
+      position: absolute; top: 0; width: 2px; height: 14px;
+      background: linear-gradient(180deg, transparent, rgba(100,160,220,0.65));
+      border-radius: 2px; animation: rain-fall linear infinite;
+    }
+    #weatherLayer {
+      position: absolute; inset: 0; pointer-events: none;
+      overflow: hidden; border-radius: 16px; z-index: 3;
+    }
+
+    /* Overlay */
+    .scene-overlay { position: absolute; inset: 0; border-radius: 16px; pointer-events: none; }
+
+    /* ── BG picker ── */
+    .bg-picker-row {
+      display: flex; align-items: center; gap: 4px;
+      padding: 7px 12px; overflow-x: auto; scrollbar-width: none;
+      background: white; border-top: 1.5px solid var(--color-swan);
+    }
+    .bg-picker-row::-webkit-scrollbar { display: none; }
+    .bg-picker-label { font-size: 11px; font-weight: 800; color: var(--color-wolf); white-space: nowrap; margin-right: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .bg-swatch {
+      width: 34px; height: 34px; border-radius: 50%; border: 3px solid transparent;
+      cursor: pointer; flex-shrink: 0; transition: transform 100ms ease;
+    }
+    .bg-swatch.active { border-color: var(--color-eel); transform: scale(1.15); }
+    .bg-swatch:hover { transform: scale(1.1); }
+
+    /* ── Dialogue panel ── */
+    .dialogue-area {
+      padding: 8px 12px 6px; background: white; border-top: 1.5px solid var(--color-swan);
+    }
+    .dialogue-speaker-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .speaker-avatar { width: 28px; height: 28px; border-radius: 50%; overflow: hidden; flex-shrink: 0; border: 2px solid var(--color-swan); }
+    .speaker-name { font-size: 13px; font-weight: 800; color: #CC0000; }
+    .dialogue-input-row { display: flex; gap: 8px; align-items: flex-end; }
+    .dialogue-field {
+      flex: 1; font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 700;
+      color: var(--color-eel); background: var(--color-polar);
+      border: 2px solid var(--color-swan); border-radius: 12px;
+      padding: 8px 12px; resize: none; outline: none; min-height: 44px;
+      max-height: 86px; line-height: 1.4; transition: border-color 150ms ease;
+    }
+    .dialogue-field:focus { border-color: #FF4B4B; background: white; }
+    .send-btn {
+      width: 44px; height: 44px; border-radius: 50%; background: #FF4B4B;
+      color: white; font-size: 18px; border: none; cursor: pointer; flex-shrink: 0;
+      box-shadow: 0 3px 0 #CC2222; transition: transform 100ms ease, box-shadow 100ms ease;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .send-btn:active { transform: translateY(3px); box-shadow: none; }
+
+    /* ── Scene settings panel ── */
+    .scene-panel { display: none; padding: 8px 12px; background: white; border-top: 1.5px solid var(--color-swan); }
+    .scene-panel.visible { display: block; }
+    .scene-panel-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .scene-panel-row:last-child { margin-bottom: 0; }
+    .scene-row-label { font-size: 10px; font-weight: 900; color: var(--color-wolf); text-transform: uppercase; letter-spacing: 0.06em; width: 66px; flex-shrink: 0; }
+    .scene-field {
+      flex: 1; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700;
+      color: var(--color-eel); background: var(--color-polar);
+      border: 2px solid var(--color-swan); border-radius: 9px; padding: 6px 10px;
+      outline: none; resize: none; transition: border-color 150ms ease;
+    }
+    .scene-field:focus { border-color: var(--color-macaw); background: white; }
+    .time-pills { display: flex; gap: 4px; flex-wrap: nowrap; overflow-x: auto; }
+    .time-pill {
+      padding: 5px 8px; border-radius: 9999px;
+      border: 2px solid var(--color-swan); background: var(--color-polar);
+      font-family: 'Nunito', sans-serif; font-size: 11px; font-weight: 800;
+      color: var(--color-wolf); cursor: pointer; white-space: nowrap; flex-shrink: 0;
+    }
+    .time-pill.active { background: #1A0A2E; color: white; border-color: #1A0A2E; }
+    .weather-chips { display: flex; gap: 5px; }
+    .weather-chip {
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 2.5px solid var(--color-swan); background: var(--color-polar);
+      font-size: 16px; cursor: pointer; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; transition: all 100ms ease;
+    }
+    .weather-chip.active { border-color: var(--color-macaw); background: rgba(28,176,246,0.12); }
+
+    /* ── Story Arc panel ── */
+    .arc-panel { display: none; padding: 8px 12px; background: white; border-top: 1.5px solid var(--color-swan); }
+    .arc-panel.visible { display: block; }
+    .arc-vis svg { display: block; width: 100%; overflow: visible; }
+    .arc-dot { transition: fill 200ms ease; }
+    .arc-labels-row { display: flex; justify-content: space-between; padding: 3px 4px 0; margin-bottom: 6px; }
+    .arc-labels-row span { font-size: 9px; font-weight: 800; color: var(--color-hare); cursor: pointer; text-align: center; flex: 1; transition: color 120ms ease; }
+    .arc-labels-row span.arc-label-active { color: #5B1F9E; font-weight: 900; }
+    .arc-beat-bar {
+      background: rgba(206,130,255,0.12); border: 2px solid rgba(206,130,255,0.3);
+      border-radius: 9px; padding: 5px 10px; margin-bottom: 6px;
+      font-size: 12px; font-weight: 700; color: #5B1F9E; text-align: center;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .beat-pills-row { display: flex; gap: 5px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+    .beat-pills-row::-webkit-scrollbar { display: none; }
+    .beat-pill {
+      padding: 5px 11px; border-radius: 9999px; border: 2px solid transparent;
+      font-family: 'Nunito', sans-serif; font-size: 11px; font-weight: 800;
+      cursor: pointer; white-space: nowrap; flex-shrink: 0;
+      transition: transform 120ms ease, box-shadow 120ms ease; outline: none;
+    }
+    .beat-pill.active { border-color: currentColor; box-shadow: 0 2px 0 rgba(0,0,0,0.15); transform: translateY(-1px); }
+
+    /* ── Toolbar ── */
+    .canvas-toolbar {
+      display: flex; align-items: center;
+      border-top: 1.5px solid var(--color-swan); background: white; padding: 4px 0;
+    }
+    .tool-btn {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      gap: 3px; padding: 7px 4px; cursor: pointer; border: none;
+      background: transparent; border-radius: 10px; transition: background 120ms ease;
+      font-family: 'Nunito', sans-serif;
+    }
+    .tool-btn:hover { background: var(--color-polar); }
+    .tool-btn.active { background: rgba(206,130,255,0.12); }
+    .tool-icon { font-size: 18px; }
+    .tool-label { font-size: 10px; font-weight: 800; color: var(--color-wolf); }
+    .tool-btn.active .tool-label { color: #7C3AED; }
+
+    /* ── Timeline strip ── */
+    .timeline-strip { background: var(--color-polar); border-top: 1.5px solid var(--color-swan); padding: 8px 12px; }
+    .timeline-label { font-size: 11px; font-weight: 800; color: var(--color-wolf); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+    .timeline-row { display: flex; gap: 7px; overflow-x: auto; scrollbar-width: none; }
+    .timeline-row::-webkit-scrollbar { display: none; }
+    .timeline-scene {
+      width: 48px; height: 48px; border-radius: 10px; overflow: hidden;
+      flex-shrink: 0; border: 3px solid transparent; cursor: pointer; position: relative;
+      transition: border-color 120ms ease;
+    }
+    .timeline-scene.active { border-color: #CE82FF; box-shadow: 0 0 0 2px rgba(206,130,255,0.3); }
+    .timeline-scene-inner { width: 100%; height: 100%; display: flex; align-items: flex-end; }
+    .timeline-num { position: absolute; top: 3px; left: 3px; background: rgba(0,0,0,0.5); color: white; font-size: 9px; font-weight: 800; padding: 1px 4px; border-radius: 4px; }
+    .beat-badge {
+      position: absolute; bottom: 3px; right: 3px; width: 18px; height: 18px; border-radius: 50%;
+      font-size: 11px; display: flex; align-items: center; justify-content: center;
+      border: 2px solid white; z-index: 5; line-height: 1;
+    }
+    .timeline-add {
+      width: 48px; height: 48px; border-radius: 10px; border: 2px dashed var(--color-hare);
+      background: transparent; display: flex; align-items: center; justify-content: center;
+      font-size: 20px; color: var(--color-hare); cursor: pointer; flex-shrink: 0; transition: all 120ms ease;
+    }
+    .timeline-add:hover { border-color: var(--color-feather-green); color: var(--color-feather-green); }
+
+    /* ── Ripple effect on puddle (rain drops hitting) ── */
+    @keyframes ripple {
+      0%   { transform: translateX(-50%) scale(0); opacity: 0.6; }
+      100% { transform: translateX(-50%) scale(1); opacity: 0; }
+    }
+    .puddle-ripple {
+      position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);
+      width: 40px; height: 8px; border-radius: 50%;
+      border: 1.5px solid rgba(120,180,240,0.5);
+      animation: ripple 1.4s ease-out infinite;
+    }
+    .puddle-ripple:nth-child(2) { animation-delay: 0.45s; width: 30px; }
+    .puddle-ripple:nth-child(3) { animation-delay: 0.9s;  width: 22px; }
+  </style>
+</head>
+<body class="demo-page">
+  <div class="phone" style="position:relative;">
+    <div class="status-bar" style="background:#1A0A2E;">
+      <span class="status-time" style="color:rgba(255,255,255,0.85);">9:41</span>
+      <div class="status-icons" style="color:rgba(255,255,255,0.7);">
+        <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1" fill="currentColor"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1" fill="currentColor"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="currentColor"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="2.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="22.5" y="4" width="2" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="18" height="7" rx="1.5" fill="currentColor"/></svg>
+      </div>
+    </div>
+
+    <main class="screen" style="display:flex;flex-direction:column;">
+
+      <!-- Editor header (dark themed) -->
+      <div class="editor-header">
+        <a href="../index.html" class="back-btn" style="background:rgba(255,255,255,0.10);border-color:rgba(255,255,255,0.2);color:white;text-decoration:none;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </a>
+        <input class="title-input" type="text" value="La Traición" placeholder="Story title...">
+        <a href="06-preview-story.html" class="header-btn preview-btn">▶ Preview</a>
+      </div>
+
+      <!-- Story meta strip -->
+      <div class="story-meta-strip">
+        <span class="meta-chip drama">🎭 Drama</span>
+        <span class="meta-chip lang">🇪🇸 Spanish</span>
+        <span class="meta-chip level">⚡ Nivel B1</span>
+        <span class="meta-chip" style="margin-left:auto;background:rgba(255,75,75,0.15);color:#FFB3B3;">🏔️ Scene 5 — Climax</span>
+      </div>
+
+      <!-- ════════════════════════════════
+           DRAMATIC SCENE CANVAS
+           Night · Heavy Rain · Climax
+           ════════════════════════════════ -->
+      <div class="scene-area" id="sceneCanvas">
+
+        <!-- Night sky elements -->
+        <div class="scene-moon">🌧️</div>
+        <div class="scene-cloud" style="left:14px;top:14px;animation-duration:4s;">☁️</div>
+        <div class="scene-cloud" style="left:60px;top:24px;font-size:22px;animation-duration:5.5s;animation-delay:1s;">☁️</div>
+        <div class="scene-cloud" style="right:60px;top:10px;font-size:20px;animation-duration:6s;animation-delay:0.4s;opacity:0.5;">☁️</div>
+
+        <!-- Ground -->
+        <div class="scene-floor"></div>
+        <div class="scene-puddle">
+          <div class="puddle-ripple"></div>
+          <div class="puddle-ripple"></div>
+          <div class="puddle-ripple"></div>
+        </div>
+
+        <!-- Dramatic speech bubble (Lily speaking) -->
+        <div class="stage-bubble slide-up">
+          <div class="stage-bubble-box">
+            <div class="stage-bubble-speaker">Lily — enojada</div>
+            <div class="stage-bubble-text">¿Cómo pudiste hacerme esto?!</div>
+            <div class="bubble-translation">How could you do this to me?!</div>
+          </div>
+          <div class="stage-bubble-tail"></div>
+        </div>
+
+        <!-- Lily — left (the betrayed friend) -->
+        <div class="char-left char-bounce-in" style="filter:drop-shadow(0 0 8px rgba(255,75,75,0.35));">
+          <div data-char="lily" data-size="char-lg"></div>
+        </div>
+
+        <!-- Eddy — right (the betrayer, facing inward) -->
+        <div class="char-right char-bounce-in" style="animation-delay:150ms;filter:drop-shadow(0 0 8px rgba(100,120,200,0.25));">
+          <div data-char="eddy" data-size="char-lg"></div>
+        </div>
+
+        <!-- Overlay (night tint) -->
+        <div class="scene-overlay" id="sceneOverlay" style="background:rgba(0,5,40,0.48);"></div>
+        <!-- Rain particles (rendered via JS) -->
+        <div id="weatherLayer"></div>
+        <!-- Occasional lightning flash -->
+        <div class="lightning-layer"></div>
+
+      </div>
+
+      <!-- BG picker -->
+      <div class="bg-picker-row">
+        <span class="bg-picker-label">Scene:</span>
+        <div class="bg-swatch" style="background:linear-gradient(135deg,#C5EDFF,#B8E0B0)" onclick="setBg(this,'park')"></div>
+        <div class="bg-swatch" style="background:linear-gradient(135deg,#FFF4E8,#C49A6C)" onclick="setBg(this,'cafe')"></div>
+        <div class="bg-swatch" style="background:linear-gradient(135deg,#8EC5FC,#7986CB)" onclick="setBg(this,'city')"></div>
+        <div class="bg-swatch" style="background:linear-gradient(135deg,#FFF8E7,#D4A860)" onclick="setBg(this,'home')"></div>
+        <div class="bg-swatch active" style="background:linear-gradient(135deg,#0D0820,#0F2050)" onclick="setBg(this,'night')"></div>
+        <div class="bg-swatch" style="background:linear-gradient(135deg,#A18CD1,#FBC2EB)" onclick="setBg(this,'sunset')"></div>
+      </div>
+
+      <!-- Dialogue input (default panel) -->
+      <div class="dialogue-area" id="dialogueArea">
+        <div class="dialogue-speaker-row">
+          <div class="speaker-avatar">
+            <div data-char="lily" data-size="char-sm" style="transform:scale(0.35);transform-origin:top left;width:80px;height:100px;"></div>
+          </div>
+          <span class="speaker-name">Lily</span>
+          <span style="color:var(--color-hare);font-size:11px;margin-left:3px;">speaking</span>
+          <span style="margin-left:auto;font-size:11px;font-weight:800;color:#CC0000;">😡 Enojada</span>
+        </div>
+        <div class="dialogue-input-row">
+          <textarea class="dialogue-field" rows="2" id="dialogField">¡Eres mi mejor amigo y me traicionaste!</textarea>
+          <button class="send-btn" onclick="addLine()">→</button>
+        </div>
+        <div style="font-size:11px;font-weight:600;color:var(--color-wolf);margin-top:4px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span>💡 <em>Tip: escribir en español — "Y tú, ¿qué harías?"</em></span>
+        </div>
+      </div>
+
+      <!-- Scene settings panel -->
+      <div class="scene-panel" id="scenePanel">
+        <div class="scene-panel-row">
+          <span class="scene-row-label">📍 Location</span>
+          <input class="scene-field" type="text" value="La calle — noche lluviosa" placeholder="Where does this scene take place?">
+        </div>
+        <div class="scene-panel-row">
+          <span class="scene-row-label">🕐 Time</span>
+          <div class="time-pills">
+            <button class="time-pill" onclick="setSceneTime(this,'morning')">🌅 Morning</button>
+            <button class="time-pill" onclick="setSceneTime(this,'afternoon')">☀️ Day</button>
+            <button class="time-pill" onclick="setSceneTime(this,'evening')">🌆 Evening</button>
+            <button class="time-pill active" onclick="setSceneTime(this,'night')">🌙 Night</button>
+          </div>
+        </div>
+        <div class="scene-panel-row">
+          <span class="scene-row-label">🌤 Weather</span>
+          <div class="weather-chips">
+            <button class="weather-chip" title="Sunny" onclick="setWeather(this,'sunny')">☀️</button>
+            <button class="weather-chip" title="Cloudy" onclick="setWeather(this,'cloudy')">⛅</button>
+            <button class="weather-chip active" title="Rainy" onclick="setWeather(this,'rainy')">🌧️</button>
+            <button class="weather-chip" title="Snowy" onclick="setWeather(this,'snowy')">❄️</button>
+            <button class="weather-chip" title="Foggy" onclick="setWeather(this,'foggy')">🌫️</button>
+          </div>
+        </div>
+        <div class="scene-panel-row">
+          <span class="scene-row-label">🎭 Mood</span>
+          <input class="scene-field" type="text" value="Dramatic confrontation — heartbreak and betrayal">
+        </div>
+      </div>
+
+      <!-- Story Arc panel -->
+      <div class="arc-panel" id="arcPanel">
+        <div class="arc-vis">
+          <svg viewBox="0 0 316 62" height="62" xmlns="http://www.w3.org/2000/svg">
+            <!-- Arc path -->
+            <path d="M 16,56 C 42,52 58,26 94,14 C 116,7 136,3 158,3 C 180,3 200,7 222,16 C 252,28 270,50 300,56"
+                  stroke="#E5E5E5" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <!-- Active arc (up to Climax) in purple -->
+            <path d="M 16,56 C 42,52 58,26 94,14 C 116,7 136,3 158,3 C 180,3 200,7 222,16"
+                  stroke="#CE82FF" stroke-width="3.5" fill="none" stroke-linecap="round" opacity="0.6"/>
+            <!-- Beat dots -->
+            <circle data-beat="exposition" cx="16"  cy="56" r="7"   fill="#1CB0F6" class="arc-dot" onclick="setBeat('exposition')" style="cursor:pointer;"/>
+            <circle data-beat="inciting"   cx="70"  cy="24" r="7"   fill="#FFC800" class="arc-dot" onclick="setBeat('inciting')" style="cursor:pointer;"/>
+            <circle data-beat="rising1"    cx="112" cy="9"  r="7"   fill="#FF9800" class="arc-dot" onclick="setBeat('rising1')" style="cursor:pointer;"/>
+            <circle data-beat="rising2"    cx="158" cy="3"  r="7.5" fill="#FF4B4B" class="arc-dot" onclick="setBeat('rising2')" style="cursor:pointer;"/>
+            <circle data-beat="rising3"    cx="202" cy="8"  r="7"   fill="#E5E5E5" class="arc-dot" onclick="setBeat('rising3')" style="cursor:pointer;"/>
+            <circle data-beat="climax"     cx="234" cy="18" r="11"  fill="#CE82FF" class="arc-dot" onclick="setBeat('climax')" style="cursor:pointer;stroke:white;stroke-width:2;filter:drop-shadow(0 0 6px rgba(206,130,255,0.7));"/>
+            <circle data-beat="ending"     cx="300" cy="56" r="7"   fill="#E5E5E5" class="arc-dot" onclick="setBeat('ending')" style="cursor:pointer;"/>
+          </svg>
+          <div class="arc-labels-row">
+            <span onclick="setBeat('exposition')">Exposition</span>
+            <span onclick="setBeat('inciting')">Inciting</span>
+            <span onclick="setBeat('rising1')">Rise 1</span>
+            <span onclick="setBeat('rising2')">Rise 2</span>
+            <span onclick="setBeat('rising3')">Rise 3</span>
+            <span class="arc-label-active" onclick="setBeat('climax')">Climax ✦</span>
+            <span onclick="setBeat('ending')">Ending</span>
+          </div>
+        </div>
+        <div class="arc-beat-bar" id="arcBeatBar">🏔️ <strong>Climax</strong> — Scene 5 · the confrontation peaks</div>
+        <div class="beat-pills-row">
+          <button class="beat-pill" data-beat="exposition" onclick="setBeat('exposition')" style="background:rgba(28,176,246,0.12);color:#0080C0;">🌱 Exposition</button>
+          <button class="beat-pill" data-beat="inciting"   onclick="setBeat('inciting')"   style="background:rgba(255,200,0,0.15);color:#7A5000;">⚡ Inciting Incident</button>
+          <button class="beat-pill" data-beat="rising1"    onclick="setBeat('rising1')"    style="background:rgba(255,152,0,0.15);color:#9E5000;">📈 Rising Action 1</button>
+          <button class="beat-pill" data-beat="rising2"    onclick="setBeat('rising2')"    style="background:rgba(255,75,75,0.15);color:#CC0000;">🔥 Rising Action 2</button>
+          <button class="beat-pill" data-beat="rising3"    onclick="setBeat('rising3')"    style="background:rgba(206,82,0,0.12);color:#7A3000;">📈 Rising Action 3</button>
+          <button class="beat-pill active" data-beat="climax" onclick="setBeat('climax')"  style="background:rgba(206,130,255,0.18);color:#5B1F9E;">🏔️ Climax</button>
+          <button class="beat-pill" data-beat="ending"     onclick="setBeat('ending')"     style="background:rgba(88,204,2,0.12);color:#1E6B00;">🌅 Ending</button>
+        </div>
+      </div>
+
+      <!-- Canvas toolbar -->
+      <div class="canvas-toolbar">
+        <a href="04-character-picker.html" class="tool-btn hotspot">
+          <span class="tool-icon">👤</span>
+          <span class="tool-label">Characters</span>
+        </a>
+        <button class="tool-btn active" id="toolDialogue" onclick="setTool(this)">
+          <span class="tool-icon">💬</span>
+          <span class="tool-label">Dialogue</span>
+        </button>
+        <a href="05-branching-choice.html" class="tool-btn">
+          <span class="tool-icon">🔀</span>
+          <span class="tool-label">Choices</span>
+        </a>
+        <button class="tool-btn" onclick="setTool(this)">
+          <span class="tool-icon">🎨</span>
+          <span class="tool-label">Scene</span>
+        </button>
+        <button class="tool-btn" onclick="setTool(this)">
+          <span class="tool-icon">📖</span>
+          <span class="tool-label">Arc</span>
+        </button>
+      </div>
+
+      <!-- Timeline strip — 5 scenes with beat badges pre-assigned -->
+      <div class="timeline-strip">
+        <div class="timeline-label">Story Arc — 5 Scenes</div>
+        <div class="timeline-row" id="timelineRow">
+
+          <!-- Scene 1: Exposition — Day Park -->
+          <div class="timeline-scene" onclick="selectScene(0)" title="Exposition — La reunión">
+            <div class="timeline-scene-inner" style="background:linear-gradient(135deg,#C5EDFF,#B8E0B0)"></div>
+            <div class="timeline-num">1</div>
+            <div class="beat-badge" style="background:#1CB0F6;">🌱</div>
+          </div>
+
+          <!-- Scene 2: Inciting Incident — Evening Cafe -->
+          <div class="timeline-scene" onclick="selectScene(1)" title="Inciting Incident — El mensaje">
+            <div class="timeline-scene-inner" style="background:linear-gradient(135deg,#FFF4E8,#C49A6C)"></div>
+            <div class="timeline-num">2</div>
+            <div class="beat-badge" style="background:#FFC800;">⚡</div>
+          </div>
+
+          <!-- Scene 3: Rising Action 1 — City Evening -->
+          <div class="timeline-scene" onclick="selectScene(2)" title="Rising Action 1 — La duda">
+            <div class="timeline-scene-inner" style="background:linear-gradient(135deg,#7986CB,#546E9A)"></div>
+            <div class="timeline-num">3</div>
+            <div class="beat-badge" style="background:#FF9800;">📈</div>
+          </div>
+
+          <!-- Scene 4: Rising Action 2 — Night Rain -->
+          <div class="timeline-scene" onclick="selectScene(3)" title="Rising Action 2 — La verdad">
+            <div class="timeline-scene-inner" style="background:linear-gradient(135deg,#1A1040,#0F2050)"></div>
+            <div class="timeline-num">4</div>
+            <div class="beat-badge" style="background:#FF4B4B;">🔥</div>
+          </div>
+
+          <!-- Scene 5: CLIMAX — Night Storm (ACTIVE) -->
+          <div class="timeline-scene active" onclick="selectScene(4)" title="Climax — La traición">
+            <div class="timeline-scene-inner" style="background:linear-gradient(135deg,#0D0820,#1A0A2E)"></div>
+            <div class="timeline-num">5</div>
+            <div class="beat-badge" style="background:#CE82FF;">🏔️</div>
+          </div>
+
+          <!-- Add new scene -->
+          <button class="timeline-add" onclick="addScene()">+</button>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+      <a class="nav-item" href="01-duolingo-home-new-tab.html"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div><span class="nav-label">Home</span></a>
+      <a class="nav-item" href="#"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><span class="nav-label">Learn</span></a>
+      <a class="nav-item active" href="02-studio-landing.html"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="12" y2="12"/><polyline points="14 12 18 16 14 20"/></svg></div><span class="nav-label">Stories</span></a>
+      <a class="nav-item" href="11-popularity-board.html"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="11" width="6" height="11" rx="1"/><rect x="9" y="4" width="6" height="18" rx="1"/><rect x="17" y="7" width="6" height="15" rx="1"/></svg></div><span class="nav-label">Boards</span></a>
+      <a class="nav-item" href="#"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div><span class="nav-label">Profile</span></a>
+    </nav>
+  </div>
+
+  <script src="../js/characters.js"></script>
+  <script>
+    /* ── Background map ── */
+    const bgMap = {
+      park:   'linear-gradient(180deg,#C5EDFF 0%,#A8D8FF 40%,#D4EDCF 75%,#B8E0B0 100%)',
+      cafe:   'linear-gradient(180deg,#FFF4E8 0%,#FFE0C0 40%,#D4A574 80%,#C49A6C 100%)',
+      city:   'linear-gradient(180deg,#8EC5FC 0%,#E0C3FC 50%,#9FA8DA 80%,#7986CB 100%)',
+      home:   'linear-gradient(180deg,#FFF8E7 0%,#FDECD2 40%,#E8C990 80%,#D4A860 100%)',
+      night:  'linear-gradient(180deg,#0D0820 0%,#1A1040 35%,#0F2050 65%,#0A1828 100%)',
+      sunset: 'linear-gradient(180deg,#F8B500 0%,#F04E23 50%,#8E3090 100%)',
+    };
+
+    function setBg(el, key) {
+      document.querySelectorAll('.bg-swatch').forEach(s => s.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById('sceneCanvas').style.background = bgMap[key];
+    }
+
+    /* ── Tool switcher ── */
+    function setTool(el) {
+      document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      const label = el.querySelector('.tool-label').textContent.trim();
+      const dialogue = document.getElementById('dialogueArea');
+      const scene    = document.getElementById('scenePanel');
+      const arc      = document.getElementById('arcPanel');
+      dialogue.style.display = 'none';
+      scene.classList.remove('visible');
+      arc.classList.remove('visible');
+      if (label === 'Dialogue') dialogue.style.display = '';
+      else if (label === 'Scene') scene.classList.add('visible');
+      else if (label === 'Arc')   arc.classList.add('visible');
+    }
+
+    /* ── Time of day ── */
+    function setSceneTime(btn, time) {
+      document.querySelectorAll('.time-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const overlays = { morning:'rgba(255,200,80,0.10)', afternoon:'transparent', evening:'rgba(255,100,40,0.20)', night:'rgba(0,5,40,0.48)' };
+      document.getElementById('sceneOverlay').style.background = overlays[time] || 'transparent';
+    }
+
+    /* ── Weather ── */
+    function setWeather(btn, weather) {
+      document.querySelectorAll('.weather-chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderRain(); // Only rain is relevant here but keep generic
+    }
+
+    /* ── Render rain ── */
+    function renderRain() {
+      const layer = document.getElementById('weatherLayer');
+      layer.innerHTML = '';
+      for (let i = 0; i < 26; i++) {
+        const d = document.createElement('div');
+        d.className = 'rain-drop';
+        d.style.left             = (Math.random() * 108) + '%';
+        d.style.animationDelay   = (Math.random() * 1.2).toFixed(2) + 's';
+        d.style.animationDuration = (0.45 + Math.random() * 0.40).toFixed(2) + 's';
+        d.style.opacity          = (0.40 + Math.random() * 0.40).toFixed(2);
+        d.style.height           = (11 + Math.random() * 7).toFixed(0) + 'px';
+        layer.appendChild(d);
+      }
+    }
+
+    /* ── Story Arc ── */
+    const beats = {
+      exposition: { label: 'Exposition',        icon: '🌱', dot: '#1CB0F6', pillColor: '#0080C0' },
+      inciting:   { label: 'Inciting Incident', icon: '⚡', dot: '#FFC800', pillColor: '#7A5000' },
+      rising1:    { label: 'Rising Action 1',   icon: '📈', dot: '#FF9800', pillColor: '#9E5000' },
+      rising2:    { label: 'Rising Action 2',   icon: '🔥', dot: '#FF4B4B', pillColor: '#CC0000' },
+      rising3:    { label: 'Rising Action 3',   icon: '📈', dot: '#FF6D00', pillColor: '#BF3600' },
+      climax:     { label: 'Climax',            icon: '🏔️', dot: '#CE82FF', pillColor: '#5B1F9E' },
+      ending:     { label: 'Ending',            icon: '🌅', dot: '#58CC02', pillColor: '#1E6B00' },
+    };
+    let activeSceneIndex = 4; // Start on Climax scene
+    const sceneBeatMap = { 0:'exposition', 1:'inciting', 2:'rising1', 3:'rising2', 4:'climax' };
+
+    function selectScene(idx) {
+      activeSceneIndex = idx;
+      document.querySelectorAll('.timeline-scene').forEach((s, i) => s.classList.toggle('active', i === idx));
+      if (document.getElementById('arcPanel').classList.contains('visible')) {
+        const b = sceneBeatMap[idx];
+        if (b) _applyBeatVisuals(b);
+      }
+    }
+
+    function setBeat(key) {
+      sceneBeatMap[activeSceneIndex] = key;
+      _applyBeatVisuals(key);
+      _updateTimelineBadge(activeSceneIndex, key);
+      const pill = document.querySelector(`.beat-pill[data-beat="${key}"]`);
+      if (pill) { pill.style.transform = 'scale(1.15)'; setTimeout(() => pill.style.transform = '', 180); }
+    }
+
+    function _applyBeatVisuals(key) {
+      const beat = beats[key];
+      document.querySelectorAll('.beat-pill').forEach(p => p.classList.remove('active'));
+      const pill = document.querySelector(`.beat-pill[data-beat="${key}"]`);
+      if (pill) pill.classList.add('active');
+      document.querySelectorAll('.arc-dot').forEach(d => {
+        const existing = sceneBeatMap;
+        // Keep pre-assigned dots colored
+        const dBeat = d.getAttribute('data-beat');
+        const assignedScenes = Object.values(existing);
+        if (assignedScenes.includes(dBeat)) {
+          d.setAttribute('fill', beats[dBeat]?.dot || '#E5E5E5');
+        } else {
+          d.setAttribute('fill', '#E5E5E5');
+        }
+      });
+      // Always highlight selected dot brighter
+      const dot = document.querySelector(`.arc-dot[data-beat="${key}"]`);
+      if (dot) dot.setAttribute('fill', beat.dot);
+      document.getElementById('arcBeatBar').innerHTML = `${beat.icon} <strong>${beat.label}</strong> — assigned to Scene ${activeSceneIndex + 1}`;
+    }
+
+    function _updateTimelineBadge(sceneIdx, key) {
+      const scenes = document.querySelectorAll('.timeline-scene');
+      const scene = scenes[sceneIdx];
+      if (!scene) return;
+      let badge = scene.querySelector('.beat-badge');
+      if (!badge) { badge = document.createElement('div'); badge.className = 'beat-badge'; scene.appendChild(badge); }
+      badge.textContent = beats[key].icon;
+      badge.style.background = beats[key].dot;
+    }
+
+    function addLine() {
+      const field = document.getElementById('dialogField');
+      if (!field.value.trim()) return;
+      const btn = document.querySelector('.send-btn');
+      btn.style.transform = 'scale(1.3)';
+      btn.style.background = '#CE82FF';
+      setTimeout(() => { btn.style.transform = ''; btn.style.background = '#FF4B4B'; }, 200);
+      // Update bubble text
+      document.querySelector('.stage-bubble-text').textContent = field.value.trim();
+    }
+
+    function addScene() {
+      const row = document.getElementById('timelineRow');
+      const existing = row.querySelectorAll('.timeline-scene').length;
+      const s = document.createElement('div');
+      s.className = 'timeline-scene';
+      s.innerHTML = `<div class="timeline-scene-inner" style="background:#333"></div><div class="timeline-num">${existing+1}</div>`;
+      s.onclick = () => selectScene(existing);
+      row.insertBefore(s, row.querySelector('.timeline-add'));
+      s.classList.add('char-bounce-in');
+    }
+
+    /* ── Init: render rain on load ── */
+    window.addEventListener('load', () => { renderRain(); });
+  </script>
+  <script>
+    document.querySelectorAll('.hotspot').forEach(el => {
+      el.addEventListener('click', () => el.classList.add('done'), { once: true });
+    });
+  </script>
+  <a class="home-fab" href="../index.html">🏠 Main Page</a>
+</body>
+</html>

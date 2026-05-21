@@ -10,206 +10,215 @@
   <link rel="stylesheet" href="../design-system.css">
   <link rel="stylesheet" href="../components/animations.css">
   <style>
-    /* ── Home header bar ── */
-    .home-header {
+    /* ─── PATH STATS BAR ─── */
+    .path-stats {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 10px 20px 8px;
-    }
-    .duo-wordmark {
-      font-size: 22px;
-      font-weight: 900;
-      color: var(--color-feather-green);
-      letter-spacing: -0.5px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .home-stats {
-      display: flex;
-      align-items: center;
+      justify-content: flex-end;
+      padding: 10px 16px 6px;
       gap: 14px;
     }
-    .stat-pill {
+    .pst {
       display: flex;
       align-items: center;
       gap: 5px;
       font-size: 15px;
       font-weight: 900;
       color: var(--color-eel);
+      letter-spacing: -0.2px;
     }
-    .stat-icon { font-size: 18px; }
+    .pst svg { flex-shrink: 0; }
 
-    /* ── New feature banner ── */
-    .new-feature-banner {
-      margin: 8px 16px 4px;
-      background: linear-gradient(135deg, #7C3AED 0%, #1CB0F6 100%);
+    /* ─── UNIT BANNER (orange) ─── */
+    .unit-banner {
+      margin: 2px 12px 0;
+      background: linear-gradient(120deg, #FFAA00, #FF8C00);
       border-radius: 16px;
-      padding: 14px 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      box-shadow: 0 4px 0 #5B21B6;
-      transition: transform 100ms ease, box-shadow 100ms ease;
-      text-decoration: none;
-    }
-    .new-feature-banner:active { transform: translateY(4px); box-shadow: none; }
-    .banner-icon { font-size: 36px; line-height: 1; flex-shrink: 0; }
-    .banner-text { flex: 1; }
-    .banner-new { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; color: #FFE066; margin-bottom: 2px; }
-    .banner-title { font-size: 16px; font-weight: 900; color: white; line-height: 1.2; margin-bottom: 2px; }
-    .banner-desc { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.85); }
-    .banner-cta {
-      background: rgba(255,255,255,0.2);
-      color: white;
-      font-size: 13px;
-      font-weight: 800;
-      padding: 8px 14px;
-      border-radius: 9999px;
-      white-space: nowrap;
-      border: 1.5px solid rgba(255,255,255,0.4);
-      flex-shrink: 0;
-    }
-
-    /* ── Section banner ── */
-    .section-banner {
-      margin: 14px 16px 0;
-      background: linear-gradient(135deg, #58CC02 0%, #89E219 100%);
-      border-radius: 14px;
-      padding: 12px 16px;
+      padding: 13px 15px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      box-shadow: 0 4px 0 #B86000;
       cursor: pointer;
     }
-    .section-banner-left { display: flex; align-items: center; gap: 10px; }
-    .section-icon { font-size: 22px; }
-    .section-num { font-size: 10px; font-weight: 900; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.06em; }
-    .section-name { font-size: 16px; font-weight: 900; color: white; }
-    .section-chevron { color: white; font-size: 18px; opacity: 0.7; }
-
-    /* ── Lesson path ── */
-    .lesson-path {
-      padding: 12px 0 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
+    .unit-sublabel {
+      font-size: 10px;
+      font-weight: 900;
+      color: rgba(255,255,255,0.72);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 2px;
     }
-    .path-row {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      margin-bottom: 4px;
+    .unit-title {
+      font-size: 15px;
+      font-weight: 900;
+      color: white;
     }
-    .path-row.right { justify-content: flex-end; padding-right: 56px; }
-    .path-row.left  { justify-content: flex-start; padding-left: 56px; }
-    .path-row.center { justify-content: center; }
-
-    .lesson-node {
-      width: 76px;
-      height: 76px;
-      border-radius: 50%;
+    .unit-menu-btn {
+      width: 34px;
+      height: 34px;
+      background: rgba(255,255,255,0.22);
+      border-radius: 9px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 2px;
-      cursor: pointer;
+      gap: 3.5px;
+      flex-shrink: 0;
+    }
+    .unit-menu-btn span { display: block; width: 16px; height: 2px; background: white; border-radius: 2px; }
+
+    /* ─── DECORATION (image chest + Duo owl) ─── */
+    .path-deco {
       position: relative;
-      font-size: 28px;
-      transition: transform 100ms ease;
+      height: 96px;
+      overflow: visible;
+      margin: 0 4px;
     }
-    .lesson-node:active { transform: scale(0.95); }
-
-    .lesson-node.completed {
-      background: var(--color-feather-green);
-      box-shadow: 0 5px 0 #3DA800;
+    .deco-chest {
+      position: absolute; left: 20px; top: 14px;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.18));
     }
-    .lesson-node.completed .node-stars { color: var(--color-bee); font-size: 10px; display: flex; gap: 1px; }
-
-    .lesson-node.current {
-      background: var(--color-feather-green);
-      box-shadow: 0 5px 0 #3DA800, 0 0 0 6px rgba(88,204,2,0.25);
-      width: 84px;
-      height: 84px;
-      font-size: 32px;
+    .deco-chest img {
+      display: block;
+      width: 62px;
+      height: 62px;
+      object-fit: contain;
+      image-rendering: -webkit-optimize-contrast;
     }
-    .lesson-node.current::after {
-      content: 'START';
-      position: absolute;
-      bottom: -30px;
-      background: var(--color-eel);
-      color: white;
-      font-size: 10px;
-      font-weight: 900;
-      padding: 4px 10px;
-      border-radius: 9999px;
-      letter-spacing: 0.06em;
+    .deco-duo {
+      position: absolute; right: 18px; top: 0;
+      animation: bob 2.2s ease-in-out infinite;
+    }
+    .deco-duo img {
+      width: 78px; height: 78px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
     }
 
-    .lesson-node.locked {
-      background: var(--color-swan);
-      box-shadow: 0 5px 0 var(--color-hare);
-      cursor: default;
+    /* ─── LESSON PATH ─── */
+    .lesson-path {
+      padding: 4px 0 4px;
+      display: flex; flex-direction: column;
+      position: relative;
     }
-    .lesson-node.locked .node-icon { filter: grayscale(1); opacity: 0.5; }
+    .path-row { width: 100%; display: flex; align-items: center; }
+    .pr-l  { padding-left: 68px; }
+    .pr-r  { padding-right: 68px; justify-content: flex-end; }
+    .pr-cl { padding-left: 48px; }
+    .pr-cr { padding-right: 48px; justify-content: flex-end; }
 
-    /* Connecting dots between nodes */
-    .path-connector {
-      width: 4px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      padding: 6px 0;
-    }
-    .path-dot {
-      width: 8px;
-      height: 8px;
-      background: var(--color-feather-green);
+    .pnode {
+      width: 68px; height: 68px;
       border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      position: relative; flex-shrink: 0;
+      transition: transform 80ms;
     }
-    .path-dot.locked { background: var(--color-swan); }
+    .pnode:active { transform: scale(0.93); }
+    .pnode.done {
+      background: linear-gradient(180deg, #FFC200 0%, #FF9600 100%);
+      box-shadow: 0 6px 0 #CE6F00, 0 0 0 3px rgba(255,150,0,0.15);
+    }
+    .pnode.unit-node {
+      background: transparent;
+      box-shadow: none;
+      width: 74px; height: 74px;
+      overflow: visible;
+    }
+    .pnode.unit-node img {
+      display: block;
+      width: 74px;
+      height: 74px;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 0 rgba(179,138,0,0.38)) drop-shadow(0 2px 6px rgba(0,0,0,0.12));
+    }
 
-    /* Duo hovering over current lesson */
-    .duo-hover {
+    .side-stars { display: flex; gap: 5px; margin-left: 10px; align-self: center; }
+
+    /* Connectors */
+    .conn-row  { width: 100%; display: flex; padding: 1px 0; }
+    .conn-lr   { padding-left: 102px; }
+    .conn-rl   { padding-right: 102px; justify-content: flex-end; }
+    .conn-dots {
+      position: relative;
+      width: 38px;
+      height: 42px;
+    }
+    .cdot {
       position: absolute;
-      top: -42px;
-      right: -8px;
-      font-size: 28px;
-      animation: bob 2s ease-in-out infinite;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #FFB300;
+      opacity: 0.95;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.32);
+    }
+    .conn-lr .cdot:nth-child(1) { left: 0; top: 0; }
+    .conn-lr .cdot:nth-child(2) { left: 11px; top: 12px; }
+    .conn-lr .cdot:nth-child(3) { left: 22px; top: 24px; }
+    .conn-rl .cdot:nth-child(1) { right: 0; top: 0; }
+    .conn-rl .cdot:nth-child(2) { right: 11px; top: 12px; }
+    .conn-rl .cdot:nth-child(3) { right: 22px; top: 24px; }
+
+    /* ─── STUDIO CTA ─── */
+    .studio-cta {
+      margin: 8px 16px 6px;
+      background: linear-gradient(135deg, #7C3AED, #CE82FF);
+      border-radius: 20px;
+      padding: 14px 16px;
+      display: flex; align-items: center; gap: 12px;
+      cursor: pointer; text-decoration: none;
+      box-shadow: 0 5px 0 #5B21B6;
+      transition: transform 100ms, box-shadow 100ms;
+    }
+    .studio-cta:active { transform: translateY(5px); box-shadow: none; }
+    .sc-emoji {
+      width: 46px;
+      height: 46px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .sc-emoji img {
+      display: block;
+      width: 46px;
+      height: 46px;
+      object-fit: contain;
+    }
+    .sc-text  { flex: 1; }
+    .sc-eyebrow { font-size: 10px; font-weight: 900; color: rgba(255,255,255,0.75); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; }
+    .sc-title   { font-size: 14px; font-weight: 900; color: white; margin-bottom: 1px; }
+    .sc-desc    { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.82); }
+    .sc-btn {
+      background: rgba(255,255,255,0.2);
+      border: 1.5px solid rgba(255,255,255,0.4);
+      color: white; font-size: 12px; font-weight: 800;
+      padding: 8px 12px; border-radius: 9999px; flex-shrink: 0;
     }
 
-    /* Stars above completed */
-    .lesson-stars {
-      display: flex;
-      gap: 1px;
-      font-size: 10px;
+    /* ─── FLOATING UP BUTTON ─── */
+    .fab-up {
+      position: absolute; bottom: 76px; right: 12px;
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+      border: none; font-size: 20px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: #555; z-index: 5;
     }
 
-    /* XP progress bar at top of section */
-    .xp-bar-section {
-      padding: 8px 20px 4px;
-    }
-    .xp-bar-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      font-weight: 800;
-      color: var(--color-wolf);
-      margin-bottom: 4px;
-    }
   </style>
 </head>
 <body class="demo-page">
 
-  <div class="phone">
+  <div class="phone" style="position:relative;">
     <!-- Status Bar -->
     <div class="status-bar">
-      <span class="status-time">9:41</span>
+      <span class="status-time">5:57</span>
       <div class="status-icons">
         <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1" fill="currentColor"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1" fill="currentColor"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="currentColor"/><rect x="13.5" y="0" width="3.5" height="12" rx="1" fill="currentColor" opacity="0.3"/></svg>
         <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 3C5.2 3 2.8 4.2 1 6.2L0 5.2C2.1 2.8 5 1.2 8 1.2c3 0 5.9 1.6 8 4L15 6.2C13.2 4.2 10.8 3 8 3z" fill="currentColor"/><path d="M8 6C6.2 6 4.6 6.8 3.4 8L2.4 7C3.9 5.5 5.8 4.6 8 4.6s4.1.9 5.6 2.4L12.6 8C11.4 6.8 9.8 6 8 6z" fill="currentColor"/><circle cx="8" cy="10.5" r="1.5" fill="currentColor"/></svg>
@@ -220,132 +229,171 @@
     <!-- Scrollable screen -->
     <main class="screen">
 
-      <!-- App header -->
-      <div class="home-header">
-        <div class="duo-wordmark">
-          <img src="../Image/Duolingo-owl-front.png" alt="Duolingo" width="28" height="28" style="display:block;">
-          duolingo
+      <!-- Stats bar: streak / shield / gems / xp (matches screenshot) -->
+      <div class="path-stats">
+        <!-- Streak: red flame -->
+        <div class="pst">
+          <svg width="26" height="26" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#FF4B4B"/><path d="M12 4c0 0-1 3.5 0 5.5C9 8 8 5.5 8 5.5S6 8.5 6 11c0 3.3 2.7 6 6 6s6-2.7 6-6c0-2-1-4-1-4s-1 2.5-3 2.5C15 8 12 4 12 4z" fill="white"/></svg>
+          <span>25</span>
         </div>
-        <div class="home-stats">
-          <div class="stat-pill"><span class="stat-icon">🔥</span><span>47</span></div>
-          <div class="stat-pill"><span class="stat-icon">💎</span><span>3,240</span></div>
-          <div class="stat-pill"><span class="stat-icon">❤️</span><span>5</span></div>
+        <!-- Shield (lives): gray -->
+        <div class="pst">
+          <svg width="26" height="26" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#E5E5E5"/><path d="M12 4L6 7v5c0 3.5 2.5 6.5 6 7.5 3.5-1 6-4 6-7.5V7L12 4z" fill="#AFAFAF"/></svg>
+          <span>0</span>
         </div>
-      </div>
-
-      <!-- NEW: Stories Studio banner -->
-      <a href="02-studio-landing.html" class="new-feature-banner">
-        <div class="banner-icon">✏️</div>
-        <div class="banner-text">
-          <div class="banner-new">✨ New Feature</div>
-          <div class="banner-title">Stories Studio is here!</div>
-          <div class="banner-desc">Create your own interactive Spanish stories</div>
+        <!-- Gems: blue diamond -->
+        <div class="pst">
+          <svg width="26" height="26" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#1CB0F6"/><path d="M12 5l4 5-4 9-4-9 4-5zm0 0l4 5H8l4-5z" fill="white"/></svg>
+          <span>2,259</span>
         </div>
-        <div class="banner-cta">Try it →</div>
-      </a>
-
-      <!-- XP progress -->
-      <div class="xp-bar-section">
-        <div class="xp-bar-label">
-          <span>Daily XP Goal</span>
-          <span>55 / 100 XP</span>
-        </div>
-        <div class="progress-track progress-track-sm">
-          <div class="progress-fill" style="width: 55%"></div>
+        <!-- XP: yellow lightning -->
+        <div class="pst">
+          <svg width="26" height="26" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#FFC800"/><path d="M13 4L7 13h5l-1 7 6-9h-5l1-7z" fill="white"/></svg>
+          <span>25</span>
         </div>
       </div>
 
-      <!-- Section banner -->
-      <div class="section-banner">
-        <div class="section-banner-left">
-          <span class="section-icon">🇪🇸</span>
-          <div>
-            <div class="section-num">Section 2</div>
-            <div class="section-name">Ordering Food & Drinks</div>
-          </div>
+      <!-- Orange unit banner -->
+      <div class="unit-banner">
+        <div>
+          <div class="unit-sublabel">Section 2, Unit 29</div>
+          <div class="unit-title">Discuss seasonal events</div>
         </div>
-        <span class="section-chevron">›</span>
+        <div class="unit-menu-btn"><span></span><span></span><span></span></div>
       </div>
 
-      <!-- Lesson path -->
+      <!-- Decoration: treasure chest asset (left) + Duo owl (right) -->
+      <div class="path-deco">
+        <div class="deco-chest">
+          <img src="../Image/Color=Gold, Open=False.png" alt="Treasure chest reward" />
+        </div>
+        <!-- Duo owl hovering (bobbing animation) -->
+        <div class="deco-duo">
+          <img src="../Image/Duolingo-owl-front.png" alt="Duo" />
+        </div>
+      </div>
+
+      <!-- Lesson path (zigzag) -->
       <div class="lesson-path">
-        <!-- Node 1: completed -->
-        <div class="path-row right">
-          <div class="lesson-node completed">
-            <span>🍎</span>
-            <div class="lesson-stars">⭐⭐⭐</div>
+
+        <!-- Node 1: Headphones (left) + 3 empty stars beside -->
+        <div class="path-row pr-l">
+          <div class="pnode done">
+            <svg width="34" height="34" viewBox="0 0 32 32" fill="white">
+              <path d="M16 5C9.9 5 5 9.9 5 16v4a3 3 0 1 0 6 0v-4a5 5 0 1 1 10 0v4a3 3 0 1 0 6 0v-4c0-6.1-4.9-11-11-11z"/>
+            </svg>
+          </div>
+          <div class="side-stars">
+            <svg width="22" height="22" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="none" stroke="#C8C8C8" stroke-width="2"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="none" stroke="#C8C8C8" stroke-width="2"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="none" stroke="#C8C8C8" stroke-width="2"/></svg>
           </div>
         </div>
-        <div class="path-connector">
-          <div class="path-dot"></div><div class="path-dot"></div><div class="path-dot"></div>
+
+        <!-- Connector 1→2 (drift right) -->
+        <div class="conn-row conn-lr">
+          <div class="conn-dots"><div class="cdot"></div><div class="cdot"></div><div class="cdot"></div></div>
         </div>
 
-        <!-- Node 2: completed -->
-        <div class="path-row center">
-          <div class="lesson-node completed">
-            <span>🗣️</span>
-            <div class="lesson-stars">⭐⭐⭐</div>
+        <!-- Node 2: Star (right) -->
+        <div class="path-row pr-r">
+          <div class="pnode done">
+            <svg width="34" height="34" viewBox="0 0 32 32" fill="white">
+              <path d="M16 4l3.27 6.63 7.32 1.06-5.3 5.16 1.25 7.28L16 20.71l-6.54 3.42 1.25-7.28-5.3-5.16 7.32-1.06z"/>
+            </svg>
           </div>
         </div>
-        <div class="path-connector">
-          <div class="path-dot"></div><div class="path-dot"></div><div class="path-dot"></div>
+
+        <!-- Connector 2→3 (drift left) -->
+        <div class="conn-row conn-rl">
+          <div class="conn-dots"><div class="cdot"></div><div class="cdot"></div><div class="cdot"></div></div>
         </div>
 
-        <!-- Node 3: completed -->
-        <div class="path-row left">
-          <div class="lesson-node completed">
-            <span>🍽️</span>
-            <div class="lesson-stars">⭐⭐⭐</div>
+        <!-- Node 3: Video camera (left) -->
+        <div class="path-row pr-l">
+          <div class="pnode done">
+            <svg width="34" height="34" viewBox="0 0 32 32" fill="white">
+              <rect x="2" y="9" width="18" height="14" rx="3"/>
+              <path d="M20 13l8-4v14l-8-4z"/>
+            </svg>
           </div>
         </div>
-        <div class="path-connector">
-          <div class="path-dot"></div><div class="path-dot"></div><div class="path-dot"></div>
+
+        <!-- Connector 3→4 (drift right) -->
+        <div class="conn-row conn-lr">
+          <div class="conn-dots"><div class="cdot"></div><div class="cdot"></div><div class="cdot"></div></div>
         </div>
 
-        <!-- Node 4: CURRENT -->
-        <div class="path-row center" style="margin-bottom: 32px;">
-          <div class="lesson-node current" style="position:relative;">
-            <div class="duo-hover"><img src="../Image/Duolingo-owl-front.png" alt="Duo" width="28" height="28"></div>
-            <span>🥘</span>
+        <!-- Node 4: Headphones (right) + teal arrow pointing toward trophy -->
+        <div class="path-row pr-r" style="position:relative; margin-bottom:4px;">
+          <div class="pnode done">
+            <svg width="34" height="34" viewBox="0 0 32 32" fill="white">
+              <path d="M16 5C9.9 5 5 9.9 5 16v4a3 3 0 1 0 6 0v-4a5 5 0 1 1 10 0v4a3 3 0 1 0 6 0v-4c0-6.1-4.9-11-11-11z"/>
+            </svg>
+          </div>
+          <!-- Teal arrow curved down-left toward trophy node -->
+          <svg style="position:absolute;left:76px;bottom:-52px;width:60px;height:60px;pointer-events:none;" viewBox="0 0 60 60" fill="none">
+            <path d="M48 10 C34 10 16 20 14 44" stroke="#10B8C8" stroke-width="5" stroke-linecap="round"/>
+            <polyline points="6,40 14,44 20,36" stroke="#10B8C8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <!-- Connector 4→5 (drift left) -->
+        <div class="conn-row conn-rl" style="margin-top:18px;">
+          <div class="conn-dots"><div class="cdot"></div><div class="cdot"></div><div class="cdot"></div></div>
+        </div>
+
+        <!-- Node 5: Trophy / Unit Challenge — clicking opens Storytelling Studio -->
+        <div class="path-row pr-cl" style="margin-bottom:4px;">
+          <div class="pnode unit-node" onclick="window.location.href='02-studio-landing.html'" title="Unit 29 Challenge">
+            <img src="../Image/Property 1=Gold.png" alt="Unit reward" />
           </div>
         </div>
-        <div class="path-connector">
-          <div class="path-dot locked"></div><div class="path-dot locked"></div><div class="path-dot locked"></div>
-        </div>
 
-        <!-- Node 5: locked -->
-        <div class="path-row right">
-          <div class="lesson-node locked"><span class="node-icon">🔒</span></div>
-        </div>
-        <div class="path-connector">
-          <div class="path-dot locked"></div><div class="path-dot locked"></div><div class="path-dot locked"></div>
-        </div>
+      </div><!-- /lesson-path -->
 
-        <!-- Node 6: locked -->
-        <div class="path-row center">
-          <div class="lesson-node locked"><span class="node-icon">🔒</span></div>
+      <!-- "Try Storytelling Studio" CTA — shown after completing the unit -->
+      <a class="studio-cta" href="02-studio-landing.html">
+        <div class="sc-emoji"><img src="../Image/Color=Gold, Open=True (1).png" alt="Opened chest reward" /></div>
+        <div class="sc-text">
+          <div class="sc-eyebrow">✨ Unit 29 Complete!</div>
+          <div class="sc-title">Try Storytelling Studio</div>
+          <div class="sc-desc">Turn what you learned into a story</div>
         </div>
-      </div>
+        <div class="sc-btn">Try it →</div>
+      </a>
 
     </main>
 
-    <!-- Bottom Nav -->
+    <!-- Floating ↑ button -->
+    <button class="fab-up" onclick="document.querySelector('.screen').scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+    <!-- Bottom Nav (6 tabs matching image) -->
     <nav class="bottom-nav" aria-label="Main navigation">
-      <!-- Home (active) -->
       <a class="nav-item active" href="01-duolingo-home-new-tab.html" aria-current="page">
-        <div class="nav-icon">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-        </div>
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div>
         <span class="nav-label">Home</span>
       </a>
-      <!-- Learn -->
-      <a class="nav-item" href="01-duolingo-home-new-tab.html">
+      <a class="nav-item" href="#">
         <div class="nav-icon">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 18c4-4 5-9 9-9s5 5 9 0"/><circle cx="3" cy="18" r="1.5" fill="currentColor"/><circle cx="12" cy="9" r="1.5" fill="currentColor"/><circle cx="21" cy="14" r="1.5" fill="currentColor"/>
+          </svg>
         </div>
-        <span class="nav-label">Learn</span>
+        <span class="nav-label">Path</span>
       </a>
-      <!-- Stories (NEW) -->
+      <a class="nav-item" href="#">
+        <div class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><ellipse cx="12" cy="8" rx="5" ry="6"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" opacity=".6"/></svg>
+        </div>
+        <span class="nav-label">Profile</span>
+      </a>
+      <a class="nav-item" href="#">
+        <div class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        </div>
+        <span class="nav-label">Hearts</span>
+      </a>
       <a class="nav-item hotspot" href="02-studio-landing.html">
         <div class="nav-icon" style="position:relative;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="12" y2="12"/><polyline points="14 12 18 16 14 20"/></svg>
@@ -353,19 +401,11 @@
         </div>
         <span class="nav-label">Stories</span>
       </a>
-      <!-- Leaderboard -->
-      <a class="nav-item" href="11-popularity-board.html">
-        <div class="nav-icon">
-          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="11" width="6" height="11" rx="1"/><rect x="9" y="4" width="6" height="18" rx="1"/><rect x="17" y="7" width="6" height="15" rx="1"/></svg>
-        </div>
-        <span class="nav-label">Boards</span>
-      </a>
-      <!-- Profile -->
       <a class="nav-item" href="#">
         <div class="nav-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
         </div>
-        <span class="nav-label">Profile</span>
+        <span class="nav-label">More</span>
       </a>
     </nav>
   </div>

@@ -205,6 +205,99 @@
       border-top: 2px solid #F0F0F0;
       padding-top: 24px;
     }
+
+    /* ── Pitch section ── */
+    .pitch-section {
+      max-width: 960px;
+      margin: 0 auto 40px;
+    }
+
+    .pitch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .pitch-card {
+      border-radius: 16px;
+      padding: 20px 22px;
+      border: 2px solid transparent;
+    }
+
+    .pitch-card-problem {
+      background: #FFF7F7;
+      border-color: rgba(255,75,75,0.2);
+    }
+
+    .pitch-card-opportunity {
+      background: #F0FFF4;
+      border-color: rgba(88,204,2,0.25);
+    }
+
+    .pitch-card-label {
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pitch-card-problem .pitch-card-label { color: #CC2222; }
+    .pitch-card-opportunity .pitch-card-label { color: #2B7A00; }
+
+    .pitch-card-text {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.65;
+      color: #4B4B4B;
+    }
+
+    .pitch-banner {
+      background: linear-gradient(135deg, #3C3C3C 0%, #555555 100%);
+      border-radius: 18px;
+      padding: 24px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pitch-banner::before {
+      content: '✏️';
+      position: absolute;
+      right: 24px;
+      bottom: -8px;
+      font-size: 72px;
+      opacity: 0.12;
+      line-height: 1;
+    }
+
+    .pitch-banner-label {
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #FFC800;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pitch-banner-text {
+      font-size: 15px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.90);
+      line-height: 1.7;
+      max-width: 780px;
+    }
+
+    .pitch-banner-text strong {
+      color: #58CC02;
+      font-weight: 900;
+    }
   </style>
 </head>
 <body>
@@ -213,8 +306,57 @@
     <h1 class="hero-title">Duolingo Stories Studio</h1>
     <p class="hero-subtitle">A new creation-first feature for language learners<br>University Design Jam · Pathway 2 · Addition</p>
     <div class="hero-tag">📱 11 screens · Mobile-first · Vanilla HTML/CSS/JS</div>
-    <br>
-    <a href="./screens/01-duolingo-home-new-tab.html" class="start-btn">▶ Start Demo</a>
+    <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:24px;">
+      <a href="./screens/01-duolingo-home-new-tab.html" class="start-btn">▶ Start Demo 1</a>
+      <a href="./screens/demo2-french-lesson.html" class="start-btn" style="background:#1CB0F6;box-shadow:0 6px 0 #149EE0;">▶ Demo 2 — Lesson</a>
+      <a href="./screens/demo3-social-feed.html"   class="start-btn" style="background:#FF7043;box-shadow:0 6px 0 #E64A19;">▶ Demo 3 — Social</a>
+      <a href="./screens/demo4-drama-scene.html"   class="start-btn" style="background:#CE82FF;box-shadow:0 6px 0 #7C3AED;">🎭 Demo 4 — Drama</a>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       PITCH SECTION
+       ═══════════════════════════════════════════ -->
+  <div class="pitch-section">
+    <p class="section-label" style="max-width:960px;margin:0 auto 16px;padding:0 4px;">💡 The idea</p>
+
+    <div class="pitch-grid">
+
+      <!-- Core Problem -->
+      <div class="pitch-card pitch-card-problem">
+        <div class="pitch-card-label">
+          <span>⚠️</span> The core problem
+        </div>
+        <div class="pitch-card-text">
+          Language learning apps often train <strong style="color:#CC2222;">recognition</strong> through repeated exercises,
+          but learners can struggle to turn what they know into personal,
+          <strong style="color:#CC2222;">expressive</strong> language use.
+        </div>
+      </div>
+
+      <!-- Opportunity -->
+      <div class="pitch-card pitch-card-opportunity">
+        <div class="pitch-card-label">
+          <span>🌱</span> Opportunity
+        </div>
+        <div class="pitch-card-text">
+          What if Duolingo helped learners <strong style="color:#2B7A00;">create</strong> with the language they are learning?
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Pitch -->
+    <div class="pitch-banner">
+      <div class="pitch-banner-label">🎯 The pitch</div>
+      <div class="pitch-banner-text">
+        Duolingo teaches users how to <strong>recognize</strong> language, but <strong>Storymaker</strong> helps them
+        <strong>create</strong> with it. By turning recently learned vocabulary and grammar into
+        character-driven, branching mini stories, learners move beyond completing lessons and
+        begin <strong>authoring playable language artifacts</strong>. Through characters, dialogue, and choices,
+        Storymaker makes practice more <strong>personal and memorable</strong>.
+      </div>
+    </div>
   </div>
 
   <div class="section-block">
@@ -366,6 +508,25 @@
             <div class="screen-name" style="margin-bottom:0;">Friend Profile &amp; Stories</div>
           </div>
           <div class="screen-desc">Carlos V.'s public profile — Beginner story is playable, Intermediate &amp; Advanced are locked until you level up.</div>
+        </div>
+        <span class="arrow" style="margin-top:2px;">›</span>
+      </a>
+
+    </div>
+  </div>
+
+  <div class="section-block">
+    <p class="section-label">🎭 Demo 4 — Dramatic Story Scene</p>
+    <div class="screen-grid">
+
+      <a href="./screens/demo4-drama-scene.html" class="screen-card killer" style="align-items:flex-start; padding: 22px 20px;">
+        <div class="screen-num" style="background:linear-gradient(135deg,#CE82FF,#7C3AED);box-shadow:0 3px 0 #5B21B6; flex-shrink:0; margin-top:2px;">D4</div>
+        <div class="screen-info">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap;">
+            <div class="screen-name" style="margin-bottom:0;">La Traición — Drama Scene</div>
+            <span class="killer-tag" style="background:linear-gradient(135deg,#CE82FF,#7C3AED);">🎭 DRAMA</span>
+          </div>
+          <div class="screen-desc">A dramatic Spanish betrayal scene at the Climax beat — night, heavy rain, lightning, two characters, full story arc spanning 5 scenes.</div>
         </div>
         <span class="arrow" style="margin-top:2px;">›</span>
       </a>

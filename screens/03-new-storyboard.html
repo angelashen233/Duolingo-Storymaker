@@ -282,6 +282,65 @@
       animation: cloud-drift ease-in-out infinite;
       pointer-events: none; user-select: none;
     }
+
+    /* ── Story Arc Panel ── */
+    .arc-panel {
+      display: none; padding: 8px 12px 8px;
+      background: white; border-top: 1.5px solid var(--color-swan);
+    }
+    .arc-panel.visible { display: block; }
+
+    .arc-vis svg { display: block; width: 100%; overflow: visible; }
+    .arc-dot { transition: fill 200ms ease, r 200ms ease; }
+
+    .arc-labels-row {
+      display: flex; justify-content: space-between;
+      padding: 3px 4px 0; margin-bottom: 6px;
+    }
+    .arc-labels-row span {
+      font-size: 9px; font-weight: 800; color: var(--color-hare);
+      cursor: pointer; text-align: center; flex: 1;
+      transition: color 120ms ease;
+    }
+    .arc-labels-row span:hover { color: var(--color-eel); }
+
+    .arc-beat-bar {
+      background: var(--color-polar); border-radius: 9px;
+      padding: 5px 10px; margin-bottom: 6px;
+      font-size: 12px; font-weight: 700; color: var(--color-wolf);
+      text-align: center; min-height: 28px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .beat-pills-row {
+      display: flex; gap: 5px; overflow-x: auto; scrollbar-width: none;
+      padding-bottom: 2px;
+    }
+    .beat-pills-row::-webkit-scrollbar { display: none; }
+    .beat-pill {
+      padding: 5px 11px; border-radius: 9999px;
+      border: 2px solid transparent;
+      font-family: 'Nunito', sans-serif; font-size: 11px; font-weight: 800;
+      cursor: pointer; white-space: nowrap; flex-shrink: 0;
+      transition: transform 120ms ease, box-shadow 120ms ease;
+      outline: none;
+    }
+    .beat-pill.active {
+      border-color: currentColor;
+      box-shadow: 0 2px 0 rgba(0,0,0,0.15);
+      transform: translateY(-1px);
+    }
+
+    /* Beat badge on timeline thumbnails */
+    .beat-badge {
+      position: absolute; bottom: 3px; right: 3px;
+      width: 18px; height: 18px; border-radius: 50%;
+      font-size: 11px; display: flex; align-items: center; justify-content: center;
+      border: 2px solid white; z-index: 5; line-height: 1;
+    }
+
+    /* Highlight active scene in timeline */
+    .timeline-scene.active { border-color: var(--color-macaw); }
   </style>
 </head>
 <body class="demo-page">
@@ -398,6 +457,47 @@
         </div>
       </div>
 
+      <!-- Story Arc Panel (shown when Arc tool is active) -->
+      <div class="arc-panel" id="arcPanel">
+        <!-- Freytag's pyramid SVG -->
+        <div class="arc-vis">
+          <svg viewBox="0 0 316 62" height="62" xmlns="http://www.w3.org/2000/svg">
+            <!-- Background arc (mountain shape) -->
+            <path d="M 16,56 C 42,52 58,26 94,14 C 116,7 136,3 158,3 C 180,3 200,7 222,16 C 252,28 270,50 300,56"
+                  stroke="#E5E5E5" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <!-- Beat dots -->
+            <circle data-beat="exposition" cx="16"  cy="56" r="7"  fill="#E5E5E5" class="arc-dot" onclick="setBeat('exposition')"/>
+            <circle data-beat="inciting"   cx="70"  cy="24" r="7"  fill="#E5E5E5" class="arc-dot" onclick="setBeat('inciting')"/>
+            <circle data-beat="rising1"    cx="112" cy="9"  r="7"  fill="#E5E5E5" class="arc-dot" onclick="setBeat('rising1')"/>
+            <circle data-beat="rising2"    cx="158" cy="3"  r="7.5" fill="#E5E5E5" class="arc-dot" onclick="setBeat('rising2')"/>
+            <circle data-beat="rising3"    cx="202" cy="8"  r="7"  fill="#E5E5E5" class="arc-dot" onclick="setBeat('rising3')"/>
+            <circle data-beat="climax"     cx="234" cy="18" r="9"  fill="#E5E5E5" class="arc-dot" onclick="setBeat('climax')"/>
+            <circle data-beat="ending"     cx="300" cy="56" r="7"  fill="#E5E5E5" class="arc-dot" onclick="setBeat('ending')"/>
+          </svg>
+          <div class="arc-labels-row">
+            <span onclick="setBeat('exposition')">Exposition</span>
+            <span onclick="setBeat('inciting')">Inciting</span>
+            <span onclick="setBeat('rising1')">Rise 1</span>
+            <span onclick="setBeat('rising2')">Rise 2</span>
+            <span onclick="setBeat('rising3')">Rise 3</span>
+            <span onclick="setBeat('climax')">Climax</span>
+            <span onclick="setBeat('ending')">Ending</span>
+          </div>
+        </div>
+        <!-- Current beat info -->
+        <div class="arc-beat-bar" id="arcBeatBar">Tap a dot or pill to assign a beat to <strong>Scene 1</strong></div>
+        <!-- Scrollable beat pill selector -->
+        <div class="beat-pills-row">
+          <button class="beat-pill" data-beat="exposition" onclick="setBeat('exposition')" style="background:rgba(28,176,246,0.12);color:#0080C0;">🌱 Exposition</button>
+          <button class="beat-pill" data-beat="inciting"   onclick="setBeat('inciting')"   style="background:rgba(255,200,0,0.15);color:#7A5000;">⚡ Inciting Incident</button>
+          <button class="beat-pill" data-beat="rising1"    onclick="setBeat('rising1')"    style="background:rgba(255,152,0,0.15);color:#9E5000;">📈 Rising Action 1</button>
+          <button class="beat-pill" data-beat="rising2"    onclick="setBeat('rising2')"    style="background:rgba(255,109,0,0.15);color:#BF3600;">📈 Rising Action 2</button>
+          <button class="beat-pill" data-beat="rising3"    onclick="setBeat('rising3')"    style="background:rgba(255,75,75,0.15);color:#CC0000;">🔥 Rising Action 3</button>
+          <button class="beat-pill" data-beat="climax"     onclick="setBeat('climax')"     style="background:rgba(206,130,255,0.18);color:#5B1F9E;">🏔️ Climax</button>
+          <button class="beat-pill" data-beat="ending"     onclick="setBeat('ending')"     style="background:rgba(88,204,2,0.12);color:#1E6B00;">🌅 Ending</button>
+        </div>
+      </div>
+
       <!-- Bottom toolbar -->
       <div class="canvas-toolbar">
         <a href="04-character-picker.html" class="tool-btn hotspot">
@@ -416,17 +516,21 @@
           <span class="tool-icon">🎨</span>
           <span class="tool-label">Scene</span>
         </button>
+        <button class="tool-btn" onclick="setTool(this)">
+          <span class="tool-icon">📖</span>
+          <span class="tool-label">Arc</span>
+        </button>
       </div>
 
       <!-- Timeline strip -->
       <div class="timeline-strip">
         <div class="timeline-label">Scenes</div>
         <div class="timeline-row">
-          <div class="timeline-scene active">
+          <div class="timeline-scene active" onclick="selectScene(0)">
             <div class="timeline-scene-inner" style="background:linear-gradient(135deg,#C5EDFF,#B8E0B0)"></div>
             <div class="timeline-num">1</div>
           </div>
-          <div class="timeline-scene">
+          <div class="timeline-scene" onclick="selectScene(1)">
             <div class="timeline-scene-inner" style="background:linear-gradient(135deg,#FFF4E8,#C49A6C)"></div>
             <div class="timeline-num">2</div>
           </div>
@@ -461,13 +565,27 @@
       const label = el.querySelector('.tool-label').textContent.trim();
       const dialogueArea = document.querySelector('.dialogue-area');
       const scenePanel   = document.getElementById('scenePanel');
+      const arcPanel     = document.getElementById('arcPanel');
 
-      if (label === 'Scene') {
-        dialogueArea.style.display = 'none';
+      // Hide all panels
+      dialogueArea.style.display = 'none';
+      scenePanel.classList.remove('visible');
+      arcPanel.classList.remove('visible');
+
+      if (label === 'Dialogue') {
+        dialogueArea.style.display = '';
+      } else if (label === 'Scene') {
         scenePanel.classList.add('visible');
-      } else {
-        scenePanel.classList.remove('visible');
-        dialogueArea.style.display = label === 'Dialogue' ? '' : 'none';
+      } else if (label === 'Arc') {
+        arcPanel.classList.add('visible');
+        // Refresh arc state for current scene
+        const existingBeat = sceneBeatMap[activeSceneIndex];
+        if (existingBeat) {
+          _applyBeatVisuals(existingBeat);
+        } else {
+          document.getElementById('arcBeatBar').innerHTML =
+            `Tap a dot or pill to assign a beat to <strong>Scene ${activeSceneIndex + 1}</strong>`;
+        }
       }
     }
 
@@ -604,8 +722,88 @@
       const newScene = document.createElement('div');
       newScene.className = 'timeline-scene';
       newScene.innerHTML = `<div class="timeline-scene-inner" style="background:var(--studio-canvas-bg)"></div><div class="timeline-num">${existing+1}</div>`;
+      const idx = existing;
+      newScene.onclick = () => selectScene(idx);
       row.insertBefore(newScene, row.querySelector('.timeline-add'));
       newScene.classList.add('char-bounce-in');
+    }
+
+    /* ── Story Arc ─────────────────────────────────────────── */
+    const beats = {
+      exposition: { label: 'Exposition',        icon: '🌱', dot: '#1CB0F6', pillColor: '#0080C0' },
+      inciting:   { label: 'Inciting Incident', icon: '⚡', dot: '#FFC800', pillColor: '#7A5000' },
+      rising1:    { label: 'Rising Action 1',   icon: '📈', dot: '#FF9800', pillColor: '#9E5000' },
+      rising2:    { label: 'Rising Action 2',   icon: '📈', dot: '#FF6D00', pillColor: '#BF3600' },
+      rising3:    { label: 'Rising Action 3',   icon: '🔥', dot: '#FF4B4B', pillColor: '#CC0000' },
+      climax:     { label: 'Climax',            icon: '🏔️', dot: '#CE82FF', pillColor: '#5B1F9E' },
+      ending:     { label: 'Ending',            icon: '🌅', dot: '#58CC02', pillColor: '#1E6B00' },
+    };
+
+    let activeSceneIndex = 0;
+    const sceneBeatMap = {};
+
+    function selectScene(idx) {
+      activeSceneIndex = idx;
+      const scenes = document.querySelectorAll('.timeline-scene');
+      scenes.forEach((s, i) => s.classList.toggle('active', i === idx));
+
+      // If arc panel is visible, refresh its state
+      if (document.getElementById('arcPanel').classList.contains('visible')) {
+        const existingBeat = sceneBeatMap[idx];
+        if (existingBeat) {
+          _applyBeatVisuals(existingBeat);
+        } else {
+          document.querySelectorAll('.arc-dot').forEach(d => d.setAttribute('fill', '#E5E5E5'));
+          document.querySelectorAll('.beat-pill').forEach(p => p.classList.remove('active'));
+          document.getElementById('arcBeatBar').innerHTML =
+            `Tap a dot or pill to assign a beat to <strong>Scene ${idx + 1}</strong>`;
+        }
+      }
+    }
+
+    function setBeat(key) {
+      sceneBeatMap[activeSceneIndex] = key;
+      _applyBeatVisuals(key);
+      _updateTimelineBadge(activeSceneIndex, key);
+      // Bounce the active pill
+      const pill = document.querySelector(`.beat-pill[data-beat="${key}"]`);
+      if (pill) {
+        pill.style.transform = 'scale(1.15)';
+        setTimeout(() => pill.style.transform = '', 180);
+      }
+    }
+
+    function _applyBeatVisuals(key) {
+      const beat = beats[key];
+      // Update pills
+      document.querySelectorAll('.beat-pill').forEach(p => p.classList.remove('active'));
+      const pill = document.querySelector(`.beat-pill[data-beat="${key}"]`);
+      if (pill) pill.classList.add('active');
+      // Update SVG dots
+      document.querySelectorAll('.arc-dot').forEach(d => {
+        const base = d.getAttribute('data-beat') === 'rising2' ? '7.5' : (d.getAttribute('data-beat') === 'climax' ? '9' : '7');
+        d.setAttribute('r', base);
+        d.setAttribute('fill', '#E5E5E5');
+      });
+      const dot = document.querySelector(`.arc-dot[data-beat="${key}"]`);
+      if (dot) { dot.setAttribute('fill', beat.dot); dot.setAttribute('r', parseFloat(dot.getAttribute('r')) + 2); }
+      // Update beat bar
+      document.getElementById('arcBeatBar').innerHTML =
+        `${beat.icon} <strong>${beat.label}</strong> — assigned to Scene ${activeSceneIndex + 1}`;
+    }
+
+    function _updateTimelineBadge(sceneIdx, key) {
+      const scenes = document.querySelectorAll('.timeline-scene');
+      const scene = scenes[sceneIdx];
+      if (!scene) return;
+      let badge = scene.querySelector('.beat-badge');
+      if (!badge) {
+        badge = document.createElement('div');
+        badge.className = 'beat-badge';
+        scene.appendChild(badge);
+      }
+      badge.textContent = beats[key].icon;
+      badge.style.background = beats[key].dot;
     }
   </script>
   <script>
