@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Screen 03 — What Kind Of Story</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../duolingo-design.css">
+  <link rel="stylesheet" href="../design-system.css">
+  <style>
+    .screen {
+      background: linear-gradient(180deg, #FFFFFF 0%, #FBF8FF 100%);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .type-page {
+      padding: 10px 16px 18px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    .type-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .topbar-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      border: 2px solid #EEE7F7;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--studio-figma-text);
+      text-decoration: none;
+      box-shadow: 0 4px 0 rgba(236, 230, 247, 0.95);
+    }
+
+    .topbar-btn img {
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+    }
+
+    .type-hero {
+      background: linear-gradient(135deg, #8C3BFF 0%, #6E23E8 100%);
+      border-radius: 24px;
+      padding: 26px 16px 18px;
+      min-height: 176px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 0 rgba(91, 33, 182, 0.18);
+      margin-bottom: 18px;
+    }
+
+    .type-hero::before,
+    .type-hero::after {
+      content: '';
+      position: absolute;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.10);
+      pointer-events: none;
+    }
+
+    .type-hero::before {
+      width: 140px;
+      height: 140px;
+      right: -34px;
+      top: -42px;
+    }
+
+    .type-hero::after {
+      width: 120px;
+      height: 120px;
+      left: -44px;
+      bottom: -62px;
+    }
+
+    .type-hero-row {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      min-height: 128px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .type-hero-copy {
+      flex: 1;
+      min-width: 0;
+      padding-top: 2px;
+    }
+
+    .type-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+      color: rgba(255,255,255,0.9);
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+    }
+
+    .type-title {
+      font-size: 28px;
+      font-weight: 900;
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      color: white;
+      max-width: 9ch;
+      margin-bottom: 8px;
+    }
+
+    .type-subtitle {
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.5;
+      color: rgba(255,255,255,0.82);
+      max-width: 20ch;
+    }
+
+    .type-hero-art {
+      width: 96px;
+      height: 110px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .type-hero-art img {
+      position: absolute;
+      right: -6px;
+      bottom: -8px;
+      width: 96px;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 10px 16px rgba(44, 9, 113, 0.28));
+    }
+
+    .type-section-label {
+      font-size: 10px;
+      font-weight: 900;
+      color: #B3A9C7;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 10px;
+    }
+
+    .type-grid {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .story-type-card {
+      border: 2px solid #ECE5F6;
+      background: white;
+      border-radius: 22px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      box-shadow: 0 5px 0 rgba(236, 230, 247, 0.9);
+      transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+    }
+
+    .story-type-card.selected {
+      border-color: var(--studio-figma-purple);
+      box-shadow: 0 6px 0 rgba(124, 58, 237, 0.18);
+      transform: translateY(-1px);
+    }
+
+    .story-type-art {
+      width: 92px;
+      height: 92px;
+      border-radius: 20px;
+      flex-shrink: 0;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      position: relative;
+    }
+
+    .story-type-art img {
+      width: 92px;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .art-funny { background: linear-gradient(135deg, #FFC96A, #FF9A1F); }
+    .art-drama { background: linear-gradient(135deg, #8E8BFF, #6E23E8); }
+    .art-adventure { background: linear-gradient(135deg, #64D9FF, #1CB0F6); }
+
+    .story-type-copy {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .story-type-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #F6F2FF;
+      color: var(--studio-figma-purple);
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 7px;
+    }
+
+    .story-type-name {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--studio-figma-text);
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+
+    .story-type-desc {
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.45;
+      color: var(--studio-figma-muted);
+      margin-bottom: 8px;
+    }
+
+    .story-type-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .meta-pill {
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #F7F4FD;
+      color: #8B7EAA;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .more-options {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      min-height: 48px;
+      border-radius: 16px;
+      border: 2px dashed #D9D0EC;
+      background: rgba(255,255,255,0.8);
+      color: #8977AA;
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+
+    .continue-bar {
+      margin-top: auto;
+      background: white;
+      border: 2px solid #ECE5F6;
+      border-radius: 22px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 8px 0 rgba(236, 230, 247, 0.95);
+    }
+
+    .continue-owl {
+      width: 62px;
+      height: 62px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #F7F4FF, #FFFFFF);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .continue-owl img {
+      width: 54px;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .continue-copy {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .continue-title {
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--studio-figma-text);
+      margin-bottom: 2px;
+    }
+
+    .continue-subtitle {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--studio-figma-muted);
+      line-height: 1.4;
+    }
+
+    .continue-btn {
+      min-width: 104px;
+      height: 48px;
+      padding: 0 18px;
+      border: none;
+      border-radius: 15px;
+      background: linear-gradient(180deg, #8C3BFF 0%, #6E23E8 100%);
+      box-shadow: 0 5px 0 #5618B8;
+      color: white;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
+    }
+
+    .continue-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: 0 5px 0 rgba(86, 24, 184, 0.35);
+    }
+
+    .continue-btn:not(:disabled):active {
+      transform: translateY(5px);
+      box-shadow: none;
+    }
+  </style>
+</head>
+<body class="demo-page">
+  <div class="phone">
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-icons">
+        <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1" fill="currentColor"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1" fill="currentColor"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="currentColor"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12"><circle cx="8" cy="10.5" r="1.5" fill="currentColor"/><path d="M8 6C6.2 6 4.6 6.8 3.4 8L2.4 7C3.9 5.5 5.8 4.6 8 4.6s4.1.9 5.6 2.4L12.6 8C11.4 6.8 9.8 6 8 6z" fill="currentColor"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="2.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="22.5" y="4" width="2" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="18" height="7" rx="1.5" fill="currentColor"/></svg>
+      </div>
+    </div>
+
+    <main class="screen">
+      <div class="type-page">
+        <div class="type-topbar">
+          <a class="topbar-btn" href="02-studio-landing.html" aria-label="Back to Stories Studio">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </a>
+          <button class="topbar-btn" type="button" aria-label="More options">
+            <img src="../Image/figma-assets/Star-yellow.png" alt="" />
+          </button>
+        </div>
+
+        <section class="type-hero">
+          <div class="type-hero-row">
+            <div class="type-hero-copy">
+              <div class="type-eyebrow">Story setup</div>
+              <h1 class="type-title">What kind of story do you want to create?</h1>
+              <p class="type-subtitle">Pick a vibe first. You can change characters, dialogue, and plot details in the next step.</p>
+            </div>
+            <div class="type-hero-art" aria-hidden="true">
+              <img src="../Image/figma-assets/Duolingo-bird-reading.png" alt="" />
+            </div>
+          </div>
+        </section>
+
+        <div class="type-section-label">Choose one to begin</div>
+
+        <div class="type-grid">
+          <button class="story-type-card selected" type="button" data-type="funny" data-label="Funny Slice of Life" onclick="selectStoryType(this)">
+            <div class="story-type-art art-funny">
+              <img src="../Image/figma-assets/Actor-scared-sweating.png" alt="Funny story art" />
+            </div>
+            <div class="story-type-copy">
+              <div class="story-type-kicker">Most popular</div>
+              <div class="story-type-name">Funny Slice of Life</div>
+              <div class="story-type-desc">Build a playful story around daily chaos, awkward moments, and fast dialogue.</div>
+              <div class="story-type-meta">
+                <span class="meta-pill">Easy to start</span>
+                <span class="meta-pill">Great for dialogue</span>
+              </div>
+            </div>
+          </button>
+
+          <button class="story-type-card" type="button" data-type="drama" data-label="Drama" onclick="selectStoryType(this)">
+            <div class="story-type-art art-drama">
+              <img src="../Image/figma-assets/Black-character-confident.png" alt="Drama story art" />
+            </div>
+            <div class="story-type-copy">
+              <div class="story-type-kicker">Bold emotions</div>
+              <div class="story-type-name">Drama</div>
+              <div class="story-type-desc">Create a story with tension, secrets, or a difficult choice that changes the ending.</div>
+              <div class="story-type-meta">
+                <span class="meta-pill">Best for twists</span>
+                <span class="meta-pill">Strong endings</span>
+              </div>
+            </div>
+          </button>
+
+          <button class="story-type-card" type="button" data-type="adventure" data-label="Adventure" onclick="selectStoryType(this)">
+            <div class="story-type-art art-adventure">
+              <img src="../Image/figma-assets/Fruits-apple-banna-blueberry.png" alt="Adventure story art" />
+            </div>
+            <div class="story-type-copy">
+              <div class="story-type-kicker">Inventive</div>
+              <div class="story-type-name">Adventure</div>
+              <div class="story-type-desc">Start with a goal, a missing item, or a place to explore, then build choices around it.</div>
+              <div class="story-type-meta">
+                <span class="meta-pill">Fun scenes</span>
+                <span class="meta-pill">Clear objectives</span>
+              </div>
+            </div>
+          </button>
+        </div>
+
+        <button class="more-options" type="button">+ More options coming soon</button>
+
+        <div class="continue-bar">
+          <div class="continue-owl" aria-hidden="true">
+            <img src="../Image/figma-assets/Duolingo-bird-reading.png" alt="" />
+          </div>
+          <div class="continue-copy">
+            <div class="continue-title">Selected: <span id="selectedStoryType">Funny Slice of Life</span></div>
+            <div class="continue-subtitle">Next you’ll build the scene, dialogue, and characters for this story.</div>
+          </div>
+          <button class="continue-btn" type="button" onclick="goToBuilder()">Continue</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    let activeType = 'funny';
+
+    function selectStoryType(button) {
+      document.querySelectorAll('.story-type-card').forEach((card) => card.classList.remove('selected'));
+      button.classList.add('selected');
+      activeType = button.dataset.type;
+      document.getElementById('selectedStoryType').textContent = button.dataset.label;
+      localStorage.setItem('storymaker:selectedStoryType', button.dataset.label);
+      localStorage.setItem('storymaker:selectedStoryKey', button.dataset.type);
+    }
+
+    function goToBuilder() {
+      localStorage.setItem('storymaker:selectedStoryType', document.getElementById('selectedStoryType').textContent);
+      localStorage.setItem('storymaker:selectedStoryKey', activeType);
+      window.location.href = '03-new-storyboard.html';
+    }
+
+    localStorage.setItem('storymaker:selectedStoryType', 'Funny Slice of Life');
+    localStorage.setItem('storymaker:selectedStoryKey', 'funny');
+  </script>
+
+  <a class="home-fab" href="../index.html">🏠 Main Page</a>
+</body>
+</html>

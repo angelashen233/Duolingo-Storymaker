@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Screen — Character Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../design-system.css">
+  <style>
+    .screen {
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── Top bar ── */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px 6px;
+      flex-shrink: 0;
+    }
+    .top-bar-close {
+      width: 32px; height: 32px;
+      border: none; background: none; cursor: pointer;
+      font-size: 22px; color: #afafaf;
+      font-family: 'Nunito', sans-serif; font-weight: 400;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .top-bar-title {
+      font-family: 'Nunito', sans-serif;
+      font-size: 22px; font-weight: 900; color: #1a1a1a;
+    }
+    .top-bar-done {
+      border: none; background: none; cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px; font-weight: 900;
+      color: #ff9600; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+
+    /* ── Character slots ── */
+    .char-slots {
+      display: flex; align-items: center; gap: 10px;
+      padding: 2px 16px 6px; flex-shrink: 0;
+    }
+    .char-slot-label {
+      font-family: 'Nunito', sans-serif;
+      font-size: 9px; font-weight: 700; color: #afafaf; text-transform: uppercase;
+    }
+    .char-slot-dots { display: flex; gap: 8px; align-items: center; }
+    .char-slot-dot {
+      width: 24px; height: 24px; border-radius: 50%;
+      border: 2px solid #d9d9d9; background: white;
+    }
+    .char-slot-dot.active { background: #ff9600; border-color: #ff9600; }
+
+    /* ── Canvas ── */
+    .canvas-wrap {
+      position: relative;
+      height: 192px; flex-shrink: 0;
+      background: #ddf4ff;
+      border-top: 2px solid #d9d9d9;
+      border-bottom: 2px solid #d9d9d9;
+      overflow: hidden;
+    }
+    .char-preview-area {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      display: flex; align-items: flex-end; justify-content: center;
+      padding-bottom: 0;
+    }
+    .char-preview-area svg { width: 168px; height: 168px; }
+
+    .canvas-trash {
+      position: absolute; top: 10px; left: 12px;
+      width: 26px; height: 30px;
+      cursor: pointer; background: none; border: none; opacity: 0.7;
+    }
+    .canvas-zoom {
+      position: absolute; top: 10px; right: 10px;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+    }
+    .zoom-btn {
+      width: 28px; height: 28px;
+      border: 2px solid #1cb0f6; border-radius: 50%;
+      background: white;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 18px; color: #1cb0f6;
+      font-weight: 400; font-family: 'Nunito', sans-serif;
+      line-height: 1;
+    }
+    .zoom-track {
+      width: 3px; height: 52px; background: #1cb0f6;
+      border-radius: 2px; position: relative; margin: 2px 0;
+    }
+    .zoom-thumb {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 18px; height: 7px;
+      background: #1cb0f6; border-radius: 4px;
+    }
+
+    /* ── Tab bar ── */
+    .tab-bar {
+      display: flex; align-items: center;
+      border-bottom: 2px solid #e5e5e5;
+      flex-shrink: 0; padding: 0 8px;
+    }
+    .tab-btn {
+      flex: 1;
+      display: flex; align-items: center; justify-content: center;
+      padding: 8px 0 6px;
+      cursor: pointer; border: none; background: none;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      color: #afafaf;
+    }
+    .tab-btn.active { border-bottom-color: #1cb0f6; color: #1cb0f6; }
+    .tab-btn svg { width: 28px; height: 28px; }
+
+    .templates-pill {
+      border: 2px solid #1cb0f6;
+      border-radius: 14px;
+      padding: 4px 10px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 9px; font-weight: 800;
+      color: #1cb0f6; text-transform: uppercase;
+      background: none; cursor: pointer;
+      white-space: nowrap; flex-shrink: 0;
+      margin-left: 4px;
+    }
+
+    /* ── Scrollable content ── */
+    .tab-content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .section-label {
+      font-family: 'Nunito', sans-serif;
+      font-size: 9px; font-weight: 700;
+      color: #afafaf; text-transform: uppercase;
+      padding: 10px 16px 6px;
+    }
+
+    /* ── Color swatches ── */
+    .colors-row { display: flex; gap: 6px; padding: 0 14px 10px; flex-wrap: nowrap; }
+    .color-swatch {
+      width: 44px; height: 44px;
+      border-radius: 8px; cursor: pointer;
+      border: 3px solid transparent; flex-shrink: 0;
+      transition: border-color 80ms;
+    }
+    .color-swatch.selected { border-color: #1cb0f6; }
+
+    /* ── Asset grid ── */
+    .asset-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px; padding: 4px 14px 16px;
+    }
+    .asset-cell {
+      aspect-ratio: 1;
+      border-radius: 22px;
+      border: 4px solid #d9d9d9;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; overflow: hidden;
+      background: #fafafa; position: relative;
+      transition: border-color 80ms;
+    }
+    .asset-cell.selected { border-color: #63c9f9; }
+    .asset-cell img {
+      width: 68%; height: 68%;
+      object-fit: contain; display: block;
+    }
+    .asset-cell-placeholder {
+      width: 48px; height: 48px;
+      border-radius: 10px; background: #e5e5e5;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── Bottom nav ── */
+    .bottom-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px 38px;
+      border-top: 1.5px solid #e5e5e5;
+      background: white; flex-shrink: 0;
+    }
+    .nav-btn {
+      width: 40px; height: 40px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      border: none; background: none; cursor: pointer;
+    }
+    .nav-btn img { width: 28px; height: 28px; object-fit: contain; }
+    .nav-purple-pill {
+      width: 29px; height: 29px;
+      background: #ce82ff; border-radius: 100px;
+      border: none; cursor: pointer;
+    }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 1000;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-backdrop {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.48);
+    }
+    .modal-card {
+      position: relative; z-index: 1;
+      background: white; border-radius: 24px;
+      padding: 24px 20px 20px;
+      width: 270px;
+      display: flex; flex-direction: column; align-items: center; gap: 14px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    }
+    .modal-x {
+      position: absolute; top: 12px; right: 14px;
+      border: none; background: none;
+      font-size: 18px; cursor: pointer;
+      color: #afafaf; font-family: 'Nunito', sans-serif;
+    }
+    .modal-preview {
+      width: 150px; height: 150px;
+      border-radius: 18px; background: #f5f5f5;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .modal-preview img { width: 85%; height: 85%; object-fit: contain; }
+    .modal-label {
+      font-family: 'Nunito', sans-serif;
+      font-size: 15px; font-weight: 900; color: #1a1a1a; text-align: center;
+      margin: 0;
+    }
+    .modal-apply-btn {
+      width: 100%; padding: 16px;
+      border-radius: 14px; border: none;
+      background: #57cc02; color: white;
+      font-family: 'Nunito', sans-serif;
+      font-size: 16px; font-weight: 900;
+      text-transform: uppercase; letter-spacing: 0.03em;
+      box-shadow: 0 4px 0 #46a302; cursor: pointer;
+    }
+    .modal-apply-btn:active { transform: translateY(4px); box-shadow: none; }
+  </style>
+</head>
+<body class="demo-page">
+  <div class="phone">
+    <div class="status-bar">
+      <span class="status-time">9:27</span>
+      <div class="status-icons">
+        <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1" fill="currentColor"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1" fill="currentColor"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="currentColor"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12"><circle cx="8" cy="10.5" r="1.5" fill="currentColor"/><path d="M8 6C6.2 6 4.6 6.8 3.4 8L2.4 7C3.9 5.5 5.8 4.6 8 4.6s4.1.9 5.6 2.4L12.6 8C11.4 6.8 9.8 6 8 6z" fill="currentColor"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="2.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="22.5" y="4" width="2" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="18" height="7" rx="1.5" fill="currentColor"/></svg>
+      </div>
+    </div>
+
+    <main class="screen">
+      <!-- Top bar -->
+      <div class="top-bar">
+        <button class="top-bar-close" onclick="window.location.href='hifi-build-story.html'">✕</button>
+        <span class="top-bar-title">Characters</span>
+        <button class="top-bar-done" onclick="window.location.href='hifi-build-story.html'">Done</button>
+      </div>
+
+      <!-- Character slots -->
+      <div class="char-slots">
+        <span class="char-slot-label">Character</span>
+        <div class="char-slot-dots">
+          <div class="char-slot-dot active"></div>
+          <div class="char-slot-dot"></div>
+          <div class="char-slot-dot"></div>
+          <div class="char-slot-dot"></div>
+          <div class="char-slot-dot"></div>
+        </div>
+      </div>
+
+      <!-- Canvas -->
+      <div class="canvas-wrap">
+        <div class="char-preview-area">
+          <svg id="charSvg" viewBox="0 0 200 210" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <defs>
+              <!-- Flood-fill filter: replaces every non-transparent pixel with the chosen hair color -->
+              <filter id="hairColorFilter" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+                <feFlood id="hairFlood" flood-color="#2f6cff" flood-opacity="1" result="floodColor"/>
+                <feComposite in="floodColor" in2="SourceGraphic" operator="in"/>
+              </filter>
+            </defs>
+            <!-- Body shape (filled by JS based on selected body option) -->
+            <g id="bodyGroup"></g>
+            <!-- Hands -->
+            <ellipse cx="18" cy="165" rx="12" ry="9" fill="#e39765"/>
+            <ellipse cx="182" cy="165" rx="12" ry="9" fill="#e39765"/>
+            <!-- Neck -->
+            <rect x="84" y="118" width="32" height="20" rx="6" fill="#e39765"/>
+            <!-- Head -->
+            <ellipse cx="100" cy="88" rx="54" ry="58" fill="#e39765"/>
+            <!-- Ear details -->
+            <ellipse cx="47" cy="90" rx="8" ry="10" fill="#d4845a"/>
+            <ellipse cx="153" cy="90" rx="8" ry="10" fill="#d4845a"/>
+            <!-- Hair: Figma image tinted via SVG feFlood filter; JS updates href + flood-color -->
+            <g id="hairGroup">
+              <image id="hairImg"
+                href="https://www.figma.com/api/mcp/asset/d5277494-1ea0-452d-ae8d-cc0bfb59fb4a"
+                xlink:href="https://www.figma.com/api/mcp/asset/d5277494-1ea0-452d-ae8d-cc0bfb59fb4a"
+                x="16" y="14" width="168" height="96"
+                preserveAspectRatio="xMidYMid meet"
+                filter="url(#hairColorFilter)"/>
+            </g>
+            <!-- White of eyes -->
+            <ellipse cx="84" cy="88" rx="11" ry="13" fill="white"/>
+            <ellipse cx="116" cy="88" rx="11" ry="13" fill="white"/>
+            <!-- Pupils -->
+            <circle id="pupilL" cx="86" cy="91" r="7" fill="#1a1a1a"/>
+            <circle id="pupilR" cx="118" cy="91" r="7" fill="#1a1a1a"/>
+            <!-- Eye shine -->
+            <circle cx="83" cy="87" r="3" fill="white"/>
+            <circle cx="115" cy="87" r="3" fill="white"/>
+            <!-- Eyebrows -->
+            <path id="browL" d="M74,76 Q84,70 94,76" stroke="#7b3d2e" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+            <path id="browR" d="M106,76 Q116,70 126,76" stroke="#7b3d2e" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+            <!-- Nose -->
+            <ellipse cx="100" cy="103" rx="5" ry="3.5" fill="#d4845a"/>
+            <!-- Mouth -->
+            <path d="M90,115 Q100,122 110,115" stroke="#c0795a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <!-- Glasses overlay (hidden by default) -->
+            <g id="glassesGroup" display="none"></g>
+            <!-- Mask overlay (hidden by default) -->
+            <g id="maskGroup" display="none"></g>
+          </svg>
+        </div>
+
+        <!-- Trash button -->
+        <button class="canvas-trash" onclick="resetToDefaults()" title="Reset character">
+          <svg viewBox="0 0 22 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1 5h20M7 5V3.5A1.5 1.5 0 018.5 2h5A1.5 1.5 0 0115 3.5V5M17.5 5l-1 18H5.5l-1-18" stroke="#afafaf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <!-- Zoom controls -->
+        <div class="canvas-zoom">
+          <button class="zoom-btn">+</button>
+          <div class="zoom-track"><div class="zoom-thumb"></div></div>
+          <button class="zoom-btn">−</button>
+        </div>
+      </div>
+
+      <!-- Tab bar -->
+      <div class="tab-bar">
+        <!-- Body -->
+        <button class="tab-btn active" data-tab="body" onclick="switchTab('body')">
+          <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="14" cy="8" r="4.5" stroke="currentColor" stroke-width="2"/>
+            <path d="M5 24c0-4.97 4.03-9 9-9s9 4.03 9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <!-- Eyes -->
+        <button class="tab-btn" data-tab="eyes" onclick="switchTab('eyes')">
+          <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="9.5" cy="14" rx="4.5" ry="5.5" stroke="currentColor" stroke-width="2"/>
+            <ellipse cx="18.5" cy="14" rx="4.5" ry="5.5" stroke="currentColor" stroke-width="2"/>
+            <line x1="14" y1="11" x2="14" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <!-- Hair -->
+        <button class="tab-btn" data-tab="hair" onclick="switchTab('hair')">
+          <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="17" width="20" height="5" rx="2.5" stroke="currentColor" stroke-width="2"/>
+            <line x1="7.5" y1="17" x2="7.5" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <line x1="11.5" y1="17" x2="11.5" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <line x1="16.5" y1="17" x2="16.5" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <line x1="20.5" y1="17" x2="20.5" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <!-- Glasses -->
+        <button class="tab-btn" data-tab="glasses" onclick="switchTab('glasses')">
+          <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="9" cy="15" r="4.5" stroke="currentColor" stroke-width="2"/>
+            <circle cx="19" cy="15" r="4.5" stroke="currentColor" stroke-width="2"/>
+            <line x1="13.5" y1="15" x2="14.5" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M3 13 Q4 12 4.5 13.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <path d="M25 13 Q24 12 23.5 13.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+          </svg>
+        </button>
+        <!-- Mask/face -->
+        <button class="tab-btn" data-tab="mask" onclick="switchTab('mask')">
+          <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 9 Q5 22 14 22 Q23 22 23 9 Q18 11.5 14 11.5 Q10 11.5 5 9Z" stroke="currentColor" stroke-width="2" fill="none"/>
+            <circle cx="10" cy="14" r="1.5" fill="currentColor"/>
+            <circle cx="18" cy="14" r="1.5" fill="currentColor"/>
+            <path d="M10 18.5 Q14 21 18 18.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <!-- Templates pill -->
+        <button class="templates-pill" onclick="switchTab('templates')">Templates</button>
+      </div>
+
+      <!-- Scrollable section: colors + grid -->
+      <div class="tab-content">
+        <div class="section-label">Colors</div>
+        <div class="colors-row" id="colorsRow"></div>
+        <div class="section-label" id="assetLabel">Body</div>
+        <div class="asset-grid" id="assetGrid"></div>
+      </div>
+
+      <!-- Bottom nav -->
+      <nav class="bottom-nav">
+        <button class="nav-btn">
+          <img src="../Image/figma-assets/Bottom Nav Button-Left-1-home-birdhouse.png" alt="Home">
+        </button>
+        <button class="nav-btn">
+          <img src="../Image/figma-assets/Bottom Nav Button-left-2-chest-40by40.png" alt="Rewards">
+        </button>
+        <button class="nav-btn">
+          <img src="../Image/figma-assets/Bottom Nav Button-left3-dumbell.png" alt="Learn">
+        </button>
+        <button class="nav-btn">
+          <img src="../Image/figma-assets/feed-icon-left-5.png" alt="Stories">
+        </button>
+        <button class="nav-btn">
+          <img src="../Image/figma-assets/feed-icon-left-5.png" alt="Feed">
+        </button>
+        <button class="nav-purple-pill" aria-label="Profile"></button>
+      </nav>
+    </main>
+  </div>
+
+  <!-- Asset/color enlargement modal -->
+  <div id="assetModal" class="modal-overlay">
+    <div class="modal-backdrop" onclick="closeModal()"></div>
+    <div class="modal-card">
+      <button class="modal-x" onclick="closeModal()">✕</button>
+      <div id="modalPreview" class="modal-preview"></div>
+      <p id="modalLabel" class="modal-label"></p>
+      <button id="modalApplyBtn" class="modal-apply-btn">Use This</button>
+    </div>
+  </div>
+
+  <a class="home-fab" href="../index.html">🏠 Main Page</a>
+
+  <script>
+    // ── State ──
+    let activeTab = 'body';
+    let selectedAssetIdx  = { body: 1, eyes: 1, hair: 1, glasses: 0, mask: 0, templates: 0 };
+    let selectedColorIdx  = { body: 0, eyes: 0, hair: 6, glasses: 0, mask: 0, templates: 0 };
+    let pendingApply = null;
+
+    // ── Color palettes per tab ──
+    const TAB_COLORS = {
+      body: [
+        { hex: '#91db7b', label: 'Lime' },
+        { hex: '#00cf00', label: 'Green' },
+        { hex: '#d9d9d9', label: 'Gray' },
+        { hex: '#ffffff', label: 'White', border: '#e5e5e5' },
+        { hex: '#ff9600', label: 'Orange' },
+        { hex: '#ffc800', label: 'Yellow' },
+        { hex: '#2f6cff', label: 'Blue' },
+      ],
+      eyes: [
+        { hex: '#7b3d2e', label: 'Brown' },
+        { hex: '#1a3fa5', label: 'Dark Blue' },
+        { hex: '#d9d9d9', label: 'Gray' },
+        { hex: '#00cf00', label: 'Green' },
+        { hex: '#ff9600', label: 'Orange' },
+        { hex: '#ffc800', label: 'Yellow' },
+        { hex: '#2f6cff', label: 'Blue' },
+      ],
+      hair: [
+        { hex: '#7b3d2e', label: 'Brown' },
+        { hex: '#00cf00', label: 'Green' },
+        { hex: '#d9d9d9', label: 'Gray' },
+        { hex: '#ffffff', label: 'White', border: '#e5e5e5' },
+        { hex: '#ff9600', label: 'Orange' },
+        { hex: '#ffc800', label: 'Yellow' },
+        { hex: '#2f6cff', label: 'Blue' },
+      ],
+      glasses: [
+        { hex: '#1a1a1a', label: 'Black' },
+        { hex: '#7b3d2e', label: 'Brown' },
+        { hex: '#d9d9d9', label: 'Silver' },
+        { hex: '#ff9600', label: 'Orange' },
+        { hex: '#ffc800', label: 'Gold' },
+        { hex: '#2f6cff', label: 'Blue' },
+        { hex: '#ff4b4b', label: 'Red' },
+      ],
+      mask: [
+        { hex: '#1a1a1a', label: 'Black' },
+        { hex: '#7b3d2e', label: 'Brown' },
+        { hex: '#ff4b4b', label: 'Red' },
+        { hex: '#ff9600', label: 'Orange' },
+        { hex: '#ffc800', label: 'Gold' },
+        { hex: '#2f6cff', label: 'Blue' },
+        { hex: '#ce82ff', label: 'Purple' },
+      ],
+      templates: [
+        { hex: '#57cc02', label: 'Green' },
+        { hex: '#1cb0f6', label: 'Sky Blue' },
+        { hex: '#ff9600', label: 'Orange' },
+        { hex: '#ff4b4b', label: 'Red' },
+        { hex: '#ce82ff', label: 'Purple' },
+        { hex: '#ffc800', label: 'Yellow' },
+        { hex: '#1a1a1a', label: 'Dark' },
+      ],
+    };
+
+    // ── Asset grids per tab ──
+    // Hair images from Figma node 468:23142
+    const HAIR_IMGS = [
+      'https://www.figma.com/api/mcp/asset/812fe4da-ec51-461c-b539-450630908388',
+      'https://www.figma.com/api/mcp/asset/d5277494-1ea0-452d-ae8d-cc0bfb59fb4a',
+      'https://www.figma.com/api/mcp/asset/907d3c90-f671-4bd1-8011-49301f8a2b63',
+      'https://www.figma.com/api/mcp/asset/eff84c14-965d-4fba-b1a0-90ce5318a55b',
+      'https://www.figma.com/api/mcp/asset/8d8994a5-647a-4038-8244-ce5c9701a66e',
+      'https://www.figma.com/api/mcp/asset/4257c717-8b3c-4a8f-a80b-a81836f85b01',
+    ];
+    // Body images — local Figma exports
+    const BODY_IMGS = [
+      '../Image/figma-assets/image-110.png',
+      '../Image/figma-assets/image-111.png',
+      '../Image/figma-assets/image-112.png',
+      '../Image/figma-assets/image-113.png',
+      '../Image/figma-assets/image-114.png',
+      '../Image/figma-assets/image-115.png',
+    ];
+
+    function makeAssets(labels, imgs) {
+      return labels.map((label, i) => ({ label, img: imgs ? imgs[i] || '' : '' }));
+    }
+
+    const TAB_ASSETS = {
+      body:      makeAssets(['Body 1','Body 2','Body 3','Body 4','Body 5','Body 6'], BODY_IMGS),
+      eyes:      makeAssets(['Eyes 1','Eyes 2','Eyes 3','Eyes 4','Eyes 5','Eyes 6'], null),
+      hair:      makeAssets(['Hair 1','Hair 2','Hair 3','Hair 4','Hair 5','Hair 6'], HAIR_IMGS),
+      glasses:   makeAssets(['Frame 1','Frame 2','Frame 3','Frame 4','Frame 5','Frame 6'], null),
+      mask:      makeAssets(['Mask 1','Mask 2','Mask 3','Mask 4','Mask 5','Mask 6'], null),
+      templates: makeAssets(['Style 1','Style 2','Style 3','Style 4','Style 5','Style 6'], null),
+    };
+
+    // ── Body SVG shapes (6 styles, viewBox 0 0 200 210) ──
+    // __C__ = body color, __D__ = darker shade for collar stroke
+    const BODY_SHAPES = [
+      // 0: Standard — balanced proportions
+      `<rect x="48" y="132" width="104" height="78" rx="22" fill="__C__"/>
+       <path d="M80,132 Q100,148 120,132" fill="__C__" stroke="__D__" stroke-width="1"/>
+       <ellipse cx="32" cy="156" rx="22" ry="13" fill="__C__"/>
+       <ellipse cx="168" cy="156" rx="22" ry="13" fill="__C__"/>`,
+      // 1: Slim — narrow torso and thin arms
+      `<rect x="64" y="130" width="72" height="80" rx="16" fill="__C__"/>
+       <path d="M84,130 Q100,144 116,130" fill="__C__" stroke="__D__" stroke-width="1"/>
+       <ellipse cx="42" cy="152" rx="18" ry="10" fill="__C__"/>
+       <ellipse cx="158" cy="152" rx="18" ry="10" fill="__C__"/>`,
+      // 2: Stocky — wide and short torso
+      `<rect x="30" y="136" width="140" height="66" rx="28" fill="__C__"/>
+       <path d="M70,136 Q100,152 130,136" fill="__C__" stroke="__D__" stroke-width="1"/>
+       <ellipse cx="16" cy="162" rx="28" ry="17" fill="__C__"/>
+       <ellipse cx="184" cy="162" rx="28" ry="17" fill="__C__"/>`,
+      // 3: Round/Chubby — wide rounded belly
+      `<path d="M60,132 Q24,132 24,170 Q24,210 100,210 Q176,210 176,170 Q176,132 140,132 Z" fill="__C__"/>
+       <path d="M76,132 Q100,154 124,132" fill="__C__" stroke="__D__" stroke-width="1"/>
+       <ellipse cx="18" cy="166" rx="24" ry="16" fill="__C__"/>
+       <ellipse cx="182" cy="166" rx="24" ry="16" fill="__C__"/>`,
+      // 4: Athletic — wide shoulders tapering to waist
+      `<path d="M36,132 L164,132 Q170,150 154,180 Q138,210 100,210 Q62,210 46,180 Q30,150 36,132 Z" fill="__C__"/>
+       <path d="M72,132 Q100,148 128,132" fill="__C__" stroke="__D__" stroke-width="1"/>
+       <ellipse cx="22" cy="150" rx="26" ry="14" fill="__C__"/>
+       <ellipse cx="178" cy="150" rx="26" ry="14" fill="__C__"/>`,
+      // 5: Pear — narrow shoulders, wider hips
+      `<path d="M72,132 Q46,132 42,152 Q34,174 46,194 Q58,210 100,210 Q142,210 154,194 Q166,174 158,152 Q154,132 128,132 Z" fill="__C__"/>
+       <path d="M82,132 Q100,146 118,132" fill="__C__" stroke="__D__" stroke-width="1"/>
+       <ellipse cx="34" cy="152" rx="20" ry="12" fill="__C__"/>
+       <ellipse cx="166" cy="152" rx="20" ry="12" fill="__C__"/>`,
+    ];
+
+    function darken(hex) {
+      return '#' + hex.replace(/^#/, '').match(/.{2}/g)
+        .map(h => Math.max(0, parseInt(h, 16) - 40).toString(16).padStart(2, '0'))
+        .join('');
+    }
+
+    // Glasses SVG paths (overlay on face)
+    const GLASSES_PATHS = [
+      // 0: round
+      'M67,88 m-14,0 a14,14 0 1,0 28,0 a14,14 0 1,0 -28,0 Z M119,88 m-14,0 a14,14 0 1,0 28,0 a14,14 0 1,0 -28,0 Z M81,88 L87,88 M113,88 L119,88',
+      // 1: square
+      'M54,78 h28 v20 h-28 Z M92,78 h28 v20 h-28 Z M54,88 L54,88 M82,88 L92,88',
+      // 2: oval narrow
+      'M67,88 m-12,0 a12,8 0 1,0 24,0 a12,8 0 1,0 -24,0 Z M119,88 m-12,0 a12,8 0 1,0 24,0 a12,8 0 1,0 -24,0 Z M79,88 L89,88',
+      // 3: cat-eye
+      'M55,84 Q64,76 79,86 Q82,90 67,92 Q55,90 55,84 Z M89,84 Q98,76 113,86 Q116,90 101,92 Q89,90 89,84 Z M79,86 L89,86',
+      // 4: half-rim
+      'M53,88 a14,14 0 0,0 28,0 L53,88 M107,88 a14,14 0 0,0 28,0 L107,88 M81,88 L107,88',
+      // 5: heart/funky
+      'M66,86 Q60,78 54,84 Q54,94 66,96 Q78,94 78,84 Q72,78 66,86 Z M118,86 Q112,78 106,84 Q106,94 118,96 Q130,94 130,84 Q124,78 118,86 Z M78,90 L106,90',
+    ];
+
+    // ── Render functions ──
+    function renderColors() {
+      const colors = TAB_COLORS[activeTab] || [];
+      document.getElementById('colorsRow').innerHTML = colors.map((c, i) => {
+        const sel = selectedColorIdx[activeTab] === i;
+        const bStyle = c.border ? `border-color:${c.border};` : '';
+        return `<div class="color-swatch${sel ? ' selected' : ''}"
+          style="background:${c.hex};${bStyle}"
+          onclick="pickColor(${i})"
+          ondblclick="openColorModal(${i})"
+          title="${c.label}"></div>`;
+      }).join('');
+    }
+
+    function renderGrid() {
+      const assets = TAB_ASSETS[activeTab] || [];
+      const label = { body:'Body', eyes:'Eyes', hair:'Hair', glasses:'Glasses', mask:'Face', templates:'Templates' }[activeTab];
+      document.getElementById('assetLabel').textContent = label;
+      document.getElementById('assetGrid').innerHTML = assets.map((asset, i) => {
+        const sel = selectedAssetIdx[activeTab] === i;
+        const inner = asset.img
+          ? `<img src="${asset.img}" alt="${asset.label}">`
+          : `<div class="asset-cell-placeholder"><svg viewBox="0 0 40 40" width="36" height="36"><text x="20" y="24" font-size="9" text-anchor="middle" fill="#afafaf" font-family="Nunito,sans-serif">${asset.label}</text></svg></div>`;
+        return `<div class="asset-cell${sel ? ' selected' : ''}"
+          onclick="pickAsset(${i})"
+          ondblclick="openAssetModal(${i})">${inner}</div>`;
+      }).join('');
+    }
+
+    // ── Character preview update ──
+    function updatePreview() {
+      const hairColor = TAB_COLORS.hair[selectedColorIdx.hair].hex;
+      const bodyColor = TAB_COLORS.body[selectedColorIdx.body].hex;
+      const hairIdx   = selectedAssetIdx.hair;
+      const bodyIdx   = selectedAssetIdx.body;
+
+      // Hair: update SVG feFlood color + swap <image> href to the selected Figma asset
+      const floodEl = document.getElementById('hairFlood');
+      if (floodEl) floodEl.setAttribute('flood-color', hairColor);
+      const hairImgEl = document.getElementById('hairImg');
+      if (hairImgEl) {
+        const url = HAIR_IMGS[hairIdx] || HAIR_IMGS[0];
+        hairImgEl.setAttribute('href', url);
+        hairImgEl.setAttribute('xlink:href', url);
+      }
+
+      // Body shape + color
+      const bodyTemplate = BODY_SHAPES[bodyIdx] || BODY_SHAPES[0];
+      document.getElementById('bodyGroup').innerHTML =
+        bodyTemplate.replace(/__C__/g, bodyColor).replace(/__D__/g, darken(bodyColor));
+
+      // Glasses overlay
+      const glassesG = document.getElementById('glassesGroup');
+      if (selectedAssetIdx.glasses > 0 || activeTab === 'glasses') {
+        const gColor = TAB_COLORS.glasses[selectedColorIdx.glasses].hex;
+        const gPath  = GLASSES_PATHS[selectedAssetIdx.glasses] || GLASSES_PATHS[0];
+        glassesG.setAttribute('display', 'block');
+        glassesG.innerHTML = `<path d="${gPath}" stroke="${gColor}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+      } else {
+        glassesG.setAttribute('display', 'none');
+      }
+    }
+
+    // ── Interactions ──
+    function switchTab(tab) {
+      activeTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(btn =>
+        btn.classList.toggle('active', btn.dataset.tab === tab));
+      renderColors();
+      renderGrid();
+      updatePreview();
+    }
+
+    function pickColor(idx) {
+      selectedColorIdx[activeTab] = idx;
+      renderColors();
+      updatePreview();
+    }
+
+    function pickAsset(idx) {
+      selectedAssetIdx[activeTab] = idx;
+      renderGrid();
+      updatePreview();
+    }
+
+    function resetToDefaults() {
+      selectedAssetIdx[activeTab] = 0;
+      selectedColorIdx[activeTab] = 0;
+      renderColors();
+      renderGrid();
+      updatePreview();
+    }
+
+    // ── Modal ──
+    function openColorModal(idx) {
+      const c = TAB_COLORS[activeTab][idx];
+      document.getElementById('modalPreview').innerHTML =
+        `<div style="width:120px;height:120px;border-radius:16px;background:${c.hex};${c.border ? `border:2px solid ${c.border}` : ''}"></div>`;
+      document.getElementById('modalLabel').textContent = c.label;
+      pendingApply = () => pickColor(idx);
+      document.getElementById('modalApplyBtn').onclick = () => { pendingApply && pendingApply(); closeModal(); };
+      document.getElementById('assetModal').classList.add('open');
+    }
+
+    function openAssetModal(idx) {
+      const asset = TAB_ASSETS[activeTab][idx];
+      document.getElementById('modalPreview').innerHTML = asset.img
+        ? `<img src="${asset.img}" alt="${asset.label}" style="width:130px;height:130px;object-fit:contain;">`
+        : `<div style="width:120px;height:120px;background:#f0f0f0;border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:Nunito,sans-serif;font-size:12px;color:#afafaf;">${asset.label}</div>`;
+      document.getElementById('modalLabel').textContent = asset.label;
+      pendingApply = () => pickAsset(idx);
+      document.getElementById('modalApplyBtn').onclick = () => { pendingApply && pendingApply(); closeModal(); };
+      document.getElementById('assetModal').classList.add('open');
+    }
+
+    function closeModal() {
+      document.getElementById('assetModal').classList.remove('open');
+      pendingApply = null;
+    }
+
+    // ── Init ──
+    renderColors();
+    renderGrid();
+    updatePreview();
+  </script>
+</body>
+</html>

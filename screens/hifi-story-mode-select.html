@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Screen — What kind of story?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../duolingo-design.css">
+  <link rel="stylesheet" href="../design-system.css">
+  <style>
+    .screen {
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Progress bar topbar */
+    .progress-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px 8px;
+    }
+
+    .progress-bar-row .settings-icon {
+      width: 26px;
+      height: 26px;
+      color: #afafaf;
+      flex-shrink: 0;
+    }
+
+    .progress-track {
+      flex: 1;
+      height: 14px;
+      background: #e5e5e5;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 20%;
+      background: #57cc02;
+      border-radius: 99px;
+    }
+
+    .progress-badges {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .badge-pill {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      background: #fff0f0;
+      border: 1.5px solid #ffb3b3;
+      border-radius: 99px;
+      padding: 3px 8px;
+      font-size: 10px;
+      font-weight: 900;
+      color: #ff4b4b;
+    }
+
+    .badge-inf {
+      font-size: 11px;
+      font-weight: 900;
+      color: #afafaf;
+    }
+
+    /* Back button */
+    .back-row {
+      padding: 6px 16px 0;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+      color: #4b4b4b;
+      padding: 4px 0;
+    }
+
+    /* Main content */
+    .content {
+      padding: 20px 20px 0;
+      flex: 1;
+    }
+
+    .page-question {
+      font-size: 22px;
+      font-weight: 900;
+      color: #1a1a1a;
+      line-height: 1.2;
+      margin-bottom: 24px;
+    }
+
+    /* Mode option rows */
+    .mode-option {
+      border: 2.5px solid #e5e5e5;
+      border-radius: 14px;
+      padding: 16px 18px;
+      box-shadow: 0 4px 0 #e5e5e5;
+      background: white;
+      cursor: pointer;
+      margin-bottom: 8px;
+      transition: border-color 100ms, transform 80ms, box-shadow 80ms;
+      display: block;
+      text-decoration: none;
+    }
+
+    .mode-option:hover   { transform: translateY(-1px); border-color: #ce82ff; }
+    .mode-option:active  { transform: translateY(4px); box-shadow: none; }
+    .mode-option.selected {
+      border-color: #7c3aed;
+      box-shadow: 0 4px 0 rgba(124,58,237,0.15);
+    }
+
+    .mode-name {
+      font-size: 18px;
+      font-weight: 900;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+
+    .mode-desc {
+      font-size: 13px;
+      font-weight: 700;
+      color: #6b6b6b;
+      line-height: 1.4;
+    }
+
+    .mode-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 2px 8px;
+      border-radius: 99px;
+      margin-bottom: 6px;
+    }
+
+    .badge-beginner    { background: #e2f5d0; color: #1e6b00; }
+    .badge-mid         { background: #ddf4ff; color: #006b9f; }
+    .badge-advanced    { background: #f0e8ff; color: #5a1fb8; }
+
+    /* Bottom nav */
+    .bottom-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 16px 38px;
+      border-top: 1.5px solid #e5e5e5;
+      background: white;
+      margin-top: auto;
+    }
+
+    .nav-btn {
+      width: 40px; height: 40px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      border: none; background: none; cursor: pointer;
+    }
+
+    .nav-btn img { width: 28px; height: 28px; object-fit: contain; }
+    .nav-btn.active { background: #ddf4ff; border: 2px solid #63c9f9; }
+    .nav-purple-pill {
+      width: 29px; height: 29px;
+      background: #ce82ff; border-radius: 100px; border: none; cursor: pointer;
+    }
+  </style>
+</head>
+<body class="demo-page">
+  <div class="phone">
+    <div class="status-bar">
+      <span class="status-time">9:27</span>
+      <div class="status-icons">
+        <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1" fill="currentColor"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1" fill="currentColor"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="currentColor"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12"><circle cx="8" cy="10.5" r="1.5" fill="currentColor"/><path d="M8 6C6.2 6 4.6 6.8 3.4 8L2.4 7C3.9 5.5 5.8 4.6 8 4.6s4.1.9 5.6 2.4L12.6 8C11.4 6.8 9.8 6 8 6z" fill="currentColor"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="2.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="22.5" y="4" width="2" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="18" height="7" rx="1.5" fill="currentColor"/></svg>
+      </div>
+    </div>
+
+    <main class="screen">
+      <!-- Progress bar -->
+      <div class="progress-bar-row">
+        <svg class="settings-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        <div class="progress-track">
+          <div class="progress-fill"></div>
+        </div>
+        <div class="progress-badges">
+          <span class="badge-pill">
+            <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9 3,11 3.5,7.5 1,5 4.5,4.5" fill="#ff4b4b"/></svg>
+            3
+          </span>
+          <span class="badge-inf">∞</span>
+        </div>
+      </div>
+
+      <!-- Back -->
+      <div class="back-row">
+        <button class="back-btn" onclick="history.back()" aria-label="Back">↩</button>
+      </div>
+
+      <div class="content">
+        <h1 class="page-question">What kind of story do you want to create?</h1>
+
+        <!-- Guided Build -->
+        <a href="hifi-scene-editor.html" class="mode-option" id="opt-guided">
+          <span class="mode-badge badge-beginner">Beginner</span>
+          <div class="mode-name">Guided Build</div>
+          <div class="mode-desc">For beginners — preset stories waiting to be assembled</div>
+        </a>
+
+        <!-- Write with AI -->
+        <div class="mode-option" id="opt-ai" onclick="selectMode('opt-ai','hifi-scene-editor.html')">
+          <span class="mode-badge badge-mid">Mid-level</span>
+          <div class="mode-name">Write with AI</div>
+          <div class="mode-desc">For mid-level users — when you have a story but are not quite there yet in terms of idea / language ability</div>
+        </div>
+
+        <!-- Build scene-by-scene -->
+        <div class="mode-option" id="opt-scene" onclick="selectMode('opt-scene','hifi-scene-editor-advanced.html')">
+          <span class="mode-badge badge-advanced">Advanced</span>
+          <div class="mode-name">Build scene-by-scene</div>
+          <div class="mode-desc">For advanced users — full control</div>
+        </div>
+      </div>
+
+      <!-- Bottom nav -->
+      <nav class="bottom-nav">
+        <button class="nav-btn active">
+          <img src="../Image/figma-assets/Bottom Nav Button-Left-1-home-birdhouse.png" alt="Home">
+        </button>
+        <button class="nav-btn">
+          <img src="../Image/figma-assets/Bottom Nav Button-left-2-chest-40by40.png" alt="Rewards">
+        </button>
+        <button class="nav-btn">
+          <img src="../Image/figma-assets/Bottom Nav Button-left3-dumbell.png" alt="Learn">
+        </button>
+        <button class="nav-btn">
+          <img src="../Image/figma-assets/feed-icon-left-5.png" alt="Stories">
+        </button>
+        <button class="nav-btn">
+          <img src="../Image/figma-assets/feed-icon-left-5.png" alt="Feed">
+        </button>
+        <button class="nav-purple-pill" aria-label="Profile"></button>
+      </nav>
+    </main>
+  </div>
+
+  <a class="home-fab" href="../index.html">🏠 Main Page</a>
+
+  <script>
+    function selectMode(id, dest) {
+      document.querySelectorAll('.mode-option').forEach(el => el.classList.remove('selected'));
+      document.getElementById(id).classList.add('selected');
+      setTimeout(() => { window.location.href = dest; }, 180);
+    }
+  </script>
+</body>
+</html>

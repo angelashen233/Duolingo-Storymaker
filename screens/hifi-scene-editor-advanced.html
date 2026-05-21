@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Screen — Scene Editor (Advanced — Choices & Endings)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../duolingo-design.css">
+  <link rel="stylesheet" href="../design-system.css">
+  <style>
+    .screen {
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Progress bar topbar */
+    .progress-bar-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 16px 8px; flex-shrink: 0;
+    }
+    .settings-icon { width: 26px; height: 26px; color: #afafaf; flex-shrink: 0; }
+    .progress-track { flex: 1; height: 14px; background: #e5e5e5; border-radius: 99px; overflow: hidden; }
+    .progress-fill  { height: 100%; width: 60%; background: #57cc02; border-radius: 99px; }
+    .progress-badges { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+    .badge-pill {
+      display: flex; align-items: center; gap: 3px;
+      background: #fff0f0; border: 1.5px solid #ffb3b3;
+      border-radius: 99px; padding: 3px 8px;
+      font-size: 10px; font-weight: 900; color: #ff4b4b;
+    }
+    .badge-inf { font-size: 11px; font-weight: 900; color: #afafaf; }
+
+    /* Back + title */
+    .top-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 4px 16px 8px; flex-shrink: 0;
+    }
+    .back-btn { background: none; border: none; cursor: pointer; font-size: 18px; color: #4b4b4b; padding: 4px; }
+
+    /* Meta row */
+    .meta-row {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 4px 20px 8px; flex-shrink: 0;
+    }
+    .meta-left .meta-label { font-size: 10px; font-weight: 900; color: #afafaf; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; }
+    .meta-left .meta-value { font-size: 12px; font-weight: 800; color: #1a1a1a; }
+    .add-scene-btn {
+      border: 2px solid #e5e5e5; border-radius: 10px; padding: 6px 12px; background: white;
+      font-family: 'Nunito', sans-serif; font-size: 11px; font-weight: 900; color: #4b4b4b;
+      cursor: pointer; box-shadow: 0 2px 0 #e5e5e5;
+    }
+
+    /* Scene dots */
+    .scene-dots-row { display: flex; align-items: center; gap: 4px; padding: 4px 20px 10px; flex-shrink: 0; }
+    .scene-dot-label { font-size: 10px; font-weight: 900; color: #afafaf; text-transform: uppercase; letter-spacing: 0.08em; margin-right: 4px; }
+    .dot { width: 13px; height: 13px; border-radius: 50%; border: 2px solid #e5e5e5; background: white; cursor: pointer; }
+    .dot.active { background: #57cc02; border-color: #57cc02; }
+
+    /* Scrollable form */
+    .scene-form { flex: 1; overflow-y: auto; padding: 0 16px 16px; }
+
+    .section-label {
+      font-size: 10px; font-weight: 900; color: #1a1a1a;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: 6px; margin-top: 14px;
+    }
+    .section-label.muted { color: #afafaf; }
+
+    textarea.field, input.field {
+      width: 100%; border: 2.5px solid #e5e5e5; border-radius: 14px;
+      padding: 14px 16px; font-family: 'Nunito', sans-serif;
+      font-size: 13px; font-weight: 700; color: #1a1a1a;
+      background: white; resize: none; box-sizing: border-box; outline: none;
+    }
+    textarea.field:focus, input.field:focus { border-color: #7c3aed; }
+    textarea.field::placeholder, input.field::placeholder { color: #9d9d9d; }
+
+    /* Visual canvas */
+    .scene-canvas {
+      background: #e5e5e5; border-radius: 9px; height: 180px;
+      display: flex; align-items: flex-end; justify-content: space-around;
+      overflow: hidden; margin-top: 10px; position: relative;
+    }
+    .scene-canvas .placeholder {
+      position: absolute; inset: 0; display: flex;
+      align-items: center; justify-content: center;
+      color: #b0b0b0; font-size: 12px; font-weight: 700;
+    }
+    .scene-canvas img { height: 160px; object-fit: contain; position: relative; }
+    .canvas-actions { display: flex; gap: 8px; margin-top: 8px; }
+    .canvas-action-btn {
+      flex: 1; border: 1.5px solid #e5e5e5; border-radius: 9px;
+      padding: 7px 10px; font-family: 'Nunito', sans-serif;
+      font-size: 11px; font-weight: 800; color: #4b4b4b;
+      background: white; cursor: pointer; box-shadow: 0 2px 0 #e5e5e5;
+    }
+
+    /* Choice rows */
+    .choice-wrap {
+      display: flex; align-items: stretch; gap: 8px; margin-bottom: 10px;
+    }
+    .choice-wrap textarea {
+      flex: 1; border: 2.5px solid #e5e5e5; border-radius: 14px;
+      padding: 12px 14px; font-family: 'Nunito', sans-serif;
+      font-size: 13px; font-weight: 700; color: #1a1a1a;
+      background: white; resize: none; box-sizing: border-box; outline: none;
+    }
+    .choice-wrap textarea:focus { border-color: #7c3aed; }
+    .choice-wrap textarea::placeholder { color: #9d9d9d; }
+    .remove-choice-btn {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #ff4b4b; border: none; color: white;
+      font-size: 16px; cursor: pointer; display: flex;
+      align-items: center; justify-content: center;
+      align-self: center; flex-shrink: 0;
+    }
+
+    /* Assign letter row */
+    .assign-row {
+      display: flex; align-items: center; gap: 6px;
+      margin-bottom: 8px; color: #4b4b4b;
+      font-size: 11px; font-weight: 800;
+    }
+    .assign-row select {
+      border: 1.5px solid #e5e5e5; border-radius: 8px;
+      padding: 4px 8px; font-family: 'Nunito', sans-serif;
+      font-size: 11px; font-weight: 800; color: #4b4b4b;
+      background: white; outline: none;
+    }
+
+    /* Add choice */
+    .add-choice-btn {
+      border: 2px solid #e5e5e5; border-radius: 10px; padding: 8px 14px;
+      background: #f7f7f7; font-family: 'Nunito', sans-serif;
+      font-size: 12px; font-weight: 900; color: #4b4b4b;
+      cursor: pointer; margin-bottom: 14px;
+    }
+
+    /* Endings */
+    .endings-section { margin-top: 16px; }
+    .endings-grid { display: flex; flex-direction: column; gap: 6px; }
+    .ending-row { display: flex; align-items: center; gap: 8px; }
+    .ending-badge {
+      font-size: 10px; font-weight: 900; color: #afafaf;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      min-width: 56px;
+    }
+    .ending-input {
+      flex: 1; border: 1.5px dashed #e5e5e5; border-radius: 10px;
+      padding: 8px 12px; font-family: 'Nunito', sans-serif;
+      font-size: 12px; font-weight: 700; color: #1a1a1a;
+      background: white; outline: none;
+    }
+    .ending-input:focus { border-color: #7c3aed; border-style: solid; }
+    .ending-input::placeholder { color: #c0c0c0; }
+
+    /* Bottom nav */
+    .bottom-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 16px 38px; border-top: 1.5px solid #e5e5e5;
+      background: white; flex-shrink: 0;
+    }
+    .nav-btn { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: none; background: none; cursor: pointer; }
+    .nav-btn img { width: 28px; height: 28px; object-fit: contain; }
+    .nav-btn.active { background: #ddf4ff; border: 2px solid #63c9f9; }
+    .nav-purple-pill { width: 29px; height: 29px; background: #ce82ff; border-radius: 100px; border: none; cursor: pointer; }
+
+    h1.page-title { font-size: 26px; font-weight: 900; color: #1a1a1a; margin: 0; }
+  </style>
+</head>
+<body class="demo-page">
+  <div class="phone">
+    <div class="status-bar">
+      <span class="status-time">9:27</span>
+      <div class="status-icons">
+        <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1" fill="currentColor"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1" fill="currentColor"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="currentColor"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12"><circle cx="8" cy="10.5" r="1.5" fill="currentColor"/><path d="M8 6C6.2 6 4.6 6.8 3.4 8L2.4 7C3.9 5.5 5.8 4.6 8 4.6s4.1.9 5.6 2.4L12.6 8C11.4 6.8 9.8 6 8 6z" fill="currentColor"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="2.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="22.5" y="4" width="2" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="18" height="7" rx="1.5" fill="currentColor"/></svg>
+      </div>
+    </div>
+
+    <main class="screen">
+      <!-- Progress bar -->
+      <div class="progress-bar-row">
+        <svg class="settings-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        <div class="progress-track"><div class="progress-fill"></div></div>
+        <div class="progress-badges">
+          <span class="badge-pill">
+            <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9 3,11 3.5,7.5 1,5 4.5,4.5" fill="#ff4b4b"/></svg>
+            3
+          </span>
+          <span class="badge-inf">∞</span>
+        </div>
+      </div>
+
+      <!-- Back + title -->
+      <div class="top-row">
+        <button class="back-btn" onclick="window.location.href='hifi-story-mode-select.html'" aria-label="Back">↩</button>
+        <h1 class="page-title">Scenes</h1>
+      </div>
+
+      <!-- Meta row -->
+      <div class="meta-row">
+        <div class="meta-left">
+          <div class="meta-label">Scene Count</div>
+          <div class="meta-value" id="sceneCount">1/10 scenes (MAX)</div>
+        </div>
+        <button class="add-scene-btn" onclick="addScene()">Add scene</button>
+      </div>
+
+      <!-- Scene dots -->
+      <div class="scene-dots-row" id="dotsRow">
+        <span class="scene-dot-label">Scene</span>
+        <div class="dot active" onclick="switchScene(0)"></div>
+        <div class="dot" onclick="switchScene(1)"></div>
+        <div class="dot" onclick="switchScene(2)"></div>
+        <div class="dot" onclick="switchScene(3)"></div>
+        <div class="dot" onclick="switchScene(4)"></div>
+        <div class="dot" onclick="switchScene(5)"></div>
+        <div class="dot" onclick="switchScene(6)"></div>
+        <div class="dot" onclick="switchScene(7)"></div>
+        <div class="dot" onclick="switchScene(8)"></div>
+        <div class="dot" onclick="switchScene(9)"></div>
+      </div>
+
+      <!-- Scrollable scene form -->
+      <div class="scene-form">
+        <!-- Narration -->
+        <div class="section-label">Narration</div>
+        <textarea class="field" id="narration" rows="2" placeholder="Type here...."></textarea>
+
+        <!-- Visual canvas -->
+        <div class="scene-canvas" id="sceneCanvas">
+          <div class="placeholder" id="canvasPlaceholder">Visual scene area</div>
+          <img id="bgChar" src="../Image/figma-assets/Actor-scared-sweating.png" alt="" style="display:none;">
+        </div>
+        <div class="canvas-actions">
+          <button class="canvas-action-btn" onclick="addBackground()">+ Add background</button>
+          <button class="canvas-action-btn" onclick="addCharacter()">+ Add character</button>
+        </div>
+
+        <!-- Dialogue -->
+        <div class="section-label" style="margin-top:16px;">Dialogue</div>
+        <textarea class="field" id="dialogue" rows="2" placeholder="Type here...."></textarea>
+
+        <!-- Response + choices -->
+        <div class="section-label">Response</div>
+
+        <div id="choiceList">
+          <div class="section-label muted">Choice 1</div>
+          <div class="choice-wrap">
+            <textarea rows="2" placeholder="Type here...."></textarea>
+            <button class="remove-choice-btn" onclick="removeChoice(this)" title="Remove choice">−</button>
+          </div>
+
+          <div class="section-label muted">Choice 2</div>
+          <div class="choice-wrap">
+            <textarea rows="2" placeholder="Type here...."></textarea>
+            <button class="remove-choice-btn" onclick="removeChoice(this)" title="Remove choice">−</button>
+          </div>
+
+          <div class="section-label muted">Choice 3</div>
+          <div class="choice-wrap">
+            <textarea rows="2" placeholder="Type here...."></textarea>
+            <button class="remove-choice-btn" onclick="removeChoice(this)" title="Remove choice">−</button>
+          </div>
+        </div>
+
+        <!-- Assign to letter -->
+        <div class="assign-row">
+          Assign to letter
+          <select>
+            <option>A</option><option>B</option><option>C</option>
+          </select>
+        </div>
+
+        <button class="add-choice-btn" onclick="addChoice()">+ Add choice</button>
+
+        <!-- Endings -->
+        <div class="endings-section">
+          <div class="section-label">Endings</div>
+          <div class="endings-grid">
+            <div class="ending-row">
+              <span class="ending-badge">Ending A</span>
+              <input class="ending-input" type="text" placeholder="Describe ending A…">
+            </div>
+            <div class="ending-row">
+              <span class="ending-badge">Ending B</span>
+              <input class="ending-input" type="text" placeholder="Describe ending B…">
+            </div>
+            <div class="ending-row">
+              <span class="ending-badge">Ending C</span>
+              <input class="ending-input" type="text" placeholder="Describe ending C…">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Done CTA -->
+      <div style="padding: 12px 16px 4px; flex-shrink:0;">
+        <button onclick="window.location.href='hifi-build-story.html'" style="width:100%;padding:16px;border-radius:14px;border:none;background:#57cc02;color:white;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:0.03em;box-shadow:0 4px 0 #46a302;cursor:pointer;">
+          Done — Build My Story →
+        </button>
+      </div>
+
+      <!-- Bottom nav -->
+      <nav class="bottom-nav">
+        <button class="nav-btn active">
+          <img src="../Image/figma-assets/Bottom Nav Button-Left-1-home-birdhouse.png" alt="Home">
+        </button>
+        <button class="nav-btn">
+          <img src="../Image/figma-assets/Bottom Nav Button-left-2-chest-40by40.png" alt="Rewards">
+        </button>
+        <button class="nav-btn">
+          <img src="../Image/figma-assets/Bottom Nav Button-left3-dumbell.png" alt="Learn">
+        </button>
+        <button class="nav-btn">
+          <img src="../Image/figma-assets/feed-icon-left-5.png" alt="Stories">
+        </button>
+        <button class="nav-btn">
+          <img src="../Image/figma-assets/feed-icon-left-5.png" alt="Feed">
+        </button>
+        <button class="nav-purple-pill" aria-label="Profile"></button>
+      </nav>
+    </main>
+  </div>
+
+  <a class="home-fab" href="../index.html">🏠 Main Page</a>
+
+  <script>
+    let sceneCount = 1;
+    let activeScene = 0;
+    const scenes = [{ narration: '', dialogue: '', hasBg: false, hasChar: false }];
+    const bgColors  = ['#b3d9ff','#ffd6a5','#d4f0b5','#ffc8c8','#e8d5ff'];
+    const charImgs  = [
+      '../Image/figma-assets/Actor-scared-sweating.png',
+      '../Image/figma-assets/Black-character-confident.png',
+      '../Image/figma-assets/Duolingo-bird-reading.png',
+    ];
+
+    function addScene() {
+      if (sceneCount >= 10) { alert('Maximum 10 scenes reached!'); return; }
+      scenes.push({ narration: '', dialogue: '', hasBg: false, hasChar: false });
+      sceneCount++;
+      document.getElementById('sceneCount').textContent = `${sceneCount}/10 scenes (MAX)`;
+      const dots = document.querySelectorAll('.dot');
+      if (sceneCount - 1 < dots.length) dots[sceneCount - 1].style.opacity = '1';
+      switchScene(sceneCount - 1);
+    }
+
+    function switchScene(index) {
+      scenes[activeScene].narration = document.getElementById('narration').value;
+      scenes[activeScene].dialogue  = document.getElementById('dialogue').value;
+      document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === index));
+      activeScene = index;
+      document.getElementById('narration').value = scenes[index].narration || '';
+      document.getElementById('dialogue').value  = scenes[index].dialogue  || '';
+      renderCanvas(index);
+    }
+
+    function renderCanvas(index) {
+      const canvas = document.getElementById('sceneCanvas');
+      const ph     = document.getElementById('canvasPlaceholder');
+      const img    = document.getElementById('bgChar');
+      canvas.style.background = scenes[index].hasBg  ? bgColors[index % bgColors.length] : '#e5e5e5';
+      ph.style.display  = scenes[index].hasBg  ? 'none'  : 'flex';
+      img.style.display = scenes[index].hasChar ? 'block' : 'none';
+      if (scenes[index].hasChar) img.src = charImgs[index % charImgs.length];
+    }
+
+    function addBackground() { scenes[activeScene].hasBg  = true; renderCanvas(activeScene); }
+    function addCharacter()  { scenes[activeScene].hasChar = true; renderCanvas(activeScene); }
+
+    let choiceNum = 3;
+    function addChoice() {
+      if (choiceNum >= 6) { alert('Maximum 6 choices per scene.'); return; }
+      choiceNum++;
+      const list = document.getElementById('choiceList');
+      const label = document.createElement('div');
+      label.className = 'section-label muted';
+      label.textContent = `Choice ${choiceNum}`;
+      const wrap = document.createElement('div');
+      wrap.className = 'choice-wrap';
+      wrap.innerHTML = `<textarea rows="2" placeholder="Type here...."></textarea>
+        <button class="remove-choice-btn" onclick="removeChoice(this)" title="Remove choice">−</button>`;
+      list.appendChild(label);
+      list.appendChild(wrap);
+    }
+
+    function removeChoice(btn) {
+      const wrap  = btn.closest('.choice-wrap');
+      const label = wrap.previousElementSibling;
+      if (label && label.classList.contains('section-label')) label.remove();
+      wrap.remove();
+      // Renumber
+      document.querySelectorAll('#choiceList .section-label').forEach((el, i) => {
+        el.textContent = `Choice ${i + 1}`;
+      });
+      choiceNum = document.querySelectorAll('#choiceList .choice-wrap').length;
+    }
+  </script>
+</body>
+</html>

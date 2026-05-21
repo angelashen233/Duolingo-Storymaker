@@ -3,814 +3,444 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Screen 03 — New Storyboard Canvas</title>
+  <title>Screen 03 - Build It</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../duolingo-design.css">
   <link rel="stylesheet" href="../design-system.css">
-  <link rel="stylesheet" href="../components/animations.css">
-  <link rel="stylesheet" href="../components/character.css">
-  <link rel="stylesheet" href="../components/dialogue-bubble.css">
-  <link rel="stylesheet" href="../components/duo-button.css">
   <style>
-    /* Canvas editor header */
-    .editor-header {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 16px 8px; background: white;
-      border-bottom: 1.5px solid var(--color-swan);
-    }
-    .title-input {
-      flex: 1; font-family: 'Nunito', sans-serif; font-size: 17px;
-      font-weight: 900; color: var(--color-eel); border: none; outline: none;
-      background: transparent; min-width: 0;
-    }
-    .title-input::placeholder { color: var(--color-hare); }
-
-    .header-btn {
-      padding: 7px 16px; border-radius: 9999px; border: none; cursor: pointer;
-      font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 800;
-    }
-    .preview-btn {
-      background: var(--color-macaw); color: white;
-      box-shadow: 0 3px 0 #149EE0; transition: transform 100ms ease, box-shadow 100ms ease;
-    }
-    .preview-btn:active { transform: translateY(3px); box-shadow: none; }
-
-    /* Scene canvas */
-    .scene-area {
-      margin: 10px 12px 0; border-radius: 18px; overflow: hidden;
-      height: 264px; position: relative;
-      border: 2px solid var(--color-swan);
-      background: linear-gradient(180deg, #C5EDFF 0%, #A8D8FF 40%, #D4EDCF 75%, #B8E0B0 100%);
-    }
-    /* Sun */
-    .scene-sun { position: absolute; top: 14px; right: 20px; font-size: 32px; opacity: 0.9; }
-    /* Clouds */
-    .scene-cloud { position: absolute; top: 20px; font-size: 22px; opacity: 0.75; }
-    /* Ground */
-    .scene-floor { position: absolute; bottom: 0; left: 0; right: 0; height: 44px; background: rgba(80,140,60,0.2); border-radius: 0 0 16px 16px; }
-
-    /* Characters on stage */
-    .char-left { position: absolute; bottom: 12px; left: 18px; }
-    .char-right-placeholder {
-      position: absolute; bottom: 16px; right: 24px;
-      width: 70px; height: 80px; border: 2.5px dashed var(--color-macaw);
-      border-radius: 50% 50% 40% 40% / 50% 50% 40% 40%;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      background: rgba(28,176,246,0.06); cursor: pointer;
-      transition: all 120ms ease;
-    }
-    .char-right-placeholder:hover { background: rgba(28,176,246,0.12); }
-    .char-placeholder-icon { font-size: 22px; }
-    .char-placeholder-text { font-size: 10px; font-weight: 800; color: var(--color-macaw); text-align: center; line-height: 1.2; margin-top: 2px; }
-
-    /* Dialogue bubble on stage */
-    .stage-bubble {
-      position: absolute; top: 14px; left: 88px; right: 20px; max-width: 200px;
-    }
-    .stage-bubble-box {
-      background: white; border: 2px solid var(--color-feather-green);
-      border-radius: 14px; padding: 10px 14px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-    }
-    .stage-bubble-speaker { font-size: 10px; font-weight: 900; color: #2D8A00; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
-    .stage-bubble-text { font-size: 14px; font-weight: 700; color: var(--color-eel); line-height: 1.4; }
-    .stage-bubble-tail {
-      width: 0; height: 0;
-      border-top: 0; border-right: 10px solid transparent;
-      border-bottom: 10px solid var(--color-feather-green);
-      border-left: 0;
-      position: absolute; bottom: -10px; left: 20px;
-    }
-
-    /* Scene background picker */
-    .bg-picker-row {
-      display: flex; align-items: center; gap: 4px;
-      padding: 8px 12px; overflow-x: auto; scrollbar-width: none;
-    }
-    .bg-picker-row::-webkit-scrollbar { display: none; }
-    .bg-picker-label { font-size: 11px; font-weight: 800; color: var(--color-wolf); white-space: nowrap; margin-right: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
-    .bg-swatch {
-      width: 36px; height: 36px; border-radius: 50%; border: 3px solid transparent;
-      cursor: pointer; flex-shrink: 0; transition: transform 100ms ease;
-    }
-    .bg-swatch.active { border-color: var(--color-eel); transform: scale(1.15); }
-    .bg-swatch:hover { transform: scale(1.1); }
-
-    /* Dialogue input area */
-    .dialogue-area {
-      padding: 8px 12px; background: white; border-top: 1.5px solid var(--color-swan);
-    }
-    .dialogue-speaker-row {
-      display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
-    }
-    .speaker-avatar { width: 28px; height: 28px; border-radius: 50%; overflow: hidden; flex-shrink: 0; border: 2px solid var(--color-swan); }
-    .speaker-name { font-size: 13px; font-weight: 800; color: var(--color-feather-green); }
-    .speaker-change { font-size: 12px; font-weight: 700; color: var(--color-macaw); cursor: pointer; }
-    .dialogue-input-row { display: flex; gap: 8px; align-items: flex-end; }
-    .dialogue-field {
-      flex: 1; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 700;
-      color: var(--color-eel); background: var(--color-polar);
-      border: 2px solid var(--color-swan); border-radius: 14px;
-      padding: 10px 14px; resize: none; outline: none; min-height: 44px;
-      max-height: 96px; line-height: 1.4; transition: border-color 150ms ease;
-    }
-    .dialogue-field:focus { border-color: var(--color-macaw); background: white; }
-    .send-btn {
-      width: 44px; height: 44px; border-radius: 50%; background: var(--color-feather-green);
-      color: white; font-size: 18px; border: none; cursor: pointer; flex-shrink: 0;
-      box-shadow: 0 3px 0 #46A302; transition: transform 100ms ease, box-shadow 100ms ease;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .send-btn:active { transform: translateY(3px); box-shadow: none; }
-
-    /* Bottom toolbar */
-    .canvas-toolbar {
-      display: flex; align-items: center; gap: 0;
-      border-top: 1.5px solid var(--color-swan); background: white;
-      padding: 4px 0;
-    }
-    .tool-btn {
-      flex: 1; display: flex; flex-direction: column; align-items: center;
-      gap: 3px; padding: 8px 4px; cursor: pointer; border: none;
-      background: transparent; border-radius: 10px; transition: background 120ms ease;
+    body {
       font-family: 'Nunito', sans-serif;
     }
-    .tool-btn:hover { background: var(--color-polar); }
-    .tool-btn.active { background: rgba(88,204,2,0.1); }
-    .tool-icon { font-size: 20px; }
-    .tool-label { font-size: 11px; font-weight: 800; color: var(--color-wolf); }
-    .tool-btn.active .tool-label { color: var(--color-feather-green); }
 
-    /* Timeline strip */
-    .timeline-strip {
-      background: var(--color-polar); border-top: 1.5px solid var(--color-swan);
-      padding: 8px 12px;
-    }
-    .timeline-label { font-size: 11px; font-weight: 800; color: var(--color-wolf); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
-    .timeline-row { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
-    .timeline-row::-webkit-scrollbar { display: none; }
-    .timeline-scene {
-      width: 52px; height: 52px; border-radius: 10px; overflow: hidden;
-      flex-shrink: 0; border: 3px solid transparent; cursor: pointer; position: relative;
-    }
-    .timeline-scene.active { border-color: var(--color-macaw); }
-    .timeline-scene-inner { width: 100%; height: 100%; display: flex; align-items: flex-end; }
-    .timeline-num { position: absolute; top: 3px; left: 3px; background: rgba(0,0,0,0.45); color: white; font-size: 9px; font-weight: 800; padding: 1px 4px; border-radius: 4px; }
-    .timeline-add {
-      width: 52px; height: 52px; border-radius: 10px; border: 2px dashed var(--color-hare);
-      background: transparent; display: flex; align-items: center; justify-content: center;
-      font-size: 22px; color: var(--color-hare); cursor: pointer; flex-shrink: 0;
-      transition: all 120ms ease;
-    }
-    .timeline-add:hover { border-color: var(--color-feather-green); color: var(--color-feather-green); background: rgba(88,204,2,0.06); }
-
-    /* Scene overlay for time-of-day / weather effects */
-    .scene-overlay {
-      position: absolute; inset: 0; border-radius: 16px; pointer-events: none;
-      transition: background 350ms ease, backdrop-filter 350ms ease;
+    .screen.builder-screen {
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
     }
 
-    /* Scene Settings Panel */
-    .scene-panel {
-      display: none;
-      padding: 10px 12px 10px;
-      background: white;
-      border-top: 1.5px solid var(--color-swan);
-    }
-    .scene-panel.visible { display: block; }
-    .scene-panel-row {
-      display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
-    }
-    .scene-panel-row:last-child { margin-bottom: 0; }
-    .scene-row-label {
-      font-size: 10px; font-weight: 900; color: var(--color-wolf);
-      text-transform: uppercase; letter-spacing: 0.06em;
-      width: 66px; flex-shrink: 0; line-height: 1.3;
-    }
-    .scene-field {
-      flex: 1; font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 700;
-      color: var(--color-eel); background: var(--color-polar);
-      border: 2px solid var(--color-swan); border-radius: 10px;
-      padding: 7px 12px; outline: none; resize: none; line-height: 1.4;
-      transition: border-color 150ms ease;
-    }
-    .scene-field:focus { border-color: var(--color-macaw); background: white; }
-    .time-pills { display: flex; gap: 4px; flex-wrap: nowrap; overflow-x: auto; }
-    .time-pill {
-      padding: 5px 8px; border-radius: 9999px;
-      border: 2px solid var(--color-swan); background: var(--color-polar);
-      font-family: 'Nunito', sans-serif; font-size: 11px; font-weight: 800;
-      color: var(--color-wolf); cursor: pointer; white-space: nowrap;
-      transition: all 100ms ease; flex-shrink: 0;
-    }
-    .time-pill.active { background: var(--color-macaw); color: white; border-color: var(--color-macaw); }
-    .weather-chips { display: flex; gap: 5px; }
-    .weather-chip {
-      width: 34px; height: 34px; border-radius: 50%;
-      border: 2.5px solid var(--color-swan); background: var(--color-polar);
-      font-size: 16px; cursor: pointer; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      transition: all 100ms ease;
-    }
-    .weather-chip.active { border-color: var(--color-feather-green); background: rgba(88,204,2,0.12); }
-
-    /* ── Weather chip pop animation ── */
-    @keyframes chip-pop {
-      0%   { transform: scale(1); }
-      35%  { transform: scale(1.45); }
-      65%  { transform: scale(0.85); }
-      100% { transform: scale(1); }
-    }
-    .weather-chip.pop { animation: chip-pop 320ms cubic-bezier(0.34,1.56,0.64,1) forwards; }
-
-    /* ── Weather particle layer ── */
-    #weatherLayer {
-      position: absolute; inset: 0; pointer-events: none;
-      overflow: hidden; border-radius: 16px; z-index: 3;
+    .builder-main {
+      flex: 1;
+      padding: 6px 12px 10px;
     }
 
-    /* Rain */
-    @keyframes rain-fall {
-      0%   { transform: translateY(-20px) rotate(15deg); }
-      100% { transform: translateY(290px) rotate(15deg); }
-    }
-    .rain-drop {
-      position: absolute; top: 0;
-      width: 2px; height: 14px;
-      background: linear-gradient(180deg, transparent, rgba(100,140,200,0.75));
-      border-radius: 2px;
-      animation: rain-fall linear infinite;
+    .builder-topbar {
+      display: grid;
+      grid-template-columns: 60px 1fr 60px;
+      align-items: center;
+      padding: 4px 2px 10px;
+      color: #4b4b4b;
     }
 
-    /* Snow */
-    @keyframes snow-fall {
-      0%   { transform: translateY(-20px) translateX(0px)   rotate(0deg); }
-      33%  { transform: translateY(80px)  translateX(12px)  rotate(120deg); }
-      66%  { transform: translateY(170px) translateX(-8px)  rotate(240deg); }
-      100% { transform: translateY(290px) translateX(5px)   rotate(360deg); }
-    }
-    .snow-flake {
-      position: absolute; top: 0;
-      color: rgba(255,255,255,0.9);
-      text-shadow: 0 0 4px rgba(150,200,255,0.6);
-      animation: snow-fall ease-in-out infinite;
+    .builder-link {
+      color: #8cccf8;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
     }
 
-    /* Fog */
-    @keyframes fog-drift {
-      0%   { transform: translateX(-50px); opacity: 0.10; }
-      50%  { opacity: 0.25; }
-      100% { transform: translateX(50px);  opacity: 0.10; }
+    .builder-link.done {
+      justify-self: end;
+      color: #d5d5d5;
     }
-    .fog-layer {
-      position: absolute; left: -15%; right: -15%;
-      height: 44px;
-      background: rgba(210,215,220,0.5);
+
+    .builder-heading {
+      text-align: center;
+      min-width: 0;
+    }
+
+    .builder-heading h1 {
+      margin: 0;
+      color: #131313;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+
+    .scene-progress {
+      margin-bottom: 12px;
+    }
+
+    .scene-progress-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      color: #d6d6d6;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .scene-dots {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-left: 2px;
+    }
+
+    .scene-dot {
+      width: 18px;
+      height: 18px;
       border-radius: 50%;
-      filter: blur(14px);
-      animation: fog-drift ease-in-out infinite alternate;
+      border: 1.8px solid #d5d5d5;
+      background: #ffffff;
+      cursor: pointer;
+      padding: 0;
+      position: relative;
+      transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
     }
 
-    /* Extra clouds (cloudy) */
-    @keyframes cloud-drift {
-      0%, 100% { transform: translateX(0px); }
-      50%       { transform: translateX(10px); }
+    .scene-dot.active {
+      border-color: #f2cb4d;
+      background: #ffffff;
     }
-    .cloud-extra {
+
+    .scene-dot.active::after {
+      content: '';
       position: absolute;
-      animation: cloud-drift ease-in-out infinite;
-      pointer-events: none; user-select: none;
+      inset: 3px;
+      border-radius: 50%;
+      background: #f2cb4d;
     }
 
-    /* ── Story Arc Panel ── */
-    .arc-panel {
-      display: none; padding: 8px 12px 8px;
-      background: white; border-top: 1.5px solid var(--color-swan);
-    }
-    .arc-panel.visible { display: block; }
-
-    .arc-vis svg { display: block; width: 100%; overflow: visible; }
-    .arc-dot { transition: fill 200ms ease, r 200ms ease; }
-
-    .arc-labels-row {
-      display: flex; justify-content: space-between;
-      padding: 3px 4px 0; margin-bottom: 6px;
-    }
-    .arc-labels-row span {
-      font-size: 9px; font-weight: 800; color: var(--color-hare);
-      cursor: pointer; text-align: center; flex: 1;
-      transition: color 120ms ease;
-    }
-    .arc-labels-row span:hover { color: var(--color-eel); }
-
-    .arc-beat-bar {
-      background: var(--color-polar); border-radius: 9px;
-      padding: 5px 10px; margin-bottom: 6px;
-      font-size: 12px; font-weight: 700; color: var(--color-wolf);
-      text-align: center; min-height: 28px;
-      display: flex; align-items: center; justify-content: center;
-    }
-
-    .beat-pills-row {
-      display: flex; gap: 5px; overflow-x: auto; scrollbar-width: none;
-      padding-bottom: 2px;
-    }
-    .beat-pills-row::-webkit-scrollbar { display: none; }
-    .beat-pill {
-      padding: 5px 11px; border-radius: 9999px;
-      border: 2px solid transparent;
-      font-family: 'Nunito', sans-serif; font-size: 11px; font-weight: 800;
-      cursor: pointer; white-space: nowrap; flex-shrink: 0;
-      transition: transform 120ms ease, box-shadow 120ms ease;
-      outline: none;
-    }
-    .beat-pill.active {
-      border-color: currentColor;
-      box-shadow: 0 2px 0 rgba(0,0,0,0.15);
+    .scene-dot:hover {
       transform: translateY(-1px);
     }
 
-    /* Beat badge on timeline thumbnails */
-    .beat-badge {
-      position: absolute; bottom: 3px; right: 3px;
-      width: 18px; height: 18px; border-radius: 50%;
-      font-size: 11px; display: flex; align-items: center; justify-content: center;
-      border: 2px solid white; z-index: 5; line-height: 1;
+    .section-label {
+      display: block;
+      margin: 0 0 6px;
+      color: #bcbcbc;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
     }
 
-    /* Highlight active scene in timeline */
-    .timeline-scene.active { border-color: var(--color-macaw); }
+    .builder-panel {
+      margin-bottom: 12px;
+    }
+
+    .builder-input {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1.6px solid #e7e7e7;
+      border-radius: 8px;
+      background: #fafafa;
+      color: #4b4b4b;
+      font: 700 12px/1.35 'Nunito', sans-serif;
+      padding: 10px 11px;
+      outline: none;
+      resize: none;
+      transition: border-color 120ms ease, background 120ms ease;
+    }
+
+    .builder-input:focus {
+      border-color: #9f74f8;
+      background: #ffffff;
+    }
+
+    .preview-stage {
+      height: 108px;
+      margin-top: 10px;
+      border-radius: 10px;
+      border: 1px solid #e6e6e6;
+      background: #d9d9d9;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .stage-character-preview {
+      position: absolute;
+      right: 10px;
+      bottom: 0;
+      width: 82px;
+      height: 82px;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.08));
+    }
+
+    .stage-character-label {
+      position: absolute;
+      left: 12px;
+      bottom: 10px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.86);
+      color: #6e23e8;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+
+    .preview-stage::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(0,0,0,0.04));
+    }
+
+    .mini-action-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 9px;
+    }
+
+    .mini-action,
+    .choice-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 28px;
+      border-radius: 8px;
+      border: 1.6px solid #ececec;
+      background: #ffffff;
+      color: #8f8f8f;
+      text-decoration: none;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      box-shadow: 0 2px 0 #efefef;
+    }
+
+    .dialogue-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 9px;
+      color: #4b4b4b;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .dialogue-meta span {
+      color: #8f8f8f;
+    }
+
+    .dialogue-select {
+      border: none;
+      background: transparent;
+      color: #4b4b4b;
+      font: inherit;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .choice-button {
+      width: 100%;
+      min-height: 32px;
+      color: #3d3d3d;
+      font-size: 12px;
+      font-weight: 800;
+      box-shadow: 0 3px 0 #e9e9e9;
+    }
+
+    .choice-button:active,
+    .mini-action:active,
+    .scene-dot:active {
+      transform: translateY(1px);
+    }
+
+    .builder-bottom {
+      margin-top: auto;
+    }
+
+    .bottom-nav.figma-nav {
+      background: #ffffff;
+      border-top: 1px solid #ece6f5;
+      padding-top: 8px;
+    }
+
+    .figma-nav .nav-item {
+      color: #b6aecb;
+      gap: 5px;
+    }
+
+    .figma-nav .nav-item:nth-child(1) { color: var(--studio-figma-nav-home); }
+    .figma-nav .nav-item:nth-child(2) { color: var(--studio-figma-nav-studio); }
+    .figma-nav .nav-item:nth-child(3) { color: var(--studio-figma-nav-learn); }
+    .figma-nav .nav-item:nth-child(4) { color: var(--studio-figma-nav-create); }
+    .figma-nav .nav-item:nth-child(5) { color: var(--studio-figma-nav-social); }
+    .figma-nav .nav-item:nth-child(6) { color: var(--studio-figma-nav-profile); }
+
+    .figma-nav .nav-item.active {
+      transform: translateY(-2px);
+      font-weight: 900;
+    }
+
+    .figma-nav .nav-label {
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .figma-nav .nav-icon svg {
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
   </style>
 </head>
 <body class="demo-page">
   <div class="phone">
-    <div class="status-bar" style="background:white;">
-      <span class="status-time">9:41</span>
+    <div class="status-bar" style="background:#ffffff;">
+      <span class="status-time">9:27</span>
       <div class="status-icons">
         <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1" fill="currentColor"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1" fill="currentColor"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="currentColor"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12"><circle cx="8" cy="10.5" r="1.5" fill="currentColor"/><path d="M8 6C6.2 6 4.6 6.8 3.4 8L2.4 7C3.9 5.5 5.8 4.6 8 4.6s4.1.9 5.6 2.4L12.6 8C11.4 6.8 9.8 6 8 6z" fill="currentColor"/></svg>
         <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="2.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="22.5" y="4" width="2" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="18" height="7" rx="1.5" fill="currentColor"/></svg>
       </div>
     </div>
 
-    <main class="screen" style="display:flex;flex-direction:column;">
-
-      <!-- Editor header -->
-      <div class="editor-header">
-        <a href="02-studio-landing.html" class="back-btn" style="text-decoration:none;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-        </a>
-        <input class="title-input" type="text" value="Mi Familia es Loca" placeholder="Story title...">
-        <a href="06-preview-story.html" class="header-btn preview-btn">▶ Preview</a>
-      </div>
-
-      <!-- Scene canvas -->
-      <div class="scene-area" id="sceneCanvas">
-        <div class="scene-sun">☀️</div>
-        <div class="scene-cloud" style="left:20px;">☁️</div>
-        <div class="scene-cloud" style="left:80px;top:30px;font-size:16px;">☁️</div>
-        <div class="scene-floor"></div>
-
-        <!-- Dialogue bubble (Duo speaking) -->
-        <div class="stage-bubble slide-up">
-          <div class="stage-bubble-box bubble-duo">
-            <div class="stage-bubble-speaker">Duo</div>
-            <div class="stage-bubble-text">¡Hola! ¿Cómo te llamas?</div>
+    <main class="screen builder-screen">
+      <div class="builder-main">
+        <header class="builder-topbar">
+          <a class="builder-link" href="03-story-type.html">Back</a>
+          <div class="builder-heading">
+            <h1>Scenes</h1>
           </div>
-        </div>
+          <a class="builder-link done" href="06-preview-story.html">Done</a>
+        </header>
 
-        <!-- Duo character on left -->
-        <div class="char-left char-bounce-in">
-          <div data-char="duo" data-size="char-lg"></div>
-        </div>
-
-        <!-- Right character placeholder -->
-        <a href="04-character-picker.html" class="char-right-placeholder">
-          <span class="char-placeholder-icon">👤</span>
-          <span class="char-placeholder-text">Add character</span>
-        </a>
-
-        <!-- Time / weather overlay -->
-        <div class="scene-overlay" id="sceneOverlay"></div>
-        <!-- Animated weather particles -->
-        <div id="weatherLayer"></div>
-      </div>
-
-      <!-- Scene BG picker -->
-      <div class="bg-picker-row">
-        <span class="bg-picker-label">Scene:</span>
-        <div class="bg-swatch active" style="background:linear-gradient(135deg,#C5EDFF,#B8E0B0)" onclick="setBg(this,'park')"></div>
-        <div class="bg-swatch" style="background:linear-gradient(135deg,#FFF4E8,#C49A6C)" onclick="setBg(this,'cafe')"></div>
-        <div class="bg-swatch" style="background:linear-gradient(135deg,#8EC5FC,#7986CB)" onclick="setBg(this,'city')"></div>
-        <div class="bg-swatch" style="background:linear-gradient(135deg,#FFF8E7,#D4A860)" onclick="setBg(this,'home')"></div>
-        <div class="bg-swatch" style="background:linear-gradient(135deg,#90EE90,#228B22)" onclick="setBg(this,'forest')"></div>
-        <div class="bg-swatch" style="background:linear-gradient(135deg,#A18CD1,#FBC2EB)" onclick="setBg(this,'sunset')"></div>
-      </div>
-
-      <!-- Dialogue input -->
-      <div class="dialogue-area">
-        <div class="dialogue-speaker-row">
-          <div class="speaker-avatar">
-            <div data-char="duo" style="width:28px;height:28px;overflow:hidden;"><div data-char="duo" data-size="char-sm" style="transform:scale(0.4);transform-origin:top left;width:70px;height:86px;"></div></div>
+        <section class="scene-progress" aria-label="Scene progress">
+          <div class="scene-progress-head">
+            <span id="sceneTitle">Scene 1</span>
+            <span id="sceneCount">0/5</span>
           </div>
-          <span class="speaker-name">Duo</span>
-          <span style="color:var(--color-hare);font-size:11px;margin-left:2px;">speaking</span>
-          <a href="04-character-picker.html" class="speaker-change" style="margin-left:auto;">Change ›</a>
-        </div>
-        <div class="dialogue-input-row">
-          <textarea class="dialogue-field" rows="2" placeholder="Type dialogue in Spanish...">¡Hola! ¿Cómo te llamas?</textarea>
-          <button class="send-btn" onclick="addDialogue()">→</button>
-        </div>
-        <div style="font-size:11px;font-weight:600;color:var(--color-wolf);margin-top:5px;display:flex;align-items:center;gap:5px;">
-          <span>💡</span><span>Tip: Write in Spanish to match your story's language tag</span>
-        </div>
+          <div class="scene-dots" id="sceneDots">
+            <button class="scene-dot active" type="button" data-scene="1" aria-label="Scene 1"></button>
+            <button class="scene-dot" type="button" data-scene="2" aria-label="Scene 2"></button>
+            <button class="scene-dot" type="button" data-scene="3" aria-label="Scene 3"></button>
+            <button class="scene-dot" type="button" data-scene="4" aria-label="Scene 4"></button>
+            <button class="scene-dot" type="button" data-scene="5" aria-label="Scene 5"></button>
+          </div>
+        </section>
+
+        <section class="builder-panel">
+          <label class="section-label" for="narrationField">Narration</label>
+          <textarea class="builder-input" id="narrationField" rows="2" placeholder="Type here..."></textarea>
+          <div class="preview-stage" id="previewStage"></div>
+          <div class="mini-action-row">
+            <button class="mini-action" id="backgroundButton" type="button">Add background</button>
+            <a class="mini-action" href="04-character-picker.html" id="addCharacterLink">Add character</a>
+          </div>
+        </section>
+
+        <section class="builder-panel">
+          <label class="section-label" for="dialogueField">Dialogue</label>
+          <textarea class="builder-input" id="dialogueField" rows="2" placeholder="Type here..."></textarea>
+          <div class="dialogue-meta">
+            <span>Who says this?</span>
+            <button class="dialogue-select" type="button" id="characterSelect">Character Select v</button>
+          </div>
+        </section>
+
+        <section class="builder-panel">
+          <label class="section-label" for="choiceButton">Response</label>
+          <a class="choice-button" id="choiceButton" href="05-branching-choice.html">Add Choice</a>
+        </section>
       </div>
 
-      <!-- Scene settings panel (shown when Scene tool is active) -->
-      <div class="scene-panel" id="scenePanel">
-        <div class="scene-panel-row">
-          <span class="scene-row-label">📍 Location</span>
-          <input class="scene-field" type="text" id="sceneLocation" value="City Park" placeholder="Where does this scene take place?">
-        </div>
-        <div class="scene-panel-row">
-          <span class="scene-row-label">🕐 Time</span>
-          <div class="time-pills">
-            <button class="time-pill active" onclick="setSceneTime(this,'morning')">🌅 Morning</button>
-            <button class="time-pill" onclick="setSceneTime(this,'afternoon')">☀️ Day</button>
-            <button class="time-pill" onclick="setSceneTime(this,'evening')">🌆 Evening</button>
-            <button class="time-pill" onclick="setSceneTime(this,'night')">🌙 Night</button>
-          </div>
-        </div>
-        <div class="scene-panel-row">
-          <span class="scene-row-label">🌤 Weather</span>
-          <div class="weather-chips">
-            <button class="weather-chip active" title="Sunny" onclick="setWeather(this,'sunny')">☀️</button>
-            <button class="weather-chip" title="Cloudy" onclick="setWeather(this,'cloudy')">⛅</button>
-            <button class="weather-chip" title="Rainy" onclick="setWeather(this,'rainy')">🌧️</button>
-            <button class="weather-chip" title="Snowy" onclick="setWeather(this,'snowy')">❄️</button>
-            <button class="weather-chip" title="Foggy" onclick="setWeather(this,'foggy')">🌫️</button>
-          </div>
-        </div>
-        <div class="scene-panel-row" style="margin-bottom:0;">
-          <span class="scene-row-label">📝 Note</span>
-          <textarea class="scene-field" rows="2" placeholder="Describe the mood or context for this scene…"></textarea>
-        </div>
+      <div class="builder-bottom">
+        <nav class="bottom-nav figma-nav">
+          <a class="nav-item" href="01-duolingo-home-new-tab.html">
+            <div class="nav-icon"><img class="nav-asset" src="../Image/figma-assets/Bottom Nav Button-Left-1-home-birdhouse.png" alt="" /></div>
+            <span class="nav-label">Home</span>
+          </a>
+          <a class="nav-item" href="11-popularity-board.html">
+            <div class="nav-icon"><img class="nav-asset" src="../Image/figma-assets/Bottom Nav Button-left-2-chest-40by40.png" alt="" /></div>
+            <span class="nav-label">Cards</span>
+          </a>
+          <a class="nav-item" href="01-duolingo-home-new-tab.html">
+            <div class="nav-icon"><img class="nav-asset" src="../Image/figma-assets/Bottom Nav Button-left3-dumbell.png" alt="" /></div>
+            <span class="nav-label">Learn</span>
+          </a>
+          <a class="nav-item active" href="02-studio-landing.html">
+            <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M4 18h16"/><path d="M5 7h7l2 2h5v7H5z"/><path d="M9 7V4"/><path d="M13 7V4"/></svg></div>
+            <span class="nav-label">Studio</span>
+          </a>
+          <a class="nav-item" href="08-community-feed.html">
+            <div class="nav-icon"><img class="nav-asset" src="../Image/figma-assets/feed-icon-left-5.png" alt="" /></div>
+            <span class="nav-label">Social</span>
+          </a>
+          <a class="nav-item" href="#">
+            <div class="nav-icon"><img class="nav-asset" src="../Image/figma-assets/Profile-left-6.png" alt="" /></div>
+            <span class="nav-label">Profile</span>
+          </a>
+        </nav>
       </div>
-
-      <!-- Story Arc Panel (shown when Arc tool is active) -->
-      <div class="arc-panel" id="arcPanel">
-        <!-- Freytag's pyramid SVG -->
-        <div class="arc-vis">
-          <svg viewBox="0 0 316 62" height="62" xmlns="http://www.w3.org/2000/svg">
-            <!-- Background arc (mountain shape) -->
-            <path d="M 16,56 C 42,52 58,26 94,14 C 116,7 136,3 158,3 C 180,3 200,7 222,16 C 252,28 270,50 300,56"
-                  stroke="#E5E5E5" stroke-width="3" fill="none" stroke-linecap="round"/>
-            <!-- Beat dots -->
-            <circle data-beat="exposition" cx="16"  cy="56" r="7"  fill="#E5E5E5" class="arc-dot" onclick="setBeat('exposition')"/>
-            <circle data-beat="inciting"   cx="70"  cy="24" r="7"  fill="#E5E5E5" class="arc-dot" onclick="setBeat('inciting')"/>
-            <circle data-beat="rising1"    cx="112" cy="9"  r="7"  fill="#E5E5E5" class="arc-dot" onclick="setBeat('rising1')"/>
-            <circle data-beat="rising2"    cx="158" cy="3"  r="7.5" fill="#E5E5E5" class="arc-dot" onclick="setBeat('rising2')"/>
-            <circle data-beat="rising3"    cx="202" cy="8"  r="7"  fill="#E5E5E5" class="arc-dot" onclick="setBeat('rising3')"/>
-            <circle data-beat="climax"     cx="234" cy="18" r="9"  fill="#E5E5E5" class="arc-dot" onclick="setBeat('climax')"/>
-            <circle data-beat="ending"     cx="300" cy="56" r="7"  fill="#E5E5E5" class="arc-dot" onclick="setBeat('ending')"/>
-          </svg>
-          <div class="arc-labels-row">
-            <span onclick="setBeat('exposition')">Exposition</span>
-            <span onclick="setBeat('inciting')">Inciting</span>
-            <span onclick="setBeat('rising1')">Rise 1</span>
-            <span onclick="setBeat('rising2')">Rise 2</span>
-            <span onclick="setBeat('rising3')">Rise 3</span>
-            <span onclick="setBeat('climax')">Climax</span>
-            <span onclick="setBeat('ending')">Ending</span>
-          </div>
-        </div>
-        <!-- Current beat info -->
-        <div class="arc-beat-bar" id="arcBeatBar">Tap a dot or pill to assign a beat to <strong>Scene 1</strong></div>
-        <!-- Scrollable beat pill selector -->
-        <div class="beat-pills-row">
-          <button class="beat-pill" data-beat="exposition" onclick="setBeat('exposition')" style="background:rgba(28,176,246,0.12);color:#0080C0;">🌱 Exposition</button>
-          <button class="beat-pill" data-beat="inciting"   onclick="setBeat('inciting')"   style="background:rgba(255,200,0,0.15);color:#7A5000;">⚡ Inciting Incident</button>
-          <button class="beat-pill" data-beat="rising1"    onclick="setBeat('rising1')"    style="background:rgba(255,152,0,0.15);color:#9E5000;">📈 Rising Action 1</button>
-          <button class="beat-pill" data-beat="rising2"    onclick="setBeat('rising2')"    style="background:rgba(255,109,0,0.15);color:#BF3600;">📈 Rising Action 2</button>
-          <button class="beat-pill" data-beat="rising3"    onclick="setBeat('rising3')"    style="background:rgba(255,75,75,0.15);color:#CC0000;">🔥 Rising Action 3</button>
-          <button class="beat-pill" data-beat="climax"     onclick="setBeat('climax')"     style="background:rgba(206,130,255,0.18);color:#5B1F9E;">🏔️ Climax</button>
-          <button class="beat-pill" data-beat="ending"     onclick="setBeat('ending')"     style="background:rgba(88,204,2,0.12);color:#1E6B00;">🌅 Ending</button>
-        </div>
-      </div>
-
-      <!-- Bottom toolbar -->
-      <div class="canvas-toolbar">
-        <a href="04-character-picker.html" class="tool-btn hotspot">
-          <span class="tool-icon">👤</span>
-          <span class="tool-label">Characters</span>
-        </a>
-        <button class="tool-btn active" onclick="setTool(this)">
-          <span class="tool-icon">💬</span>
-          <span class="tool-label">Dialogue</span>
-        </button>
-        <a href="05-branching-choice.html" class="tool-btn">
-          <span class="tool-icon">🔀</span>
-          <span class="tool-label">Choices</span>
-        </a>
-        <button class="tool-btn" onclick="setTool(this)">
-          <span class="tool-icon">🎨</span>
-          <span class="tool-label">Scene</span>
-        </button>
-        <button class="tool-btn" onclick="setTool(this)">
-          <span class="tool-icon">📖</span>
-          <span class="tool-label">Arc</span>
-        </button>
-      </div>
-
-      <!-- Timeline strip -->
-      <div class="timeline-strip">
-        <div class="timeline-label">Scenes</div>
-        <div class="timeline-row">
-          <div class="timeline-scene active" onclick="selectScene(0)">
-            <div class="timeline-scene-inner" style="background:linear-gradient(135deg,#C5EDFF,#B8E0B0)"></div>
-            <div class="timeline-num">1</div>
-          </div>
-          <div class="timeline-scene" onclick="selectScene(1)">
-            <div class="timeline-scene-inner" style="background:linear-gradient(135deg,#FFF4E8,#C49A6C)"></div>
-            <div class="timeline-num">2</div>
-          </div>
-          <button class="timeline-add" onclick="addScene()">+</button>
-        </div>
-      </div>
-
     </main>
   </div>
 
-  <script src="../js/characters.js"></script>
   <script>
-    const bgMap = {
-      park:   'linear-gradient(180deg,#C5EDFF 0%,#A8D8FF 40%,#D4EDCF 75%,#B8E0B0 100%)',
-      cafe:   'linear-gradient(180deg,#FFF4E8 0%,#FFE0C0 40%,#D4A574 80%,#C49A6C 100%)',
-      city:   'linear-gradient(180deg,#8EC5FC 0%,#E0C3FC 50%,#9FA8DA 80%,#7986CB 100%)',
-      home:   'linear-gradient(180deg,#FFF8E7 0%,#FDECD2 40%,#E8C990 80%,#D4A860 100%)',
-      forest: 'linear-gradient(180deg,#90EE90 0%,#6DBF6D 30%,#228B22 70%,#155215 100%)',
-      sunset: 'linear-gradient(180deg,#F8B500 0%,#F04E23 50%,#8E3090 100%)',
-    };
+    const storyKey = localStorage.getItem('storymaker:selectedStoryKey');
+    const selectedCharacterRaw = localStorage.getItem('storymaker:selectedCharacter');
+    const narrationField = document.getElementById('narrationField');
+    const dialogueField = document.getElementById('dialogueField');
+    const sceneTitle = document.getElementById('sceneTitle');
+    const sceneCount = document.getElementById('sceneCount');
+    const previewStage = document.getElementById('previewStage');
+    const characterSelect = document.getElementById('characterSelect');
+    const addCharacterLink = document.getElementById('addCharacterLink');
+    const sceneDots = Array.from(document.querySelectorAll('.scene-dot'));
 
-    function setBg(el, key) {
-      document.querySelectorAll('.bg-swatch').forEach(s => s.classList.remove('active'));
-      el.classList.add('active');
-      document.getElementById('sceneCanvas').style.background = bgMap[key];
-    }
-
-    function setTool(el) {
-      document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-      el.classList.add('active');
-
-      const label = el.querySelector('.tool-label').textContent.trim();
-      const dialogueArea = document.querySelector('.dialogue-area');
-      const scenePanel   = document.getElementById('scenePanel');
-      const arcPanel     = document.getElementById('arcPanel');
-
-      // Hide all panels
-      dialogueArea.style.display = 'none';
-      scenePanel.classList.remove('visible');
-      arcPanel.classList.remove('visible');
-
-      if (label === 'Dialogue') {
-        dialogueArea.style.display = '';
-      } else if (label === 'Scene') {
-        scenePanel.classList.add('visible');
-      } else if (label === 'Arc') {
-        arcPanel.classList.add('visible');
-        // Refresh arc state for current scene
-        const existingBeat = sceneBeatMap[activeSceneIndex];
-        if (existingBeat) {
-          _applyBeatVisuals(existingBeat);
-        } else {
-          document.getElementById('arcBeatBar').innerHTML =
-            `Tap a dot or pill to assign a beat to <strong>Scene ${activeSceneIndex + 1}</strong>`;
-        }
+    const storyPlaceholders = {
+      funny: {
+        narration: 'Type here...',
+        dialogue: 'Type here...'
+      },
+      drama: {
+        narration: 'Type here...',
+        dialogue: 'Type here...'
+      },
+      adventure: {
+        narration: 'Type here...',
+        dialogue: 'Type here...'
       }
-    }
-
-    /* ── Time-of-day ───────────────────────────────── */
-    const timeOverlayMap = {
-      morning:   'rgba(255,200,80,0.10)',
-      afternoon: 'transparent',
-      evening:   'rgba(255,100,40,0.20)',
-      night:     'rgba(0,15,60,0.44)',
-    };
-    const timeSunMap = {
-      morning: '🌅', afternoon: '☀️', evening: '🌇', night: '🌙'
     };
 
-    function setSceneTime(btn, time) {
-      document.querySelectorAll('.time-pill').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('sceneOverlay').style.background = timeOverlayMap[time];
-      document.querySelector('.scene-sun').textContent = timeSunMap[time];
-    }
-
-    /* ── Weather ───────────────────────────────────── */
-    const weatherOverlayMap = {
-      sunny:  'transparent',
-      cloudy: 'rgba(160,170,190,0.16)',
-      rainy:  'rgba(80,100,140,0.22)',
-      snowy:  'rgba(210,230,255,0.24)',
-      foggy:  'rgba(200,205,215,0.35)',
-    };
-
-    /* ── Weather emoji maps ── */
-    const weatherSunMap   = { sunny:'☀️', cloudy:'⛅', rainy:'🌧️', snowy:'🌨️', foggy:'🌫️' };
-    const weatherCloudOp  = { sunny:'0.45', cloudy:'1', rainy:'1', snowy:'0.9', foggy:'0.7' };
-    const weatherSunOp    = { sunny:'0.9',  cloudy:'0.7', rainy:'0.55', snowy:'0.65', foggy:'0.4' };
-    const weatherShadow   = {
-      sunny:  '',
-      cloudy: 'inset 0 0 30px rgba(160,170,190,0.18)',
-      rainy:  'inset 0 0 40px rgba(80,100,140,0.28)',
-      snowy:  'inset 0 0 40px rgba(210,230,255,0.32)',
-      foggy:  'inset 0 0 55px rgba(200,205,215,0.45)',
-    };
-
-    function setWeather(btn, weather) {
-      document.querySelectorAll('.weather-chip').forEach(b => b.classList.remove('active', 'pop'));
-      btn.classList.add('active');
-      /* chip bounce */
-      void btn.offsetWidth;
-      btn.classList.add('pop');
-      btn.addEventListener('animationend', () => btn.classList.remove('pop'), { once: true });
-
-      /* update sun + cloud emojis */
-      const sun = document.querySelector('.scene-sun');
-      sun.textContent = weatherSunMap[weather];
-      sun.style.opacity = weatherSunOp[weather];
-      document.querySelectorAll('.scene-cloud').forEach(c => {
-        c.style.opacity = weatherCloudOp[weather];
+    function setScene(sceneNumber) {
+      sceneDots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === sceneNumber - 1);
       });
-
-      /* canvas inset shadow */
-      document.getElementById('sceneCanvas').style.boxShadow = weatherShadow[weather];
-
-      /* animated particles */
-      renderWeatherParticles(weather);
+      sceneTitle.textContent = `Scene ${sceneNumber}`;
+      sceneCount.textContent = `${sceneNumber - 1}/5`;
     }
 
-    function renderWeatherParticles(weather) {
-      const layer = document.getElementById('weatherLayer');
-      layer.innerHTML = '';
-
-      if (weather === 'rainy') {
-        for (let i = 0; i < 22; i++) {
-          const d = document.createElement('div');
-          d.className = 'rain-drop';
-          d.style.left            = (Math.random() * 105) + '%';
-          d.style.animationDelay    = (Math.random() * 1.4).toFixed(2) + 's';
-          d.style.animationDuration = (0.55 + Math.random() * 0.45).toFixed(2) + 's';
-          d.style.opacity           = (0.35 + Math.random() * 0.45).toFixed(2);
-          d.style.height            = (10 + Math.random() * 8).toFixed(0) + 'px';
-          layer.appendChild(d);
-        }
-
-      } else if (weather === 'snowy') {
-        const chars = ['❄', '❅', '❆', '·', '•'];
-        for (let i = 0; i < 18; i++) {
-          const f = document.createElement('div');
-          f.className   = 'snow-flake';
-          f.textContent = chars[Math.floor(Math.random() * chars.length)];
-          f.style.left            = (Math.random() * 100) + '%';
-          f.style.fontSize        = (9 + Math.random() * 13).toFixed(0) + 'px';
-          f.style.animationDelay    = (Math.random() * 3.5).toFixed(2) + 's';
-          f.style.animationDuration = (2.8 + Math.random() * 2.2).toFixed(2) + 's';
-          f.style.opacity           = (0.55 + Math.random() * 0.45).toFixed(2);
-          layer.appendChild(f);
-        }
-
-      } else if (weather === 'foggy') {
-        for (let i = 0; i < 4; i++) {
-          const fg = document.createElement('div');
-          fg.className = 'fog-layer';
-          fg.style.top             = (15 + i * 22) + '%';
-          fg.style.animationDelay  = (i * 1.3).toFixed(1) + 's';
-          fg.style.animationDuration = (3.5 + i * 0.8).toFixed(1) + 's';
-          layer.appendChild(fg);
-        }
-
-      } else if (weather === 'cloudy') {
-        const specs = [
-          { emoji:'☁️', top:8,  right:'8%',  size:26, delay:0,   dur:4   },
-          { emoji:'☁️', top:28, right:'55%', size:20, delay:1.5, dur:5   },
-          { emoji:'⛅', top:48, right:'20%', size:22, delay:0.8, dur:3.5 },
-        ];
-        specs.forEach(s => {
-          const c = document.createElement('div');
-          c.className = 'cloud-extra';
-          c.textContent = s.emoji;
-          c.style.cssText = `top:${s.top}px;right:${s.right};font-size:${s.size}px;animation-delay:${s.delay}s;animation-duration:${s.dur}s;opacity:0.7;`;
-          layer.appendChild(c);
-        });
-      }
-    }
-
-    function addDialogue() {
-      const val = document.querySelector('.dialogue-field').value.trim();
-      if (!val) return;
-      // Simulate adding dialogue line — just pulse the button
-      const btn = document.querySelector('.send-btn');
-      btn.style.transform = 'scale(1.2)';
-      setTimeout(() => btn.style.transform = '', 200);
-    }
-
-    function addScene() {
-      const row = document.querySelector('.timeline-row');
-      const existing = row.querySelectorAll('.timeline-scene').length;
-      const newScene = document.createElement('div');
-      newScene.className = 'timeline-scene';
-      newScene.innerHTML = `<div class="timeline-scene-inner" style="background:var(--studio-canvas-bg)"></div><div class="timeline-num">${existing+1}</div>`;
-      const idx = existing;
-      newScene.onclick = () => selectScene(idx);
-      row.insertBefore(newScene, row.querySelector('.timeline-add'));
-      newScene.classList.add('char-bounce-in');
-    }
-
-    /* ── Story Arc ─────────────────────────────────────────── */
-    const beats = {
-      exposition: { label: 'Exposition',        icon: '🌱', dot: '#1CB0F6', pillColor: '#0080C0' },
-      inciting:   { label: 'Inciting Incident', icon: '⚡', dot: '#FFC800', pillColor: '#7A5000' },
-      rising1:    { label: 'Rising Action 1',   icon: '📈', dot: '#FF9800', pillColor: '#9E5000' },
-      rising2:    { label: 'Rising Action 2',   icon: '📈', dot: '#FF6D00', pillColor: '#BF3600' },
-      rising3:    { label: 'Rising Action 3',   icon: '🔥', dot: '#FF4B4B', pillColor: '#CC0000' },
-      climax:     { label: 'Climax',            icon: '🏔️', dot: '#CE82FF', pillColor: '#5B1F9E' },
-      ending:     { label: 'Ending',            icon: '🌅', dot: '#58CC02', pillColor: '#1E6B00' },
-    };
-
-    let activeSceneIndex = 0;
-    const sceneBeatMap = {};
-
-    function selectScene(idx) {
-      activeSceneIndex = idx;
-      const scenes = document.querySelectorAll('.timeline-scene');
-      scenes.forEach((s, i) => s.classList.toggle('active', i === idx));
-
-      // If arc panel is visible, refresh its state
-      if (document.getElementById('arcPanel').classList.contains('visible')) {
-        const existingBeat = sceneBeatMap[idx];
-        if (existingBeat) {
-          _applyBeatVisuals(existingBeat);
-        } else {
-          document.querySelectorAll('.arc-dot').forEach(d => d.setAttribute('fill', '#E5E5E5'));
-          document.querySelectorAll('.beat-pill').forEach(p => p.classList.remove('active'));
-          document.getElementById('arcBeatBar').innerHTML =
-            `Tap a dot or pill to assign a beat to <strong>Scene ${idx + 1}</strong>`;
-        }
-      }
-    }
-
-    function setBeat(key) {
-      sceneBeatMap[activeSceneIndex] = key;
-      _applyBeatVisuals(key);
-      _updateTimelineBadge(activeSceneIndex, key);
-      // Bounce the active pill
-      const pill = document.querySelector(`.beat-pill[data-beat="${key}"]`);
-      if (pill) {
-        pill.style.transform = 'scale(1.15)';
-        setTimeout(() => pill.style.transform = '', 180);
-      }
-    }
-
-    function _applyBeatVisuals(key) {
-      const beat = beats[key];
-      // Update pills
-      document.querySelectorAll('.beat-pill').forEach(p => p.classList.remove('active'));
-      const pill = document.querySelector(`.beat-pill[data-beat="${key}"]`);
-      if (pill) pill.classList.add('active');
-      // Update SVG dots
-      document.querySelectorAll('.arc-dot').forEach(d => {
-        const base = d.getAttribute('data-beat') === 'rising2' ? '7.5' : (d.getAttribute('data-beat') === 'climax' ? '9' : '7');
-        d.setAttribute('r', base);
-        d.setAttribute('fill', '#E5E5E5');
-      });
-      const dot = document.querySelector(`.arc-dot[data-beat="${key}"]`);
-      if (dot) { dot.setAttribute('fill', beat.dot); dot.setAttribute('r', parseFloat(dot.getAttribute('r')) + 2); }
-      // Update beat bar
-      document.getElementById('arcBeatBar').innerHTML =
-        `${beat.icon} <strong>${beat.label}</strong> — assigned to Scene ${activeSceneIndex + 1}`;
-    }
-
-    function _updateTimelineBadge(sceneIdx, key) {
-      const scenes = document.querySelectorAll('.timeline-scene');
-      const scene = scenes[sceneIdx];
-      if (!scene) return;
-      let badge = scene.querySelector('.beat-badge');
-      if (!badge) {
-        badge = document.createElement('div');
-        badge.className = 'beat-badge';
-        scene.appendChild(badge);
-      }
-      badge.textContent = beats[key].icon;
-      badge.style.background = beats[key].dot;
-    }
-  </script>
-  <script>
-    document.querySelectorAll('.hotspot').forEach(el => {
-      el.addEventListener('click', () => el.classList.add('done'), { once: true });
+    sceneDots.forEach((dot) => {
+      dot.addEventListener('click', () => setScene(Number(dot.dataset.scene)));
     });
+
+    document.getElementById('backgroundButton').addEventListener('click', () => {
+      previewStage.style.background = 'linear-gradient(180deg, #f2d27a 0%, #f5bd6a 44%, #d4d4d4 100%)';
+    });
+
+    characterSelect.addEventListener('click', () => {
+      window.location.href = '04-character-picker.html';
+    });
+
+    if (selectedCharacterRaw) {
+      const selectedCharacter = JSON.parse(selectedCharacterRaw);
+      if (selectedCharacter.preview) {
+        previewStage.innerHTML = `
+          <img class="stage-character-preview" src="${selectedCharacter.preview}" alt="Selected scene character">
+          <div class="stage-character-label">Character ready</div>
+        `;
+      }
+      characterSelect.textContent = 'Edit Character v';
+      addCharacterLink.textContent = 'Change character';
+    }
+
+    if (storyKey && storyPlaceholders[storyKey]) {
+      const copy = storyPlaceholders[storyKey];
+      narrationField.placeholder = copy.narration;
+      dialogueField.placeholder = copy.dialogue;
+    }
   </script>
-  <a class="home-fab" href="../index.html">🏠 Main Page</a>
 </body>
 </html>

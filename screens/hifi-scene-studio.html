@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Screen — Scene Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../duolingo-design.css">
+  <link rel="stylesheet" href="../design-system.css">
+  <style>
+    * { box-sizing: border-box; }
+
+    .screen {
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Top bar ── */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px 8px;
+      flex-shrink: 0;
+    }
+    .top-bar .close-btn {
+      background: none; border: none; cursor: pointer;
+      font-size: 20px; color: #afafaf; padding: 4px;
+    }
+    .top-bar .screen-title {
+      font-size: 22px; font-weight: 900; color: #1a1a1a;
+    }
+    .top-bar .done-btn {
+      background: none; border: none; cursor: pointer;
+      font-size: 15px; font-weight: 900; color: #ff9600;
+      padding: 4px 8px;
+    }
+
+    /* ── Character slots ── */
+    .char-slots {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 16px 10px;
+      flex-shrink: 0;
+    }
+    .slot-label {
+      font-size: 12px; font-weight: 700; color: #afafaf;
+      margin-right: 4px;
+    }
+    .char-slot {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: #e5e5e5;
+      border: 2.5px solid #e5e5e5;
+      cursor: pointer;
+      transition: border-color 120ms;
+    }
+    .char-slot.active {
+      background: #ff9600;
+      border-color: #e07000;
+    }
+
+    /* ── Canvas ── */
+    .canvas-wrap {
+      position: relative;
+      margin: 0 16px;
+      height: 190px;
+      border-radius: 16px;
+      background: #c8e6ff;
+      overflow: hidden;
+      flex-shrink: 0;
+      transition: background 250ms;
+    }
+    .canvas-char {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-55%);
+      height: 155px;
+      object-fit: contain;
+      z-index: 2;
+    }
+    .canvas-trash {
+      position: absolute;
+      top: 10px; left: 12px;
+      background: rgba(255,255,255,0.22);
+      border: none; border-radius: 8px;
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 16px; z-index: 4;
+      color: white;
+    }
+    .canvas-zoom {
+      position: absolute;
+      top: 10px; right: 12px;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 4px; z-index: 4;
+    }
+    .zoom-btn {
+      width: 26px; height: 26px;
+      background: rgba(255,255,255,0.85);
+      border: none; border-radius: 6px;
+      font-size: 18px; font-weight: 900;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: #4b4b4b; line-height: 1;
+    }
+    .zoom-track {
+      width: 4px; height: 52px;
+      background: rgba(255,255,255,0.5);
+      border-radius: 2px;
+      position: relative;
+    }
+    .zoom-handle {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 14px; height: 14px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+    /* Landscape overlays */
+    .landscape-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 200ms;
+    }
+    .landscape-overlay.visible { opacity: 1; }
+
+    /* ── Category tabs ── */
+    .cat-tabs {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      padding: 10px 16px 0;
+      border-bottom: 1.5px solid #e5e5e5;
+      flex-shrink: 0;
+    }
+    .cat-tab {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 4px 8px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -1.5px;
+      color: #afafaf;
+    }
+    .cat-tab.active { border-bottom-color: #1cb0f6; color: #1cb0f6; }
+    .cat-tab svg { width: 24px; height: 24px; }
+    .cat-tab.templates-tab {
+      flex: none;
+      background: #f0f0f0;
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 900;
+      color: #4b4b4b;
+      border-bottom: 3px solid transparent;
+      margin-left: 4px;
+    }
+    .cat-tab.templates-tab.active {
+      background: #ddf4ff;
+      color: #1cb0f6;
+    }
+
+    /* ── Scrollable asset panel ── */
+    .asset-panel {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 16px 12px;
+    }
+    .asset-section-label {
+      font-size: 12px;
+      font-weight: 900;
+      color: #6b6b6b;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 10px 0 8px;
+    }
+    .asset-section-label:first-child { margin-top: 2px; }
+
+    /* Colors row */
+    .colors-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .color-swatch {
+      width: 34px; height: 34px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 2.5px solid transparent;
+      transition: border-color 100ms, transform 80ms;
+      flex-shrink: 0;
+    }
+    .color-swatch:active { transform: scale(0.9); }
+    .color-swatch.selected { border-color: #1cb0f6; }
+
+    /* Landscape thumbnails */
+    .thumb-row {
+      display: flex;
+      gap: 10px;
+    }
+    .landscape-thumb {
+      width: 90px; height: 90px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2.5px solid #e5e5e5;
+      cursor: pointer;
+      transition: border-color 120ms, transform 80ms;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .landscape-thumb:hover { transform: translateY(-1px); border-color: #c0c0c0; }
+    .landscape-thumb.selected { border-color: #1cb0f6; }
+    .landscape-thumb svg { width: 100%; height: 100%; display: block; }
+
+    /* Background swatches */
+    .bg-swatches-row {
+      display: flex;
+      gap: 10px;
+    }
+    .bg-swatch {
+      width: 90px; height: 68px;
+      border-radius: 12px;
+      cursor: pointer;
+      border: 2.5px solid transparent;
+      transition: border-color 120ms, transform 80ms;
+      flex-shrink: 0;
+    }
+    .bg-swatch:hover { transform: translateY(-1px); }
+    .bg-swatch.selected { border-color: #1cb0f6; box-shadow: 0 0 0 2px white, 0 0 0 4px #1cb0f6; }
+
+    /* ── Bottom nav ── */
+    .bottom-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px 36px;
+      border-top: 1.5px solid #e5e5e5;
+      background: white;
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      width: 40px; height: 40px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      border: none; background: none; cursor: pointer;
+    }
+    .nav-btn img { width: 28px; height: 28px; object-fit: contain; }
+    .nav-btn.active { background: #fff3e0; border: 2px solid #ff9600; }
+    .nav-purple-pill {
+      width: 29px; height: 29px;
+      background: #ce82ff; border-radius: 100px; border: none; cursor: pointer;
+    }
+
+    /* ── Enlarge Modal ── */
+    .asset-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .asset-modal.open { display: flex; }
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+    }
+    .modal-box {
+      position: relative;
+      z-index: 1;
+      background: white;
+      border-radius: 24px;
+      padding: 20px;
+      width: 300px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    }
+    .modal-close {
+      position: absolute;
+      top: 14px; right: 14px;
+      background: #f0f0f0; border: none;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      font-size: 16px; cursor: pointer; color: #4b4b4b;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .modal-preview {
+      width: 100%; height: 180px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid #e5e5e5;
+    }
+    .modal-preview svg,
+    .modal-preview .swatch-fill {
+      width: 100%; height: 100%; display: block;
+    }
+    .modal-label {
+      font-size: 15px; font-weight: 900; color: #1a1a1a;
+    }
+    .modal-apply-btn {
+      background: #57cc02; color: white;
+      border: none; border-radius: 14px;
+      padding: 14px 32px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 15px; font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #46a302;
+      width: 100%;
+      transition: transform 80ms;
+    }
+    .modal-apply-btn:active { transform: translateY(4px); box-shadow: none; }
+  </style>
+</head>
+<body class="demo-page">
+  <div class="phone">
+    <div class="status-bar">
+      <span class="status-time">9:27</span>
+      <div class="status-icons">
+        <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1" fill="currentColor"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1" fill="currentColor"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="currentColor"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12"><circle cx="8" cy="10.5" r="1.5" fill="currentColor"/><path d="M8 6C6.2 6 4.6 6.8 3.4 8L2.4 7C3.9 5.5 5.8 4.6 8 4.6s4.1.9 5.6 2.4L12.6 8C11.4 6.8 9.8 6 8 6z" fill="currentColor"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="2.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="22.5" y="4" width="2" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="18" height="7" rx="1.5" fill="currentColor"/></svg>
+      </div>
+    </div>
+
+    <main class="screen">
+      <!-- Top bar -->
+      <div class="top-bar">
+        <button class="close-btn" onclick="window.location.href='hifi-build-story.html'">✕</button>
+        <span class="screen-title">Scene</span>
+        <button class="done-btn" onclick="window.location.href='hifi-build-story.html'">DONE</button>
+      </div>
+
+      <!-- Character slots -->
+      <div class="char-slots">
+        <span class="slot-label">Character</span>
+        <div class="char-slot active"></div>
+        <div class="char-slot"></div>
+        <div class="char-slot"></div>
+        <div class="char-slot"></div>
+        <div class="char-slot"></div>
+      </div>
+
+      <!-- Preview canvas -->
+      <div class="canvas-wrap" id="canvas">
+        <!-- Landscape overlay -->
+        <div class="landscape-overlay" id="landscapeOverlay"></div>
+        <!-- Trash -->
+        <button class="canvas-trash" onclick="clearLandscape()" title="Remove landscape">🗑</button>
+        <!-- Character -->
+        <img class="canvas-char" id="canvasChar"
+             src="../Image/figma-assets/Actor-scared-sweating.png" alt="Character">
+        <!-- Zoom controls -->
+        <div class="canvas-zoom">
+          <button class="zoom-btn">+</button>
+          <div class="zoom-track"><div class="zoom-handle"></div></div>
+          <button class="zoom-btn">−</button>
+        </div>
+      </div>
+
+      <!-- Category tabs -->
+      <div class="cat-tabs">
+        <button class="cat-tab active" id="tab-landscapes" onclick="setCategory('landscapes')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="3,20 12,4 21,20"/><polygon points="1,20 8,10 15,20" opacity="0.5"/>
+          </svg>
+        </button>
+        <button class="cat-tab" id="tab-indoor" onclick="setCategory('indoor')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </button>
+        <button class="cat-tab" id="tab-outdoor" onclick="setCategory('outdoor')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
+          </svg>
+        </button>
+        <button class="cat-tab" id="tab-character" onclick="setCategory('character')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="9" r="2"/><circle cx="15" cy="9" r="2"/>
+            <path d="M4 5c0-1 1-2 2-1.5M20 5c0-1-1-2-2-1.5"/>
+            <path d="M9 16c1.5 1 4.5 1 6 0"/>
+            <path d="M2 11c0-4 4-8 10-8s10 4 10 8c0 5-4 9-10 9S2 16 2 11z"/>
+          </svg>
+        </button>
+        <button class="cat-tab templates-tab" id="tab-templates" onclick="setCategory('templates')">
+          Templates
+        </button>
+      </div>
+
+      <!-- Asset panel -->
+      <div class="asset-panel" id="assetPanel">
+        <!-- Colors -->
+        <div class="asset-section-label">Colors</div>
+        <div class="colors-row" id="colorsRow">
+          <!-- filled by JS -->
+        </div>
+
+        <!-- Landscapes -->
+        <div class="asset-section-label" id="landLabel">Landscapes</div>
+        <div class="thumb-row" id="landRow">
+          <!-- filled by JS -->
+        </div>
+
+        <!-- Background -->
+        <div class="asset-section-label">Background</div>
+        <div class="bg-swatches-row" id="bgRow">
+          <!-- filled by JS -->
+        </div>
+      </div>
+
+      <!-- Bottom nav -->
+      <nav class="bottom-nav">
+        <button class="nav-btn"><img src="../Image/figma-assets/Bottom Nav Button-Left-1-home-birdhouse.png" alt="Home"></button>
+        <button class="nav-btn"><img src="../Image/figma-assets/Bottom Nav Button-left-2-chest-40by40.png" alt="Rewards"></button>
+        <button class="nav-btn"><img src="../Image/figma-assets/Bottom Nav Button-left3-dumbell.png" alt="Learn"></button>
+        <button class="nav-btn active"><img src="../Image/figma-assets/feed-icon-left-5.png" alt="Stories"></button>
+        <button class="nav-btn"><img src="../Image/figma-assets/feed-icon-left-5.png" alt="Feed"></button>
+        <button class="nav-purple-pill" aria-label="Profile"></button>
+      </nav>
+    </main>
+  </div>
+
+  <!-- Enlarge modal -->
+  <div class="asset-modal" id="assetModal">
+    <div class="modal-backdrop" onclick="closeModal()"></div>
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-preview" id="modalPreview"></div>
+      <div class="modal-label" id="modalLabel"></div>
+      <button class="modal-apply-btn" id="modalApplyBtn">Use This</button>
+    </div>
+  </div>
+
+  <a class="home-fab" href="../index.html">🏠 Main Page</a>
+
+  <script>
+    // ── Data ──────────────────────────────────────────────
+    const COLORS = [
+      { hex: '#78d944', label: 'Lime' },
+      { hex: '#2b8c00', label: 'Forest' },
+      { hex: '#c8c8c8', label: 'Silver' },
+      { hex: '#ffffff', label: 'White', border: '#e5e5e5' },
+      { hex: '#ff9600', label: 'Orange' },
+      { hex: '#ffc800', label: 'Yellow' },
+      { hex: '#1cb0f6', label: 'Sky Blue' },
+    ];
+
+    const LANDSCAPES = [
+      {
+        id: 'arch',
+        label: 'Theater Arch',
+        svg: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="200" height="200" fill="#f5f0e6"/>
+          <path d="M30,200 L30,90 Q100,20 170,90 L170,200 Z" fill="none" stroke="#d4c8a8" stroke-width="6"/>
+          <ellipse cx="100" cy="188" rx="55" ry="10" fill="#e8dfc0" opacity="0.7"/>
+          <rect x="28" y="88" width="8" height="112" rx="4" fill="#d4c8a8"/>
+          <rect x="164" y="88" width="8" height="112" rx="4" fill="#d4c8a8"/>
+        </svg>`,
+        overlay: `<svg viewBox="0 0 402 190" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <path d="M40,190 L40,75 Q201,5 362,75 L362,190 Z" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="5"/>
+          <rect x="38" y="73" width="10" height="117" rx="5" fill="rgba(255,255,255,0.18)"/>
+          <rect x="354" y="73" width="10" height="117" rx="5" fill="rgba(255,255,255,0.18)"/>
+        </svg>`,
+      },
+      {
+        id: 'curtains',
+        label: 'Theater Curtains',
+        svg: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="200" height="200" fill="#1a0033"/>
+          <path d="M0,0 L75,0 L60,200 L0,200 Z" fill="#6b2db8"/>
+          <path d="M200,0 L125,0 L140,200 L200,200 Z" fill="#6b2db8"/>
+          <path d="M0,0 L16,0 L16,200 L0,200 Z" fill="rgba(255,255,255,0.07)"/>
+          <path d="M184,0 L200,0 L200,200 L184,200 Z" fill="rgba(255,255,255,0.07)"/>
+          <rect x="0" y="0" width="200" height="12" fill="#4a1880"/>
+        </svg>`,
+        overlay: `<svg viewBox="0 0 402 190" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <path d="M0,0 L140,0 L110,190 L0,190 Z" fill="#6b2db8"/>
+          <path d="M402,0 L262,0 L292,190 L402,190 Z" fill="#6b2db8"/>
+          <path d="M0,0 L28,0 L28,190 L0,190 Z" fill="rgba(255,255,255,0.07)"/>
+          <path d="M374,0 L402,0 L402,190 L374,190 Z" fill="rgba(255,255,255,0.07)"/>
+          <rect x="0" y="0" width="402" height="14" fill="#4a1880"/>
+        </svg>`,
+      },
+    ];
+
+    const BACKGROUNDS = [
+      { color: '#3d1470', label: 'Deep Purple' },
+      { color: '#6b0000', label: 'Dark Red' },
+      { color: '#c8a8f8', label: 'Lavender' },
+    ];
+
+    const CATEGORY_ASSETS = {
+      landscapes: { land: LANDSCAPES, bgs: BACKGROUNDS },
+      indoor:    { land: [], bgs: [
+        { color: '#ffdeb4', label: 'Warm Interior' },
+        { color: '#d4ecd4', label: 'Study Green' },
+        { color: '#fff8e0', label: 'Cream' },
+      ]},
+      outdoor:   { land: [], bgs: [
+        { color: '#87ceeb', label: 'Day Sky' },
+        { color: '#ffa550', label: 'Sunset' },
+        { color: '#1a1a3a', label: 'Night' },
+      ]},
+      character: { land: [], bgs: [
+        { color: '#ffe4b5', label: 'Peach' },
+        { color: '#b0e0e6', label: 'Powder Blue' },
+        { color: '#98fb98', label: 'Mint' },
+      ]},
+      templates: { land: [], bgs: [
+        { color: '#7c3aed', label: 'Purple Stage' },
+        { color: '#ff4b4b', label: 'Drama Red' },
+        { color: '#1cb0f6', label: 'Ocean Blue' },
+      ]},
+    };
+
+    // ── State ─────────────────────────────────────────────
+    let activeCategory = 'landscapes';
+    let selectedBg = null;
+    let selectedLand = null;
+    let selectedColor = null;
+    let pendingApply = null;
+
+    // ── Init ──────────────────────────────────────────────
+    function init() {
+      renderColors();
+      renderCategory('landscapes');
+    }
+
+    function renderColors() {
+      const row = document.getElementById('colorsRow');
+      row.innerHTML = COLORS.map((c, i) =>
+        `<div class="color-swatch" id="clr-${i}"
+           style="background:${c.hex};${c.border ? `border-color:${c.border};` : ''}"
+           title="${c.label}"
+           onclick="pickColor(${i})"
+           ondblclick="openColorModal(${i})">
+         </div>`
+      ).join('');
+    }
+
+    function renderCategory(cat) {
+      activeCategory = cat;
+      document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+      document.getElementById(`tab-${cat}`).classList.add('active');
+
+      const data = CATEGORY_ASSETS[cat];
+
+      // landscapes
+      const landLabel = document.getElementById('landLabel');
+      const landRow   = document.getElementById('landRow');
+      if (data.land && data.land.length > 0) {
+        landLabel.style.display = '';
+        landRow.innerHTML = data.land.map(l =>
+          `<div class="landscape-thumb" id="land-${l.id}"
+             onclick="pickLandscape('${l.id}')"
+             ondblclick="openLandModal('${l.id}')">
+             ${l.svg}
+           </div>`
+        ).join('');
+      } else {
+        landLabel.style.display = 'none';
+        landRow.innerHTML = '<span style="color:#afafaf;font-size:13px;font-weight:700;">No landscapes in this category</span>';
+      }
+
+      // backgrounds
+      const bgRow = document.getElementById('bgRow');
+      bgRow.innerHTML = data.bgs.map((b, i) =>
+        `<div class="bg-swatch" id="bg-${cat}-${i}"
+           style="background:${b.color}"
+           title="${b.label}"
+           onclick="pickBg('${b.color}', '${cat}-${i}')"
+           ondblclick="openBgModal('${b.color}', '${b.label}')">
+         </div>`
+      ).join('');
+
+      // restore selection states
+      if (selectedLand) {
+        const el = document.getElementById(`land-${selectedLand}`);
+        if (el) el.classList.add('selected');
+      }
+    }
+
+    function setCategory(cat) { renderCategory(cat); }
+
+    // ── Interactions ──────────────────────────────────────
+    function pickColor(idx) {
+      selectedColor = COLORS[idx].hex;
+      document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+      document.getElementById(`clr-${idx}`).classList.add('selected');
+    }
+
+    function pickLandscape(id) {
+      selectedLand = selectedLand === id ? null : id;
+      document.querySelectorAll('.landscape-thumb').forEach(t => t.classList.remove('selected'));
+      if (selectedLand) {
+        document.getElementById(`land-${id}`).classList.add('selected');
+        const l = LANDSCAPES.find(x => x.id === id);
+        document.getElementById('landscapeOverlay').innerHTML = l.overlay;
+        document.getElementById('landscapeOverlay').classList.add('visible');
+      } else {
+        clearLandscape();
+      }
+    }
+
+    function clearLandscape() {
+      selectedLand = null;
+      document.querySelectorAll('.landscape-thumb').forEach(t => t.classList.remove('selected'));
+      const ov = document.getElementById('landscapeOverlay');
+      ov.classList.remove('visible');
+      setTimeout(() => { ov.innerHTML = ''; }, 220);
+    }
+
+    function pickBg(color, key) {
+      selectedBg = color;
+      document.querySelectorAll('.bg-swatch').forEach(s => s.classList.remove('selected'));
+      const el = document.getElementById(`bg-${key}`);
+      if (el) el.classList.add('selected');
+      document.getElementById('canvas').style.background = color;
+    }
+
+    // ── Enlarge Modal ─────────────────────────────────────
+    function openModal(previewHTML, label, applyFn) {
+      document.getElementById('modalPreview').innerHTML = previewHTML;
+      document.getElementById('modalLabel').textContent = label;
+      pendingApply = applyFn;
+      document.getElementById('modalApplyBtn').onclick = () => { if (pendingApply) pendingApply(); closeModal(); };
+      document.getElementById('assetModal').classList.add('open');
+    }
+
+    function closeModal() {
+      document.getElementById('assetModal').classList.remove('open');
+    }
+
+    function openColorModal(idx) {
+      const c = COLORS[idx];
+      openModal(
+        `<div class="swatch-fill" style="background:${c.hex};border:1px solid ${c.border || c.hex};"></div>`,
+        c.label,
+        () => pickColor(idx)
+      );
+    }
+
+    function openLandModal(id) {
+      const l = LANDSCAPES.find(x => x.id === id);
+      openModal(l.svg, l.label, () => pickLandscape(id));
+    }
+
+    function openBgModal(color, label) {
+      openModal(
+        `<div class="swatch-fill" style="background:${color};"></div>`,
+        label,
+        () => {
+          const idx = CATEGORY_ASSETS[activeCategory].bgs.findIndex(b => b.label === label);
+          pickBg(color, `${activeCategory}-${idx}`);
+        }
+      );
+    }
+
+    init();
+  </script>
+</body>
+</html>

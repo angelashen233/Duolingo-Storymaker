@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Screen — Story Playing (La célébrité ce soir)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../duolingo-design.css">
+  <link rel="stylesheet" href="../design-system.css">
+  <style>
+    .screen {
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Purple hero with characters */
+    .scene-hero {
+      background: #7a34e2;
+      height: 220px;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .scene-hero img.char-left {
+      position: absolute;
+      left: -8px;
+      bottom: -10px;
+      height: 210px;
+      object-fit: contain;
+    }
+
+    .scene-hero img.char-right {
+      position: absolute;
+      right: 8px;
+      bottom: -10px;
+      height: 190px;
+      object-fit: contain;
+    }
+
+    /* Scene text */
+    .scene-body {
+      padding: 18px 20px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .scene-prompt {
+      font-size: 22px;
+      font-weight: 900;
+      color: #1a1a1a;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    /* Dialogue bubble */
+    .dialogue-bubble {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .bubble-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 2px solid #e5e5e5;
+    }
+
+    .bubble-text-wrap {
+      flex: 1;
+      background: #f7f7f7;
+      border-radius: 0 14px 14px 14px;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a1a1a;
+      line-height: 1.5;
+    }
+
+    /* Question section */
+    .question-label {
+      font-size: 14px;
+      font-weight: 900;
+      color: #1a1a1a;
+      margin-bottom: 10px;
+    }
+
+    /* Answer choices */
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .choice-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .choice-radio {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid #e5e5e5;
+      flex-shrink: 0;
+      margin-top: 2px;
+      position: relative;
+    }
+
+    .choice-row.selected .choice-radio {
+      border-color: #7a34e2;
+      background: #7a34e2;
+    }
+
+    .choice-row.selected .choice-radio::after {
+      content: '';
+      position: absolute;
+      inset: 3px;
+      background: white;
+      border-radius: 50%;
+    }
+
+    .choice-text {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a1a1a;
+      line-height: 1.45;
+    }
+
+    .choice-img {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      border-radius: 8px;
+      border: 1.5px solid #e5e5e5;
+      flex-shrink: 0;
+    }
+
+    /* Continue button */
+    .continue-btn {
+      display: block;
+      width: calc(100% - 32px);
+      margin: 0 16px 16px;
+      padding: 18px;
+      background: #57cc02;
+      border: none;
+      border-radius: 14px;
+      box-shadow: 0 4px 0 #46a302;
+      color: white;
+      font-family: 'Nunito', sans-serif;
+      font-size: 16px;
+      font-weight: 900;
+      text-align: center;
+      text-decoration: underline;
+      cursor: pointer;
+      transition: transform 80ms, box-shadow 80ms;
+    }
+
+    .continue-btn:active {
+      transform: translateY(4px);
+      box-shadow: none;
+    }
+
+    /* Bottom nav */
+    .bottom-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 16px 38px;
+      border-top: 1.5px solid #e5e5e5;
+      background: white;
+    }
+
+    .nav-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
+
+    .nav-btn img {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+    }
+
+    .nav-btn.stories-active {
+      background: #fff3e0;
+      border: 2px solid #ff9600;
+    }
+
+    .nav-purple-pill {
+      width: 29px;
+      height: 29px;
+      background: #ce82ff;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body class="demo-page">
+  <div class="phone">
+    <div class="status-bar">
+      <span class="status-time">9:27</span>
+      <div class="status-icons">
+        <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1" fill="currentColor"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1" fill="currentColor"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="currentColor"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12"><circle cx="8" cy="10.5" r="1.5" fill="currentColor"/><path d="M8 6C6.2 6 4.6 6.8 3.4 8L2.4 7C3.9 5.5 5.8 4.6 8 4.6s4.1.9 5.6 2.4L12.6 8C11.4 6.8 9.8 6 8 6z" fill="currentColor"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="2.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="22.5" y="4" width="2" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="18" height="7" rx="1.5" fill="currentColor"/></svg>
+      </div>
+    </div>
+
+    <main class="screen">
+      <!-- Scene: two characters on purple background -->
+      <div class="scene-hero">
+        <img src="../Image/figma-assets/Actor-scared-sweating.png" alt="Character 1" class="char-left" />
+        <img src="../Image/figma-assets/Black-character-confident.png" alt="Character 2" class="char-right" />
+      </div>
+
+      <div class="scene-body">
+        <!-- Scene prompt -->
+        <p class="scene-prompt">Vous vous asseyez pour votre entretien, nerveux mais excité.</p>
+
+        <!-- Host dialogue bubble -->
+        <div class="dialogue-bubble">
+          <img src="../Image/figma-assets/Black-character-confident.png" alt="Host" class="bubble-avatar" />
+          <div class="bubble-text-wrap">
+            Vous êtes devenu une star internationale après votre film à succès, [Nom du film]. Comment vivez-vous cette réussite et votre nouveau statut?
+          </div>
+        </div>
+
+        <!-- Question -->
+        <p class="question-label">Quelle est votre réponse ?</p>
+
+        <!-- Choices -->
+        <div class="choices" id="choices">
+          <div class="choice-row" onclick="selectChoice(this)">
+            <div class="choice-radio"></div>
+            <p class="choice-text">Jouer a toujours été mon rêve, alors pouvoir faire ce métier chaque jour est un immense privilège.</p>
+            <img src="../Image/figma-assets/Black-character-confident.png" alt="" class="choice-img" />
+          </div>
+          <div class="choice-row" onclick="selectChoice(this)">
+            <div class="choice-radio"></div>
+            <p class="choice-text">Le succès ne m'a pas vraiment surpris. Je pense que les gens reconnaissent enfin mon talent.</p>
+          </div>
+          <div class="choice-row" onclick="selectChoice(this)">
+            <div class="choice-radio"></div>
+            <p class="choice-text">Je suis encore un peu perdu parfois, mais j'essaie de profiter de chaque moment.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Continue -->
+      <button class="continue-btn" id="continueBtn" onclick="handleContinue()">Continue</button>
+
+      <!-- Bottom nav -->
+      <nav class="bottom-nav">
+        <button class="nav-btn">
+          <img src="../Image/figma-assets/Bottom Nav Button-Left-1-home-birdhouse.png" alt="Home">
+        </button>
+        <button class="nav-btn">
+          <img src="../Image/figma-assets/Bottom Nav Button-left-2-chest-40by40.png" alt="Rewards">
+        </button>
+        <button class="nav-btn">
+          <img src="../Image/figma-assets/Bottom Nav Button-left3-dumbell.png" alt="Learn">
+        </button>
+        <button class="nav-btn stories-active">
+          <img src="../Image/figma-assets/feed-icon-left-5.png" alt="Stories">
+        </button>
+        <button class="nav-btn">
+          <img src="../Image/figma-assets/feed-icon-left-5.png" alt="Feed">
+        </button>
+        <button class="nav-purple-pill" aria-label="Profile"></button>
+      </nav>
+    </main>
+  </div>
+
+  <a class="home-fab" href="../index.html">🏠 Main Page</a>
+
+  <script>
+    let selected = null;
+
+    function selectChoice(row) {
+      document.querySelectorAll('.choice-row').forEach(r => r.classList.remove('selected'));
+      row.classList.add('selected');
+      selected = row;
+    }
+
+    function handleContinue() {
+      if (!selected) {
+        alert('Pick an answer first!');
+        return;
+      }
+      window.location.href = '07-publish-flow.html';
+    }
+  </script>
+</body>
+</html>

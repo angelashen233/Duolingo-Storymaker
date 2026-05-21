@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Screen — Duo Is Blocking You</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../duolingo-design.css">
+  <link rel="stylesheet" href="../design-system.css">
+  <style>
+    .screen {
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    /* Duo mascot — angry/blocking */
+    .duo-mascot {
+      width: 130px;
+      height: 130px;
+      object-fit: contain;
+      display: block;
+      margin: 24px auto 10px;
+      filter: hue-rotate(0deg);
+    }
+
+    /* Headline */
+    .block-title {
+      font-size: 30px;
+      font-weight: 900;
+      color: #ff4b4b;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: -0.01em;
+      padding: 0 20px;
+      margin-bottom: 16px;
+      line-height: 1.1;
+    }
+
+    /* Body text */
+    .block-body {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a1a1a;
+      text-align: center;
+      text-transform: uppercase;
+      line-height: 1.6;
+      padding: 0 24px;
+      margin-bottom: 20px;
+    }
+
+    /* CTA buttons */
+    .cta-area {
+      width: 100%;
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: auto;
+    }
+
+    .block-btn {
+      width: 100%;
+      padding: 18px 16px;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      font-size: 15px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      line-height: 1.2;
+      transition: transform 80ms, box-shadow 80ms;
+    }
+
+    .block-btn.green {
+      background: #57cc02;
+      color: white;
+      box-shadow: 0 4px 0 #46a302;
+    }
+
+    .block-btn.green:active {
+      transform: translateY(4px);
+      box-shadow: none;
+    }
+
+    .block-btn.outline {
+      background: white;
+      color: #1a1a1a;
+      border: 2.5px solid #e5e5e5;
+      box-shadow: 0 4px 0 #e5e5e5;
+    }
+
+    .block-btn.outline:active {
+      transform: translateY(4px);
+      box-shadow: none;
+    }
+
+    /* Bottom nav */
+    .bottom-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 16px 38px;
+      border-top: 1.5px solid #e5e5e5;
+      background: white;
+      width: 100%;
+      margin-top: 16px;
+    }
+
+    .nav-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
+
+    .nav-btn img {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+    }
+
+    .nav-btn.active {
+      background: #ddf4ff;
+      border: 2px solid #63c9f9;
+    }
+
+    .nav-purple-pill {
+      width: 29px;
+      height: 29px;
+      background: #ce82ff;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body class="demo-page">
+  <div class="phone">
+    <div class="status-bar">
+      <span class="status-time">9:27</span>
+      <div class="status-icons">
+        <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1" fill="currentColor"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1" fill="currentColor"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="currentColor"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12"><circle cx="8" cy="10.5" r="1.5" fill="currentColor"/><path d="M8 6C6.2 6 4.6 6.8 3.4 8L2.4 7C3.9 5.5 5.8 4.6 8 4.6s4.1.9 5.6 2.4L12.6 8C11.4 6.8 9.8 6 8 6z" fill="currentColor"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="2.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="22.5" y="4" width="2" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="18" height="7" rx="1.5" fill="currentColor"/></svg>
+      </div>
+    </div>
+
+    <main class="screen">
+      <!-- Duo mascot — angry face -->
+      <img
+        src="../Image/figma-assets/Actor-scared-sweating.png"
+        alt="Duo is angry"
+        class="duo-mascot"
+      />
+
+      <h1 class="block-title">Duo Is<br>Blocking You</h1>
+
+      <p class="block-body">
+        The community is created based on our shared respect.<br>
+        Please refrain from making explicit content, and with excessive violence.<br>
+        <br>
+        All content with violence will be removed automatically.
+      </p>
+
+      <div class="cta-area">
+        <button class="block-btn green" onclick="window.location.href='hifi-community-promise.html'">
+          I promise I won't do it again
+        </button>
+        <button class="block-btn outline" onclick="window.location.href='../index.html'">
+          I can't
+        </button>
+      </div>
+
+      <!-- Bottom nav -->
+      <nav class="bottom-nav">
+        <button class="nav-btn active">
+          <img src="../Image/figma-assets/Bottom Nav Button-Left-1-home-birdhouse.png" alt="Home">
+        </button>
+        <button class="nav-btn">
+          <img src="../Image/figma-assets/Bottom Nav Button-left-2-chest-40by40.png" alt="Rewards">
+        </button>
+        <button class="nav-btn">
+          <img src="../Image/figma-assets/Bottom Nav Button-left3-dumbell.png" alt="Learn">
+        </button>
+        <button class="nav-btn">
+          <img src="../Image/figma-assets/feed-icon-left-5.png" alt="Stories">
+        </button>
+        <button class="nav-btn">
+          <img src="../Image/figma-assets/feed-icon-left-5.png" alt="Feed">
+        </button>
+        <button class="nav-purple-pill" aria-label="Profile"></button>
+      </nav>
+    </main>
+  </div>
+
+  <a class="home-fab" href="../index.html">🏠 Main Page</a>
+</body>
+</html>

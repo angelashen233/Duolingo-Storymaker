@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Screen — Build Your Story</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../duolingo-design.css">
+  <link rel="stylesheet" href="../design-system.css">
+  <style>
+    .screen {
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Top bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px 8px;
+      background: white;
+      border-bottom: 1.5px solid #f5f5f5;
+    }
+
+    .close-btn {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: #afafaf;
+      font-size: 20px;
+    }
+
+    .top-title {
+      font-size: 22px;
+      font-weight: 900;
+      color: #1a1a1a;
+    }
+
+    .more-btn {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
+
+    /* Build list */
+    .build-list {
+      padding: 20px 16px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .build-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 2.5px solid #e5e5e5;
+      border-radius: 14px;
+      padding: 14px 16px;
+      box-shadow: 0 4px 0 #e5e5e5;
+      background: white;
+      cursor: pointer;
+      transition: transform 80ms, box-shadow 80ms;
+    }
+
+    .build-row:hover  { transform: translateY(-1px); }
+    .build-row:active { transform: translateY(4px); box-shadow: none; }
+
+    .build-row-label {
+      font-size: 18px;
+      font-weight: 900;
+      color: #1a1a1a;
+    }
+
+    .build-row-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .build-row-count {
+      font-size: 18px;
+      font-weight: 900;
+      color: #1a1a1a;
+    }
+
+    .build-row-flag {
+      display: flex;
+      height: 18px;
+      width: 26px;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .build-row-flag span { flex: 1; }
+    .fc-blue  { background: #1cb0f6; }
+    .fc-white { background: #e5e5e5; }
+    .fc-red   { background: #ff4b4b; }
+
+    /* Try It Out section */
+    .try-section {
+      padding: 20px 16px 10px;
+    }
+
+    .try-title {
+      font-size: 22px;
+      font-weight: 900;
+      color: #1a1a1a;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .test-play-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      border: 2.5px solid #e5e5e5;
+      border-radius: 14px;
+      padding: 14px 16px;
+      box-shadow: 0 4px 0 #e5e5e5;
+      background: white;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 900;
+      color: #1a1a1a;
+      font-family: 'Nunito', sans-serif;
+      margin-bottom: 12px;
+      transition: transform 80ms, box-shadow 80ms;
+    }
+
+    .test-play-btn:hover  { transform: translateY(-1px); }
+    .test-play-btn:active { transform: translateY(4px); box-shadow: none; }
+
+    .helper-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: #4b4b4b;
+      padding: 0 4px;
+      line-height: 1.5;
+    }
+
+    /* Bottom nav */
+    .bottom-nav {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 16px 38px;
+      border-top: 1.5px solid #e5e5e5;
+      background: white;
+    }
+
+    .nav-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
+
+    .nav-btn img {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+    }
+
+    .nav-stories-active {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      border: 2px solid #ff9600;
+      background: #fff3e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-stories-active img {
+      width: 28px;
+      height: 24px;
+      object-fit: contain;
+    }
+
+    .nav-purple-pill {
+      width: 29px;
+      height: 29px;
+      background: #ce82ff;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body class="demo-page">
+  <div class="phone">
+    <div class="status-bar">
+      <span class="status-time">9:27</span>
+      <div class="status-icons">
+        <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1" fill="currentColor"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1" fill="currentColor"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="currentColor"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12"><circle cx="8" cy="10.5" r="1.5" fill="currentColor"/><path d="M8 6C6.2 6 4.6 6.8 3.4 8L2.4 7C3.9 5.5 5.8 4.6 8 4.6s4.1.9 5.6 2.4L12.6 8C11.4 6.8 9.8 6 8 6z" fill="currentColor"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="2.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="22.5" y="4" width="2" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="18" height="7" rx="1.5" fill="currentColor"/></svg>
+      </div>
+    </div>
+
+    <main class="screen">
+      <!-- Top bar -->
+      <div class="top-bar">
+        <button class="close-btn" onclick="window.location.href='hifi-story-mode-select.html'" aria-label="Close">✕</button>
+        <span class="top-title">Build Your Story</span>
+        <button class="more-btn" aria-label="More options">
+          <svg width="20" height="4" viewBox="0 0 20 4" fill="none">
+            <circle cx="2" cy="2" r="2" fill="#afafaf"/>
+            <circle cx="10" cy="2" r="2" fill="#afafaf"/>
+            <circle cx="18" cy="2" r="2" fill="#afafaf"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Build checklist -->
+      <div class="build-list">
+        <!-- Language Select -->
+        <div class="build-row">
+          <span class="build-row-label">Language Select</span>
+          <div class="build-row-right">
+            <div class="build-row-flag">
+              <span class="fc-blue"></span>
+              <span class="fc-white"></span>
+              <span class="fc-red"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scenes -->
+        <a href="hifi-scene-editor.html" class="build-row" style="text-decoration:none;">
+          <span class="build-row-label">Scenes</span>
+          <span class="build-row-count">0/5</span>
+        </a>
+
+        <!-- Characters -->
+        <a href="hifi-character-studio.html" class="build-row" style="text-decoration:none;">
+          <span class="build-row-label">Characters</span>
+          <span class="build-row-count">0/2</span>
+        </a>
+
+        <!-- Backgrounds -->
+        <div class="build-row" onclick="alert('Choose backgrounds for your scenes!')">
+          <span class="build-row-label">Backgrounds</span>
+          <span class="build-row-count">0/1</span>
+        </div>
+      </div>
+
+      <!-- Try It Out -->
+      <div class="try-section">
+        <div class="try-title">Try It Out</div>
+        <button class="test-play-btn" onclick="window.location.href='hifi-story-playing.html'">
+          Test Play
+        </button>
+        <p class="helper-text">Complete minimum amount of assets to play your story!</p>
+      </div>
+
+      <!-- Publish -->
+      <div style="padding: 8px 16px 0;">
+        <button onclick="window.location.href='hifi-community-promise.html'" style="width:100%;padding:18px 16px;border-radius:14px;border:none;background:#57cc02;color:white;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:0.03em;box-shadow:0 4px 0 #46a302;cursor:pointer;">
+          Publish Story
+        </button>
+      </div>
+
+      <!-- Bottom nav -->
+      <nav class="bottom-nav">
+        <button class="nav-btn">
+          <img src="../Image/figma-assets/Bottom Nav Button-Left-1-home-birdhouse.png" alt="Home">
+        </button>
+        <button class="nav-btn">
+          <img src="../Image/figma-assets/Bottom Nav Button-left-2-chest-40by40.png" alt="Rewards">
+        </button>
+        <button class="nav-btn">
+          <img src="../Image/figma-assets/Bottom Nav Button-left3-dumbell.png" alt="Learn">
+        </button>
+        <div class="nav-stories-active">
+          <img src="../Image/figma-assets/Bottom Nav Button-Left-1-home-birdhouse.png" alt="Stories">
+        </div>
+        <button class="nav-btn">
+          <img src="../Image/figma-assets/feed-icon-left-5.png" alt="Feed">
+        </button>
+        <button class="nav-purple-pill" aria-label="Profile"></button>
+      </nav>
+    </main>
+  </div>
+
+  <a class="home-fab" href="../index.html">🏠 Main Page</a>
+</body>
+</html>

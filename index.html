@@ -7,535 +7,775 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./duolingo-design.css">
+  <link rel="stylesheet" href="./design-system.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Nunito', sans-serif;
-      background: #FFFFFF;
       min-height: 100vh;
-      padding: 32px 20px 48px;
-      color: #4B4B4B;
-      border-top: 5px solid #58CC02;
+      padding: 28px 18px 56px;
+      color: var(--studio-figma-text);
+      background:
+        radial-gradient(circle at top left, rgba(168,85,247,0.18), transparent 30%),
+        linear-gradient(180deg, #F7F3FF 0%, #FFFFFF 48%);
+      border-top: 5px solid var(--studio-figma-purple);
     }
 
-    .hero {
-      text-align: center;
-      color: #3C3C3C;
-      padding: 0 0 40px;
-    }
-
-    .duo-icon {
-      width: 80px;
-      height: 80px;
-      margin-bottom: 16px;
-      display: inline-block;
-      animation: bob 2.5s ease-in-out infinite;
-    }
-
-    @keyframes bob {
-      0%, 100% { transform: translateY(0); }
-      50%       { transform: translateY(-10px); }
-    }
-
-    .hero-title {
-      font-size: 36px;
-      font-weight: 900;
-      letter-spacing: -0.5px;
-      line-height: 1.1;
-      margin-bottom: 8px;
-      color: #58CC02;
-    }
-
-    .hero-subtitle {
-      font-size: 16px;
-      font-weight: 700;
-      color: #777777;
-      margin-bottom: 24px;
-      line-height: 1.5;
-    }
-
-    .hero-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #F0FFF4;
-      color: #2B7A00;
-      padding: 8px 18px;
-      border-radius: 9999px;
-      font-size: 14px;
-      font-weight: 800;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      border: 1.5px solid #B7EBA0;
-    }
-
-    .start-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: #58CC02;
-      color: white;
-      font-family: 'Nunito', sans-serif;
-      font-size: 18px;
-      font-weight: 900;
-      padding: 16px 40px;
-      border-radius: 9999px;
-      border: none;
-      cursor: pointer;
-      text-decoration: none;
-      box-shadow: 0 6px 0 #46A302;
-      transition: transform 100ms ease, box-shadow 100ms ease;
-      margin-top: 24px;
-      letter-spacing: -0.2px;
-    }
-
-    .start-btn:hover { background: #5AD902; transform: translateY(-2px); box-shadow: 0 8px 0 #46A302; }
-    .start-btn:active { transform: translateY(6px); box-shadow: none; }
-
-    .screen-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 12px;
-      max-width: 960px;
+    .page {
+      max-width: 1120px;
       margin: 0 auto;
     }
 
-    .screen-card {
-      background: white;
-      border-radius: 16px;
-      padding: 18px 20px;
-      display: flex;
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 420px);
+      gap: 28px;
       align-items: center;
-      gap: 16px;
+      margin-bottom: 36px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(124,58,237,0.09);
+      color: var(--studio-figma-purple);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+    }
+
+    .hero-title {
+      font-size: clamp(40px, 6vw, 64px);
+      line-height: 0.98;
+      letter-spacing: -0.04em;
+      font-weight: 900;
+      color: var(--studio-figma-text);
+      margin-bottom: 14px;
+      max-width: 10ch;
+    }
+
+    .hero-title span {
+      color: var(--studio-figma-purple);
+    }
+
+    .hero-copy {
+      font-size: 18px;
+      line-height: 1.55;
+      font-weight: 700;
+      color: var(--studio-figma-muted);
+      max-width: 36rem;
+      margin-bottom: 20px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .cta-primary,
+    .cta-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 54px;
+      padding: 0 22px;
+      border-radius: 16px;
       text-decoration: none;
-      color: inherit;
-      box-shadow: 0 4px 0 #E5E5E5;
-      transition: transform 120ms ease, box-shadow 120ms ease;
-      border: 2px solid #F0F0F0;
-    }
-
-    .screen-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 0 rgba(0,0,0,0.1);
-      border-color: rgba(88,204,2,0.3);
-    }
-
-    .screen-card:active {
-      transform: translateY(4px);
-      box-shadow: none;
-    }
-
-    .screen-num {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #58CC02, #89E219);
-      color: white;
       font-size: 16px;
       font-weight: 900;
+      transition: transform 120ms ease, box-shadow 120ms ease;
+    }
+
+    .cta-primary {
+      background: linear-gradient(180deg, #8C3BFF 0%, #6E23E8 100%);
+      color: white;
+      box-shadow: 0 6px 0 #5618B8;
+    }
+
+    .cta-secondary {
+      background: white;
+      color: var(--studio-figma-purple);
+      border: 2px solid var(--studio-figma-border);
+      box-shadow: 0 4px 0 rgba(227, 220, 244, 0.95);
+    }
+
+    .cta-primary:hover,
+    .cta-secondary:hover { transform: translateY(-2px); }
+    .cta-primary:active,
+    .cta-secondary:active { transform: translateY(4px); box-shadow: none; }
+
+    .hero-note {
+      font-size: 13px;
+      font-weight: 800;
+      color: #9C90B6;
+      line-height: 1.5;
+    }
+
+    .hero-side {
+      display: flex;
+      justify-content: center;
+    }
+
+    .preview-phone {
+      width: 350px;
+      border-radius: 38px;
+      padding: 14px;
+      background: linear-gradient(180deg, #F4EEFF, #FFFFFF);
+      box-shadow: 0 20px 40px rgba(66, 22, 146, 0.14), 0 4px 0 rgba(230, 223, 244, 0.92);
+      border: 1px solid rgba(124,58,237,0.12);
+    }
+
+    .preview-shell {
+      border-radius: 30px;
+      overflow: hidden;
+      background: linear-gradient(180deg, var(--studio-figma-purple) 0 188px, var(--studio-figma-bg) 188px 100%);
+      min-height: 650px;
+      position: relative;
+    }
+
+    .preview-status {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 18px 0;
+      color: white;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .preview-hero {
+      padding: 10px 18px 0;
+      color: white;
+      position: relative;
+    }
+
+    .preview-hero-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .preview-brand {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+    }
+
+    .preview-brand-sub {
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.78);
+      margin-top: 5px;
+    }
+
+    .preview-duo {
+      position: relative;
+      width: 76px;
+      height: 76px;
+      flex-shrink: 0;
+    }
+
+    .preview-duo-badge {
+      position: absolute;
+      left: -2px;
+      top: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: 12px;
+      background: white;
+      color: var(--studio-figma-purple);
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
-      box-shadow: 0 3px 0 #46A302;
+      font-size: 12px;
+      font-weight: 900;
     }
 
-    .screen-card.killer .screen-num {
-      background: linear-gradient(135deg, #FF4B4B, #FFC800);
-      box-shadow: 0 3px 0 #CC2222;
+    .preview-duo img {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
     }
 
-    .screen-info { flex: 1; }
+    .preview-card {
+      background: white;
+      border-radius: 18px;
+      padding: 12px;
+      box-shadow: 0 8px 0 rgba(86, 24, 184, 0.22);
+    }
 
-    .screen-name {
+    .preview-card-title {
       font-size: 15px;
-      font-weight: 800;
-      color: #4B4B4B;
-      line-height: 1.3;
+      font-weight: 900;
+      color: var(--studio-figma-text);
+      margin-bottom: 10px;
+    }
+
+    .preview-card-btn {
+      height: 32px;
+      border-radius: 10px;
+      background: linear-gradient(180deg, #8C3BFF 0%, #6E23E8 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 900;
+      box-shadow: 0 4px 0 #5618B8;
+    }
+
+    .preview-body {
+      padding: 16px 14px 16px;
+    }
+
+    .preview-kicker {
+      font-size: 8px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #B5ADC8;
+      margin-bottom: 8px;
+    }
+
+    .preview-feature {
+      display: flex;
+      align-items: stretch;
+      gap: 10px;
+      background: linear-gradient(135deg, #79B8FF, #4A74E0);
+      color: white;
+      border-radius: 18px;
+      padding: 10px;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 0 rgba(44,84,178,0.24);
+    }
+
+    .preview-feature-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .preview-feature-title {
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1.05;
       margin-bottom: 2px;
     }
 
-    .screen-desc {
-      font-size: 13px;
-      font-weight: 600;
-      color: #777;
-      line-height: 1.4;
-    }
-
-    .killer-tag {
-      background: linear-gradient(135deg, #FF4B4B, #FFC800);
-      color: white;
+    .preview-feature-sub {
       font-size: 10px;
-      font-weight: 900;
-      padding: 2px 8px;
-      border-radius: 9999px;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      flex-shrink: 0;
+      font-weight: 700;
+      color: rgba(255,255,255,0.86);
     }
 
-    .arrow {
-      color: #AFAFAF;
-      font-size: 18px;
-      flex-shrink: 0;
+    .preview-feature-art {
+      width: 82px;
+      border-radius: 16px;
+      background: rgba(255,166,82,0.78);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .preview-feature-art img {
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+      transform: translateY(7px);
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .preview-mini {
+      background: white;
+      border: 2px solid var(--studio-figma-border);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 0 rgba(227, 220, 244, 0.92);
+    }
+
+    .preview-mini-art {
+      height: 68px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      background: linear-gradient(135deg, #B99CFF, #8D76FF);
+    }
+
+    .preview-mini-art.alt { background: linear-gradient(135deg, #FFD96B, #FF9F1C); }
+
+    .preview-mini img {
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+      transform: translateY(8px);
+    }
+
+    .preview-nav img {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .preview-mini-body {
+      padding: 8px 10px 10px;
+      color: var(--studio-figma-text);
+    }
+
+    .preview-mini-title {
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 3px;
+    }
+
+    .preview-mini-meta {
+      font-size: 9px;
+      font-weight: 700;
+      color: #8B7EAA;
+    }
+
+    .preview-nav {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 4px;
+      padding: 10px 10px 12px;
+      border-top: 1px solid #EEE7F7;
+      background: white;
+    }
+
+    .preview-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 11px;
+      margin: 0 auto;
+    }
+
+    .preview-dot.home { background: var(--studio-figma-nav-home); }
+    .preview-dot.rewards { background: var(--studio-figma-nav-studio); }
+    .preview-dot.learn { background: var(--studio-figma-nav-learn); }
+    .preview-dot.create { background: var(--studio-figma-nav-create); }
+    .preview-dot.social { background: var(--studio-figma-nav-social); }
+    .preview-dot.profile { background: var(--studio-figma-nav-profile); }
+
+    .section-block {
+      margin-bottom: 30px;
     }
 
     .section-label {
-      color: #AFAFAF;
+      color: #A295B7;
       font-size: 12px;
       font-weight: 900;
       text-transform: uppercase;
       letter-spacing: 0.1em;
       margin-bottom: 12px;
-      padding: 0 4px;
     }
 
-    .section-block {
-      max-width: 960px;
-      margin: 0 auto 32px;
+    .primary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+    }
+
+    .primary-card,
+    .secondary-card,
+    .archive-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      border-radius: 20px;
+      transition: transform 120ms ease, box-shadow 120ms ease;
+    }
+
+    .primary-card {
+      background: white;
+      border: 2px solid var(--studio-figma-border);
+      padding: 18px;
+      box-shadow: 0 6px 0 rgba(229, 221, 243, 0.96);
+    }
+
+    .primary-card:hover,
+    .secondary-card:hover,
+    .archive-card:hover { transform: translateY(-2px); }
+
+    .card-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 12px;
+    }
+
+    .tag-primary {
+      background: rgba(124,58,237,0.1);
+      color: var(--studio-figma-purple);
+    }
+
+    .tag-secondary {
+      background: rgba(121,184,255,0.14);
+      color: #3673C5;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--studio-figma-text);
+      margin-bottom: 6px;
+      line-height: 1.15;
+    }
+
+    .card-text {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--studio-figma-muted);
+      line-height: 1.55;
+    }
+
+    .card-arrow {
+      margin-top: 14px;
+      color: var(--studio-figma-purple);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .secondary-grid,
+    .archive-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .secondary-grid {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .archive-grid {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .secondary-card {
+      background: rgba(255,255,255,0.82);
+      border: 2px solid rgba(233,226,248,0.9);
+      padding: 16px;
+      box-shadow: 0 4px 0 rgba(236, 230, 247, 0.94);
+    }
+
+    .archive-card {
+      background: rgba(247,244,255,0.7);
+      border: 1px solid rgba(218,209,238,0.95);
+      padding: 14px 16px;
+      box-shadow: 0 3px 0 rgba(236, 230, 247, 0.85);
+    }
+
+    .archive-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .archive-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 16px;
+      background: rgba(124,58,237,0.12);
+      color: var(--studio-figma-purple);
+      font-size: 13px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
 
     footer {
-      text-align: center;
-      color: #AFAFAF;
+      padding-top: 22px;
+      border-top: 1px solid rgba(225,217,241,0.95);
+      color: #AA9EC1;
       font-size: 13px;
-      font-weight: 700;
-      margin-top: 40px;
-      border-top: 2px solid #F0F0F0;
-      padding-top: 24px;
+      font-weight: 800;
+      text-align: center;
     }
 
-    /* ── Pitch section ── */
-    .pitch-section {
-      max-width: 960px;
-      margin: 0 auto 40px;
+    @media (max-width: 920px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-side {
+        order: -1;
+      }
     }
 
-    .pitch-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 12px;
-      margin-bottom: 16px;
-    }
+    @media (max-width: 520px) {
+      body {
+        padding-inline: 14px;
+      }
 
-    .pitch-card {
-      border-radius: 16px;
-      padding: 20px 22px;
-      border: 2px solid transparent;
-    }
+      .preview-phone {
+        width: 100%;
+        max-width: 360px;
+      }
 
-    .pitch-card-problem {
-      background: #FFF7F7;
-      border-color: rgba(255,75,75,0.2);
-    }
-
-    .pitch-card-opportunity {
-      background: #F0FFF4;
-      border-color: rgba(88,204,2,0.25);
-    }
-
-    .pitch-card-label {
-      font-size: 10px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .pitch-card-problem .pitch-card-label { color: #CC2222; }
-    .pitch-card-opportunity .pitch-card-label { color: #2B7A00; }
-
-    .pitch-card-text {
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 1.65;
-      color: #4B4B4B;
-    }
-
-    .pitch-banner {
-      background: linear-gradient(135deg, #3C3C3C 0%, #555555 100%);
-      border-radius: 18px;
-      padding: 24px 28px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .pitch-banner::before {
-      content: '✏️';
-      position: absolute;
-      right: 24px;
-      bottom: -8px;
-      font-size: 72px;
-      opacity: 0.12;
-      line-height: 1;
-    }
-
-    .pitch-banner-label {
-      font-size: 10px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: #FFC800;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .pitch-banner-text {
-      font-size: 15px;
-      font-weight: 700;
-      color: rgba(255,255,255,0.90);
-      line-height: 1.7;
-      max-width: 780px;
-    }
-
-    .pitch-banner-text strong {
-      color: #58CC02;
-      font-weight: 900;
+      .hero-title {
+        font-size: 40px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="hero">
-    <img class="duo-icon" src="./Image/Duolingo-owl-front.png" alt="Duo the Duolingo owl">
-    <h1 class="hero-title">Duolingo Stories Studio</h1>
-    <p class="hero-subtitle">A new creation-first feature for language learners<br>University Design Jam · Pathway 2 · Addition</p>
-    <div class="hero-tag">📱 11 screens · Mobile-first · Vanilla HTML/CSS/JS</div>
-    <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:24px;">
-      <a href="./screens/01-duolingo-home-new-tab.html" class="start-btn">▶ Start Demo 1</a>
-      <a href="./screens/demo2-french-lesson.html" class="start-btn" style="background:#1CB0F6;box-shadow:0 6px 0 #149EE0;">▶ Demo 2 — Lesson</a>
-      <a href="./screens/demo3-social-feed.html"   class="start-btn" style="background:#FF7043;box-shadow:0 6px 0 #E64A19;">▶ Demo 3 — Social</a>
-      <a href="./screens/demo4-drama-scene.html"   class="start-btn" style="background:#CE82FF;box-shadow:0 6px 0 #7C3AED;">🎭 Demo 4 — Drama</a>
-    </div>
-  </div>
-
-  <!-- ═══════════════════════════════════════════
-       PITCH SECTION
-       ═══════════════════════════════════════════ -->
-  <div class="pitch-section">
-    <p class="section-label" style="max-width:960px;margin:0 auto 16px;padding:0 4px;">💡 The idea</p>
-
-    <div class="pitch-grid">
-
-      <!-- Core Problem -->
-      <div class="pitch-card pitch-card-problem">
-        <div class="pitch-card-label">
-          <span>⚠️</span> The core problem
+  <div class="page">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Figma-aligned primary direction</div>
+        <h1 class="hero-title">Stories Studio is now the <span>main product story</span></h1>
+        <p class="hero-copy">The latest Figma direction becomes the default hierarchy: a purple Stories Studio home, lighter content cards, and the older explorations moved below as supporting demos instead of competing entry points.</p>
+        <div class="hero-actions">
+          <a href="./screens/02-studio-landing.html" class="cta-primary">Open Latest Studio Home</a>
+          <a href="./screens/03-story-type.html" class="cta-secondary">Open Builder Flow</a>
         </div>
-        <div class="pitch-card-text">
-          Language learning apps often train <strong style="color:#CC2222;">recognition</strong> through repeated exercises,
-          but learners can struggle to turn what they know into personal,
-          <strong style="color:#CC2222;">expressive</strong> language use.
-        </div>
+        <p class="hero-note">The Figma-based Stories Studio flow is the primary prototype. Demo 1, Demo 2, Demo 3, and Demo 4 remain available below as secondary references.</p>
       </div>
 
-      <!-- Opportunity -->
-      <div class="pitch-card pitch-card-opportunity">
-        <div class="pitch-card-label">
-          <span>🌱</span> Opportunity
-        </div>
-        <div class="pitch-card-text">
-          What if Duolingo helped learners <strong style="color:#2B7A00;">create</strong> with the language they are learning?
-        </div>
+      <div class="hero-side">
+        <a href="./screens/02-studio-landing.html" class="preview-phone" aria-label="Open latest Stories Studio home prototype">
+          <div class="preview-shell">
+            <div class="preview-status">
+              <span>9:27</span>
+              <span>◔  ▴  ▣</span>
+            </div>
+            <div class="preview-hero">
+              <div class="preview-hero-top">
+                <div>
+                  <div class="preview-brand">Stories Studio</div>
+                  <div class="preview-brand-sub">Turn lessons into stories</div>
+                </div>
+                <div class="preview-duo">
+                  <div class="preview-duo-badge"><img src="./Image/figma-assets/Star-yellow.png" alt="" style="width:14px;height:14px;object-fit:contain;"></div>
+                  <img src="./Image/figma-assets/Duolingo-bird-reading.png" alt="Duo preview" />
+                </div>
+              </div>
+              <div class="preview-card">
+                <div class="preview-card-title">Turn lessons into stories</div>
+                <div class="preview-card-btn">START +120 XP</div>
+              </div>
+            </div>
+            <div class="preview-body">
+              <div class="preview-kicker">Monthly highlight</div>
+              <div class="preview-feature">
+                <div class="preview-feature-text">
+                  <div class="preview-feature-title">La celebrite ce soir</div>
+                  <div class="preview-feature-sub">Fame Tonight</div>
+                </div>
+                <div class="preview-feature-art">
+                  <img src="./Image/figma-assets/Black-character-confident.png" alt="Featured preview" />
+                </div>
+              </div>
+              <div class="preview-kicker">Drafts</div>
+              <div class="preview-grid">
+                <div class="preview-mini">
+                  <div class="preview-mini-art"><img src="./Image/figma-assets/Actor-scared-sweating.png" alt="Draft one" /></div>
+                  <div class="preview-mini-body">
+                    <div class="preview-mini-title">La celebrite ce soir</div>
+                    <div class="preview-mini-meta">20 scenes</div>
+                  </div>
+                </div>
+                <div class="preview-mini">
+                  <div class="preview-mini-art alt"><img src="./Image/figma-assets/Fruits-apple-banna-blueberry.png" alt="Draft two" /></div>
+                  <div class="preview-mini-body">
+                    <div class="preview-mini-title">El tren perdido</div>
+                    <div class="preview-mini-meta">25 scenes</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="preview-nav" aria-hidden="true">
+              <div class="preview-dot home"><img src="./Image/figma-assets/Bottom Nav Button-Left-1-home-birdhouse.png" alt="" /></div>
+              <div class="preview-dot rewards"><img src="./Image/figma-assets/Bottom Nav Button-left-2-chest-40by40.png" alt="" /></div>
+              <div class="preview-dot learn"><img src="./Image/figma-assets/Bottom Nav Button-left3-dumbell.png" alt="" /></div>
+              <div class="preview-dot create"></div>
+              <div class="preview-dot social"><img src="./Image/figma-assets/feed-icon-left-5.png" alt="" /></div>
+              <div class="preview-dot profile"><img src="./Image/figma-assets/Profile-left-6.png" alt="" /></div>
+            </div>
+          </div>
+        </a>
       </div>
+    </section>
 
-    </div>
-
-    <!-- Pitch -->
-    <div class="pitch-banner">
-      <div class="pitch-banner-label">🎯 The pitch</div>
-      <div class="pitch-banner-text">
-        Duolingo teaches users how to <strong>recognize</strong> language, but <strong>Storymaker</strong> helps them
-        <strong>create</strong> with it. By turning recently learned vocabulary and grammar into
-        character-driven, branching mini stories, learners move beyond completing lessons and
-        begin <strong>authoring playable language artifacts</strong>. Through characters, dialogue, and choices,
-        Storymaker makes practice more <strong>personal and memorable</strong>.
+    <section class="section-block">
+      <p class="section-label">Primary entry points</p>
+      <div class="primary-grid">
+        <a href="./screens/02-studio-landing.html" class="primary-card">
+          <div class="card-tag tag-primary">Primary</div>
+          <div class="card-title">Stories Studio Home</div>
+          <div class="card-text">Figma-driven home screen with the purple hero, featured story, drafts, and lighter card hierarchy.</div>
+          <div class="card-arrow">Open screen 02 →</div>
+        </a>
+        <a href="./screens/03-story-type.html" class="primary-card">
+          <div class="card-tag tag-primary">Primary</div>
+          <div class="card-title">Builder Flow</div>
+          <div class="card-text">Continue from the Studio home into the creation flow and story assembly experience.</div>
+          <div class="card-arrow">Open screen 03 →</div>
+        </a>
+        <a href="./screens/08-community-feed.html" class="primary-card">
+          <div class="card-tag tag-secondary">Supporting</div>
+          <div class="card-title">Community Read Layer</div>
+          <div class="card-text">The social and discovery surfaces remain in the ecosystem, but no longer outrank the Studio home.</div>
+          <div class="card-arrow">Open screen 08 →</div>
+        </a>
       </div>
-    </div>
+    </section>
+
+    <section class="section-block">
+      <p class="section-label">High-Fidelity Screens — Creator Flow</p>
+      <div class="secondary-grid">
+        <a href="./screens/hifi-story-mode-select.html" class="secondary-card">
+          <div class="card-tag tag-primary">1 · Create</div>
+          <div class="card-title">What Kind of Story?</div>
+          <div class="card-text">Pick Guided Build, Write with AI, or Build scene-by-scene to start creating.</div>
+        </a>
+        <a href="./screens/hifi-scene-editor.html" class="secondary-card">
+          <div class="card-tag tag-primary">2 · Create</div>
+          <div class="card-title">Scene Editor (Basic)</div>
+          <div class="card-text">Add narration, visuals, dialogue, and a response for each of up to 10 scenes.</div>
+        </a>
+        <a href="./screens/hifi-scene-editor-advanced.html" class="secondary-card">
+          <div class="card-tag tag-primary">2 · Advanced</div>
+          <div class="card-title">Scene Editor (Advanced)</div>
+          <div class="card-text">Full-control scene editor with branching choices A/B/C and multiple endings.</div>
+        </a>
+        <a href="./screens/hifi-build-story.html" class="secondary-card">
+          <div class="card-tag tag-primary">3 · Build</div>
+          <div class="card-title">Build Your Story</div>
+          <div class="card-text">Review the checklist — language, scenes, characters, backgrounds — then publish.</div>
+        </a>
+        <a href="./screens/hifi-community-promise.html" class="secondary-card">
+          <div class="card-tag tag-primary">4 · Publish</div>
+          <div class="card-title">Promise Duo</div>
+          <div class="card-text">Community guidelines gate before publishing — promise to keep content respectful.</div>
+        </a>
+        <a href="./screens/hifi-blocked.html" class="secondary-card">
+          <div class="card-tag tag-primary">4b · Blocked</div>
+          <div class="card-title">Duo Is Blocking You</div>
+          <div class="card-text">Shown when a user declines the community promise or breaks the rules.</div>
+        </a>
+        <a href="./screens/hifi-feed-published.html" class="secondary-card">
+          <div class="card-tag tag-primary">5 · Feed</div>
+          <div class="card-title">Feed — Story Published</div>
+          <div class="card-text">Community feed after publishing — your story appears live. Tap the heart to get a like.</div>
+        </a>
+        <a href="./screens/hifi-feed-liked.html" class="secondary-card">
+          <div class="card-tag tag-primary">6 · Feed</div>
+          <div class="card-title">Feed — Someone Liked It!</div>
+          <div class="card-text">"SOMEONE LIKED YOUR STORY!" notification shown when the first like arrives.</div>
+        </a>
+      </div>
+    </section>
+
+    <section class="section-block">
+      <p class="section-label">High-Fidelity Screens — Creation Studios</p>
+      <div class="secondary-grid">
+        <a href="./screens/hifi-scene-studio.html" class="secondary-card">
+          <div class="card-tag tag-primary">Studio · Scene</div>
+          <div class="card-title">Scene Background Studio</div>
+          <div class="card-text">Interactive scene editor — pick landscape overlays, background colors, and category tabs. Single-click applies; double-click enlarges.</div>
+        </a>
+        <a href="./screens/hifi-character-studio.html" class="secondary-card">
+          <div class="card-tag tag-primary">Studio · Character</div>
+          <div class="card-title">Character Studio</div>
+          <div class="card-text">Interactive character editor — switch body/eyes/hair/glasses/mask tabs, pick colors, and select styles. Single-click applies; double-click enlarges.</div>
+        </a>
+      </div>
+    </section>
+
+    <section class="section-block">
+      <p class="section-label">High-Fidelity Screens — Reader Flow</p>
+      <div class="secondary-grid">
+        <a href="./screens/hifi-story-detail.html" class="secondary-card">
+          <div class="card-tag tag-secondary">Read · 1</div>
+          <div class="card-title">Story Detail</div>
+          <div class="card-text">Full story page — La célébrité ce soir — with description, stats, tags, and Start CTA.</div>
+        </a>
+        <a href="./screens/hifi-story-playing.html" class="secondary-card">
+          <div class="card-tag tag-secondary">Read · 2</div>
+          <div class="card-title">Story Playing</div>
+          <div class="card-text">In-story scene with characters, dialogue bubble, and multiple-choice answer input.</div>
+        </a>
+      </div>
+    </section>
+
+    <section class="section-block">
+      <p class="section-label">Supporting demos</p>
+      <div class="secondary-grid">
+        <a href="./screens/01-duolingo-home-new-tab.html" class="secondary-card">
+          <div class="card-tag tag-secondary">Legacy trigger</div>
+          <div class="card-title">Demo 1 · Lesson Path Entry</div>
+          <div class="card-text">The Duolingo path still shows how users discover Studio after finishing a unit, but it now supports the primary Studio home rather than leading the page.</div>
+        </a>
+        <a href="./screens/demo2-french-lesson.html" class="secondary-card">
+          <div class="card-tag tag-secondary">Pipeline</div>
+          <div class="card-title">Demo 2 · Lesson to Creator</div>
+          <div class="card-text">Shows the invitation moment after a perfect lesson, now positioned as a supporting scenario.</div>
+        </a>
+        <a href="./screens/demo3-social-feed.html" class="secondary-card">
+          <div class="card-tag tag-secondary">Social</div>
+          <div class="card-title">Demo 3 · Social Feed</div>
+          <div class="card-text">Friend activity and profile prototypes remain available, but no longer compete with the Stories Studio entry flow.</div>
+        </a>
+        <a href="./screens/demo4-drama-scene.html" class="secondary-card">
+          <div class="card-tag tag-secondary">Scene</div>
+          <div class="card-title">Demo 4 · Drama Scene</div>
+          <div class="card-text">A standalone story-playing vignette kept as a lower-priority exploration.</div>
+        </a>
+      </div>
+    </section>
+
+    <section class="section-block">
+      <p class="section-label">Archive of prototype screens</p>
+      <div class="archive-grid">
+        <a href="./screens/01-duolingo-home-new-tab.html" class="archive-card"><div class="archive-top"><div class="archive-num">1</div><div><div class="card-title" style="font-size:15px;">Home + Studio tab</div><div class="card-text" style="font-size:12px;">Path-based entry from the core Duolingo app.</div></div></div></a>
+        <a href="./screens/02-studio-landing.html" class="archive-card"><div class="archive-top"><div class="archive-num">2</div><div><div class="card-title" style="font-size:15px;">Studio landing</div><div class="card-text" style="font-size:12px;">Updated to the Figma-first Stories Studio home.</div></div></div></a>
+        <a href="./screens/03-new-storyboard.html" class="archive-card"><div class="archive-top"><div class="archive-num">3</div><div><div class="card-title" style="font-size:15px;">New storyboard</div><div class="card-text" style="font-size:12px;">Story creation workspace and build flow.</div></div></div></a>
+        <a href="./screens/04-character-picker.html" class="archive-card"><div class="archive-top"><div class="archive-num">4</div><div><div class="card-title" style="font-size:15px;">Character picker</div><div class="card-text" style="font-size:12px;">Choose cast members for authored stories.</div></div></div></a>
+        <a href="./screens/05-branching-choice.html" class="archive-card"><div class="archive-top"><div class="archive-num">5</div><div><div class="card-title" style="font-size:15px;">Branching editor</div><div class="card-text" style="font-size:12px;">Insert player choices and branching outcomes.</div></div></div></a>
+        <a href="./screens/06-preview-story.html" class="archive-card"><div class="archive-top"><div class="archive-num">6</div><div><div class="card-title" style="font-size:15px;">Story preview</div><div class="card-text" style="font-size:12px;">Test-play the authored narrative before publishing.</div></div></div></a>
+        <a href="./screens/07-publish-flow.html" class="archive-card"><div class="archive-top"><div class="archive-num">7</div><div><div class="card-title" style="font-size:15px;">Publish flow</div><div class="card-text" style="font-size:12px;">Configure metadata, visibility, and remix settings.</div></div></div></a>
+        <a href="./screens/08-community-feed.html" class="archive-card"><div class="archive-top"><div class="archive-num">8</div><div><div class="card-title" style="font-size:15px;">Community feed</div><div class="card-text" style="font-size:12px;">Discovery and social browsing after stories are published.</div></div></div></a>
+        <a href="./screens/09-story-detail.html" class="archive-card"><div class="archive-top"><div class="archive-num">9</div><div><div class="card-title" style="font-size:15px;">Story detail</div><div class="card-text" style="font-size:12px;">Story metadata, cover art, and play entry.</div></div></div></a>
+        <a href="./screens/10-playing-story.html" class="archive-card"><div class="archive-top"><div class="archive-num">10</div><div><div class="card-title" style="font-size:15px;">Playing story</div><div class="card-text" style="font-size:12px;">Narrative playback with dialogue and choices.</div></div></div></a>
+        <a href="./screens/11-popularity-board.html" class="archive-card"><div class="archive-top"><div class="archive-num">11</div><div><div class="card-title" style="font-size:15px;">Popularity board</div><div class="card-text" style="font-size:12px;">Leaderboard and ranked story discovery.</div></div></div></a>
+      </div>
+    </section>
+
+    <footer>University Design Jam prototype · Figma hierarchy applied to the landing page and primary Stories Studio screen</footer>
   </div>
-
-  <div class="section-block">
-    <p class="section-label">🎬 Demo flow — click any screen to jump in</p>
-    <div class="screen-grid">
-
-      <a href="./screens/01-duolingo-home-new-tab.html" class="screen-card">
-        <div class="screen-num">1</div>
-        <div class="screen-info">
-          <div class="screen-name">Duolingo Home + Studio Tab</div>
-          <div class="screen-desc">Existing home screen with the new Studio tab added to bottom nav</div>
-        </div>
-        <span class="arrow">›</span>
-      </a>
-
-      <a href="./screens/02-studio-landing.html" class="screen-card">
-        <div class="screen-num">2</div>
-        <div class="screen-info">
-          <div class="screen-name">Studio Landing</div>
-          <div class="screen-desc">Your stories + create button + featured community picks</div>
-        </div>
-        <span class="arrow">›</span>
-      </a>
-
-      <a href="./screens/03-new-storyboard.html" class="screen-card">
-        <div class="screen-num">3</div>
-        <div class="screen-info">
-          <div class="screen-name">New Storyboard Canvas</div>
-          <div class="screen-desc">Scene editor with characters, dialogue input, timeline</div>
-        </div>
-        <span class="arrow">›</span>
-      </a>
-
-      <a href="./screens/04-character-picker.html" class="screen-card">
-        <div class="screen-num">4</div>
-        <div class="screen-info">
-          <div class="screen-name">Character Picker</div>
-          <div class="screen-desc">CSS blob characters grid + upload your own friend</div>
-        </div>
-        <span class="arrow">›</span>
-      </a>
-
-      <a href="./screens/05-branching-choice.html" class="screen-card">
-        <div class="screen-num">5</div>
-        <div class="screen-info">
-          <div class="screen-name">Branching Choice Editor</div>
-          <div class="screen-desc">Fork-in-the-story moment — add choices with animated branch lines</div>
-        </div>
-        <span class="arrow">›</span>
-      </a>
-
-      <a href="./screens/06-preview-story.html" class="screen-card">
-        <div class="screen-num">6</div>
-        <div class="screen-info">
-          <div class="screen-name">Preview Your Story</div>
-          <div class="screen-desc">Test-play your story as a player would experience it</div>
-        </div>
-        <span class="arrow">›</span>
-      </a>
-
-      <a href="./screens/07-publish-flow.html" class="screen-card">
-        <div class="screen-num">7</div>
-        <div class="screen-info">
-          <div class="screen-name">Publish Flow</div>
-          <div class="screen-desc">Title, language, difficulty, public/private, remix toggles</div>
-        </div>
-        <span class="arrow">›</span>
-      </a>
-
-      <a href="./screens/08-community-feed.html" class="screen-card killer">
-        <div class="screen-num">8</div>
-        <div class="screen-info">
-          <div class="screen-name">Community Feed</div>
-          <div class="screen-desc">Stories filtered by your learning language — the killer feature</div>
-        </div>
-        <span class="killer-tag">★ KEY</span>
-        <span class="arrow">›</span>
-      </a>
-
-      <a href="./screens/09-story-detail.html" class="screen-card">
-        <div class="screen-num">9</div>
-        <div class="screen-info">
-          <div class="screen-name">Story Detail</div>
-          <div class="screen-desc">Cover, author, stats, play button, comments, remix</div>
-        </div>
-        <span class="arrow">›</span>
-      </a>
-
-      <a href="./screens/10-playing-story.html" class="screen-card">
-        <div class="screen-num">10</div>
-        <div class="screen-info">
-          <div class="screen-name">Playing a Story</div>
-          <div class="screen-desc">Full-screen interactive — typewriter dialogue + branching choices</div>
-        </div>
-        <span class="arrow">›</span>
-      </a>
-
-      <a href="./screens/11-popularity-board.html" class="screen-card">
-        <div class="screen-num">11</div>
-        <div class="screen-info">
-          <div class="screen-name">Popularity Board</div>
-          <div class="screen-desc">Ranked top stories with gold/silver/bronze + time filters</div>
-        </div>
-        <span class="arrow">›</span>
-      </a>
-
-    </div>
-  </div>
-
-  <div class="section-block">
-    <p class="section-label">⭐ Demo 2 — Lesson-to-Creator Pipeline</p>
-    <div class="screen-grid">
-
-      <a href="./screens/demo2-french-lesson.html" class="screen-card killer" style="align-items:flex-start; padding: 22px 20px;">
-        <div class="screen-num" style="background:linear-gradient(135deg,#1CB0F6,#2B70C9);box-shadow:0 3px 0 #1A5CA8; flex-shrink:0; margin-top:2px;">D2</div>
-        <div class="screen-info">
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap;">
-            <div class="screen-name" style="margin-bottom:0;">French Lesson → Creator Invite</div>
-            <span class="killer-tag">★ NEW</span>
-          </div>
-          <div class="screen-desc">Complete a 5-exercise French lesson, score perfect, then get invited to build your own story in the Studio.</div>
-        </div>
-        <span class="arrow" style="margin-top:2px;">›</span>
-      </a>
-
-    </div>
-  </div>
-
-  <div class="section-block">
-    <p class="section-label">🌐 Demo 3 — Social Feed &amp; Friend Profiles</p>
-    <div class="screen-grid">
-
-      <a href="./screens/demo3-social-feed.html" class="screen-card killer" style="align-items:flex-start; padding: 22px 20px;">
-        <div class="screen-num" style="background:linear-gradient(135deg,#FF7043,#E64A19);box-shadow:0 3px 0 #BF360C; flex-shrink:0; margin-top:2px;">D3</div>
-        <div class="screen-info">
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap;">
-            <div class="screen-name" style="margin-bottom:0;">Friends Activity Feed</div>
-            <span class="killer-tag">★ NEW</span>
-          </div>
-          <div class="screen-desc">A live social feed of friend updates — story publications, badge earns, and more. A friend notification banner auto-appears after 700 ms.</div>
-        </div>
-        <span class="arrow" style="margin-top:2px;">›</span>
-      </a>
-
-      <a href="./screens/demo3-friend-profile.html" class="screen-card" style="align-items:flex-start; padding: 22px 20px;">
-        <div class="screen-num" style="background:linear-gradient(135deg,#9B59B6,#7D3C98);box-shadow:0 3px 0 #5B2C6F; flex-shrink:0; margin-top:2px; font-size:12px;">D3b</div>
-        <div class="screen-info">
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap;">
-            <div class="screen-name" style="margin-bottom:0;">Friend Profile &amp; Stories</div>
-          </div>
-          <div class="screen-desc">Carlos V.'s public profile — Beginner story is playable, Intermediate &amp; Advanced are locked until you level up.</div>
-        </div>
-        <span class="arrow" style="margin-top:2px;">›</span>
-      </a>
-
-    </div>
-  </div>
-
-  <div class="section-block">
-    <p class="section-label">🎭 Demo 4 — Dramatic Story Scene</p>
-    <div class="screen-grid">
-
-      <a href="./screens/demo4-drama-scene.html" class="screen-card killer" style="align-items:flex-start; padding: 22px 20px;">
-        <div class="screen-num" style="background:linear-gradient(135deg,#CE82FF,#7C3AED);box-shadow:0 3px 0 #5B21B6; flex-shrink:0; margin-top:2px;">D4</div>
-        <div class="screen-info">
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap;">
-            <div class="screen-name" style="margin-bottom:0;">La Traición — Drama Scene</div>
-            <span class="killer-tag" style="background:linear-gradient(135deg,#CE82FF,#7C3AED);">🎭 DRAMA</span>
-          </div>
-          <div class="screen-desc">A dramatic Spanish betrayal scene at the Climax beat — night, heavy rain, lightning, two characters, full story arc spanning 5 scenes.</div>
-        </div>
-        <span class="arrow" style="margin-top:2px;">›</span>
-      </a>
-
-    </div>
-  </div>
-
-  <footer>
-    Built with Vanilla HTML · CSS · JS &nbsp;·&nbsp; Duolingo Design System &nbsp;·&nbsp; iPhone 14 Pro viewport
-  </footer>
 </body>
 </html>

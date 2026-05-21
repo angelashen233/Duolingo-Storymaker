@@ -57,6 +57,27 @@
   /* Studio accent */
   --studio-purple: #7C3AED;
   --studio-teal:   #06B6D4;
+
+  /* Figma 2026 Stories Studio direction */
+  --studio-figma-purple:        #7C3AED;
+  --studio-figma-purple-dark:   #5B21B6;
+  --studio-figma-purple-soft:   #A855F7;
+  --studio-figma-bg:            #F8F4FF;
+  --studio-figma-surface:       #FFFFFF;
+  --studio-figma-surface-alt:   #F7F7FB;
+  --studio-figma-border:        #E9E2F8;
+  --studio-figma-text:          #231942;
+  --studio-figma-muted:         #8574A3;
+  --studio-figma-gold:          #FFC83D;
+  --studio-figma-cyan:          #49C6FF;
+  --studio-figma-pink:          #FF82D1;
+  --studio-figma-orange:        #FF9F1C;
+  --studio-figma-nav-home:      #FFB000;
+  --studio-figma-nav-studio:    #FFC83D;
+  --studio-figma-nav-learn:     #4DC8FF;
+  --studio-figma-nav-create:    #B275FF;
+  --studio-figma-nav-social:    #FF7ECF;
+  --studio-figma-nav-profile:   #5BB7FF;
 }
 
 /* ─────────────────────────────────────────────
